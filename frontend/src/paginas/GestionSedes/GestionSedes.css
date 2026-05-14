@@ -1,0 +1,13 @@
+.gestion-sedes {
+  animation: fadeIn 0.4s ease-out;
+}
+.gestion-sedes__cabecera { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.gestion-sedes__titulo { font-family: var(--fuente-especial); font-size: 1.5rem; color: var(--azul-institucional); margin: 0; }
+.gestion-sedes__formulario { background: var(--blanco-puro); border-radius: var(--redondeado-tarjeta); padding: 24px; box-shadow: var(--sombra-elegante); margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px; border: 1px solid var(--borde-suave); }
+.gestion-sedes__fila { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.gestion-sedes__acciones { display: flex; gap: 12px; justify-content: flex-end; }
+.gestion-sedes__lista { display: flex; flex-direction: column; gap: 10px; }
+.gestion-sedes__item { background: var(--blanco-puro); border-radius: var(--redondeado-campo); padding: 16px 20px; box-shadow: var(--sombra-elegante); border: 1px solid var(--borde-suave); display: flex; align-items: center; justify-content: space-between; }
+.gestion-sedes__nombre { font-weight: 600; color: var(--texto-oscuro); margin: 0; font-size: 0.95rem; }
+.gestion-sedes__detalle { font-size: 0.8rem; color: var(--texto-gris); margin: 4px 0 0; }
+.gestion-sedes__acciones-item { display: flex; gap: 4px; }

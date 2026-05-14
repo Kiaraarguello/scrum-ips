@@ -1,0 +1,29 @@
+.no-encontrada {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.no-encontrada__codigo {
+  font-family: var(--fuente-especial);
+  font-size: 6rem;
+  color: var(--azul-institucional);
+  margin: 0;
+  opacity: 0.3;
+}
+
+.no-encontrada__mensaje {
+  font-size: 1.1rem;
+  color: var(--texto-gris);
+  margin: 0;
+}
+
+.no-encontrada__enlace {
+  color: var(--azul-vibrante);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+}

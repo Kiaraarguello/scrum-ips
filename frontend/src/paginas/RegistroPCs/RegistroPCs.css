@@ -1,0 +1,17 @@
+.registro-pcs { padding: 32px 28px; }
+.registro-pcs__cabecera { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.registro-pcs__titulo { font-family: var(--fuente-especial); font-size: 1.5rem; color: var(--azul-institucional); margin: 0; }
+.registro-pcs__formulario { background: var(--blanco-puro); border-radius: var(--redondeado-tarjeta); padding: 24px; box-shadow: var(--sombra-elegante); margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px; border: 1px solid var(--borde-suave); }
+.registro-pcs__fila { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.registro-pcs__acciones { display: flex; gap: 12px; justify-content: flex-end; }
+.registro-pcs__tabla-envolvente { background: var(--blanco-puro); border-radius: var(--redondeado-tarjeta); box-shadow: var(--sombra-elegante); overflow: hidden; border: 1px solid var(--borde-suave); }
+.registro-pcs__tabla { width: 100%; border-collapse: collapse; }
+.registro-pcs__tabla th { background: var(--fondo-suave); padding: 12px 16px; text-align: left; font-size: 0.78rem; font-weight: 700; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 0.04em; }
+.registro-pcs__tabla td { padding: 12px 16px; border-top: 1px solid var(--borde-suave); font-size: 0.88rem; color: var(--texto-oscuro); vertical-align: middle; }
+.registro-pcs__nombre { font-weight: 600; margin: 0; }
+.registro-pcs__desc { font-size: 0.78rem; color: var(--texto-gris); margin: 3px 0 0; }
+.registro-pcs__estado { padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+.registro-pcs__estado--en_taller { background: var(--ambar-medio-suave); color: var(--ambar-medio); }
+.registro-pcs__estado--entregada { background: var(--verde-suave-claro); color: var(--verde-suave); }
+.registro-pcs__acciones-fila { display: flex; gap: 4px; align-items: center; }
+.registro-pcs__vacio { text-align: center; color: var(--texto-gris); padding: 40px; font-size: 0.88rem; }

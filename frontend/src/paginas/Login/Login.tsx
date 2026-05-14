@@ -1,0 +1,71 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contextos/ContextoAuth';
+import { login } from '../../servicios/autenticacion';
+import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
+import Boton from '../../componentes/Boton/Boton';
+import logoNombre from '../../assets/logo-nombre.svg';
+import './Login.css';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
+  const { iniciarSesion } = useAuth();
+  const navegar = useNavigate();
+
+  async function manejarEnvio(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setCargando(true);
+    try {
+      const { token, usuario } = await login(email, password);
+      iniciarSesion(token, usuario);
+      if (usuario.rol === 'admin') {
+        navegar('/admin');
+      } else if (!usuario.seleccion_completada) {
+        navegar('/seleccion-sector');
+      } else {
+        navegar('/tablero');
+      }
+    } catch {
+      setError('Email o contrasena incorrectos');
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  return (
+    <div className="login">
+      <div className="login__tarjeta modern-card animate-fade-in">
+        <img src={logoNombre} alt="Logo Scrum IPS" className="login__logo-grande" />
+        <h1 className="login__titulo">Scrum Cómputos</h1>
+        <p className="login__subtitulo">Sistema interno de gestion de tareas</p>
+        <form onSubmit={manejarEnvio} className="login__formulario">
+          <CampoTexto
+            etiqueta="Email"
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoFocus
+          />
+          <CampoTexto
+            etiqueta="Contrasena"
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className="login__error">{error}</p>}
+          <Boton type="submit" disabled={cargando} className="login__boton">
+            {cargando ? 'Ingresando...' : 'Ingresar'}
+          </Boton>
+        </form>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,75 @@
+.modal-nueva-tarea__fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(69, 91, 164, 0.18);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-nueva-tarea__caja {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 36px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 24px 64px rgba(69, 91, 164, 0.2);
+}
+
+.modal-nueva-tarea__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.3rem;
+  color: var(--azul-institucional);
+  margin: 0 0 24px 0;
+}
+
+.modal-nueva-tarea__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-nueva-tarea__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.modal-nueva-tarea__nota-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-nueva-tarea__textarea {
+  padding: 10px 14px;
+  border: 1.5px solid var(--borde-suave);
+  border-radius: var(--redondeado-campo);
+  font-family: var(--fuente-principal);
+  font-size: 0.95rem;
+  color: var(--texto-oscuro);
+  background: var(--blanco-puro);
+  resize: vertical;
+  transition: var(--transicion-base);
+  outline: none;
+}
+
+.modal-nueva-tarea__textarea:focus {
+  border-color: var(--azul-institucional);
+  box-shadow: 0 0 0 3px rgba(69, 91, 164, 0.1);
+}
+
+.modal-nueva-tarea__error {
+  font-size: 0.82rem;
+  color: var(--rojo-critico);
+  margin: 0;
+}
+
+.modal-nueva-tarea__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}

@@ -1,0 +1,85 @@
+.login {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--azul-institucional);
+  margin: 0;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de luz de fondo para que no sea tan plano */
+.login::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(var(--azul-vibrante-rgb), 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.login__tarjeta {
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+  z-index: 10;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.login__logo-grande {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 0 auto 16px auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+}
+
+.login__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 2.2rem;
+  color: var(--azul-institucional);
+  margin: 0 0 8px 0;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.login__subtitulo {
+  font-size: 0.95rem;
+  color: var(--texto-gris);
+  text-align: center;
+  margin: 0 0 24px 0;
+  font-weight: 500;
+}
+
+.login__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login__error {
+  font-size: 0.88rem;
+  color: var(--rojo-critico);
+  margin: 0;
+  text-align: center;
+  background: var(--rojo-critico-suave);
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.login__boton {
+  width: 100%;
+  margin-top: 8px;
+}
+
+

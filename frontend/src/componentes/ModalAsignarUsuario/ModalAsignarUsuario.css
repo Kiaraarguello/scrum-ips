@@ -1,0 +1,41 @@
+.modal-asignar__fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(69, 91, 164, 0.18);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.modal-asignar__caja {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 24px 64px rgba(69, 91, 164, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-asignar__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.1rem;
+  color: var(--azul-institucional);
+  margin: 0;
+}
+
+.modal-asignar__descripcion {
+  font-size: 0.88rem;
+  color: var(--texto-gris);
+  margin: 0;
+}
+
+.modal-asignar__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}

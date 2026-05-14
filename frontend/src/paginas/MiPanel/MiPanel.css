@@ -1,0 +1,493 @@
+.mi-panel {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ── Encabezado ── */
+.mi-panel__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mi-panel__saludo {
+  font-family: var(--fuente-especial);
+  font-size: 1.9rem;
+  color: var(--azul-institucional);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.4px;
+}
+
+.mi-panel__bienvenida {
+  font-size: 0.9rem;
+  color: var(--texto-gris);
+  margin: 0;
+}
+
+.mi-panel__sector-activo {
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  color: var(--azul-institucional);
+  border: 1px solid rgba(var(--azul-institucional-rgb), 0.18);
+  padding: 6px 16px;
+  border-radius: var(--redondeado-pill);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Cifras ── */
+.mi-panel__cifras {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.mi-panel__cifra {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 28px 24px;
+  box-shadow: var(--sombra-elegante);
+  border: 1px solid var(--borde-suave);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: var(--transicion-base);
+}
+
+.mi-panel__cifra:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-premium);
+  border-color: rgba(var(--azul-institucional-rgb), 0.3);
+}
+
+.mi-panel__numero {
+  font-family: var(--fuente-especial);
+  font-size: 3rem;
+  color: var(--azul-institucional);
+  line-height: 1;
+}
+
+.mi-panel__etiqueta {
+  font-size: 0.8rem;
+  color: var(--texto-gris);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Contenido ── */
+.mi-panel__contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Sección genérica ── */
+.mi-panel__seccion {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  border: 1px solid var(--borde-suave);
+  box-shadow: var(--sombra-elegante);
+  padding: 28px 32px;
+}
+
+.mi-panel__seccion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mi-panel__seccion-titulo-grupo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mi-panel__seccion-titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1rem;
+  color: var(--azul-institucional);
+  margin: 0;
+}
+
+.mi-panel__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: rgba(var(--azul-institucional-rgb), 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--azul-institucional);
+  flex-shrink: 0;
+}
+
+.mi-panel__btn-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--azul-institucional);
+  background: rgba(var(--azul-institucional-rgb), 0.07);
+  border: 1px solid rgba(var(--azul-institucional-rgb), 0.15);
+  border-radius: 10px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: var(--transicion-base);
+  font-family: var(--fuente-principal);
+}
+
+.mi-panel__btn-editar:hover {
+  background: rgba(var(--azul-institucional-rgb), 0.14);
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-glow-suave);
+}
+
+/* ── Datos personales — vista ── */
+.mi-panel__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mi-panel__dato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  transition: var(--transicion-rapida);
+}
+
+.mi-panel__dato:hover {
+  background: rgba(var(--azul-institucional-rgb), 0.03);
+}
+
+.mi-panel__dato-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--texto-gris);
+}
+
+.mi-panel__dato-valor {
+  font-size: 0.92rem;
+  color: var(--texto-oscuro);
+  font-weight: 500;
+}
+
+.mi-panel__password-mask {
+  letter-spacing: 3px;
+  color: var(--texto-gris);
+}
+
+.mi-panel__rol {
+  padding: 3px 12px;
+  border-radius: var(--redondeado-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mi-panel__rol--admin {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.mi-panel__rol--usuario {
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  color: var(--azul-institucional);
+}
+
+/* ── Mensaje éxito ── */
+.mi-panel__exito {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ── Formulario perfil ── */
+.mi-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mi-panel__form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mi-panel__separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.mi-panel__separador::before,
+.mi-panel__separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--borde-suave);
+}
+
+.mi-panel__separador span {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mi-panel__error {
+  font-size: 0.84rem;
+  color: var(--rojo-critico);
+  background: var(--rojo-critico-suave);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mi-panel__form-acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ── Sectores — vista ── */
+.mi-panel__sectores-vista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mi-panel__sin-sectores {
+  font-size: 0.88rem;
+  color: var(--texto-gris);
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.mi-panel__sectores-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mi-panel__sector-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  border-radius: var(--redondeado-pill);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(var(--azul-institucional-rgb), 0.06);
+  color: var(--azul-institucional);
+  border: 1px solid rgba(var(--azul-institucional-rgb), 0.15);
+  transition: var(--transicion-base);
+}
+
+.mi-panel__sector-chip--activo {
+  background: var(--azul-institucional);
+  color: var(--blanco-puro);
+  border-color: var(--azul-institucional);
+  box-shadow: var(--sombra-glow-suave);
+}
+
+.mi-panel__sector-chip-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+/* ── Sectores — formulario ── */
+.mi-panel__sectores-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mi-panel__sectores-ayuda {
+  font-size: 0.85rem;
+  color: var(--texto-gris);
+  margin: 0;
+}
+
+.mi-panel__sectores-opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.mi-panel__sector-opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--borde-suave);
+  background: var(--fondo-pagina);
+  cursor: pointer;
+  transition: var(--transicion-base);
+  position: relative;
+}
+
+.mi-panel__sector-opcion:hover {
+  border-color: rgba(var(--azul-institucional-rgb), 0.35);
+  background: rgba(var(--azul-institucional-rgb), 0.04);
+  transform: translateY(-1px);
+}
+
+.mi-panel__sector-opcion--marcado {
+  border-color: var(--azul-institucional);
+  background: rgba(var(--azul-institucional-rgb), 0.07);
+  box-shadow: 0 0 0 3px rgba(var(--azul-institucional-rgb), 0.12);
+}
+
+.mi-panel__sector-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mi-panel__sector-nombre {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+}
+
+.mi-panel__sector-opcion--marcado .mi-panel__sector-nombre {
+  color: var(--azul-institucional);
+}
+
+.mi-panel__sector-desc {
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+  line-height: 1.3;
+}
+
+/* ── Lista de tareas ── */
+.mi-panel__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mi-panel__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 11px;
+  border: 1px solid var(--borde-suave);
+  transition: var(--transicion-base);
+}
+
+.mi-panel__item:hover {
+  background: rgba(var(--azul-institucional-rgb), 0.03);
+  border-color: rgba(var(--azul-institucional-rgb), 0.2);
+  transform: translateX(4px);
+}
+
+.mi-panel__item-titulo {
+  font-size: 0.9rem;
+  color: var(--texto-oscuro);
+  font-weight: 500;
+}
+
+.mi-panel__item-fecha {
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .mi-panel__encabezado {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .mi-panel__saludo { font-size: 1.6rem; }
+  
+  .mi-panel__cifras { 
+    grid-template-columns: 1fr; 
+    gap: 12px;
+  }
+  
+  .mi-panel__cifra {
+    padding: 20px;
+  }
+
+  .mi-panel__numero {
+    font-size: 2.4rem;
+  }
+
+  .mi-panel__form-fila { 
+    grid-template-columns: 1fr; 
+    gap: 12px;
+  }
+  
+  .mi-panel__seccion { 
+    padding: 24px 20px; 
+  }
+
+  .mi-panel__seccion-cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .mi-panel__btn-editar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mi-panel__dato {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .mi-panel__form-acciones {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .mi-panel__form-acciones button {
+    width: 100%;
+  }
+}

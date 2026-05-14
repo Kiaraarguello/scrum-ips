@@ -1,0 +1,103 @@
+.panel-admin {
+  /* Ya hereda padding de .pagina */
+}
+
+.panel-admin__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 2rem;
+  color: var(--azul-institucional);
+  margin-bottom: 32px;
+  letter-spacing: -0.5px;
+}
+
+.panel-admin__grilla {
+  display: grid;
+  /* El cambio clave: auto-fit en lugar de auto-fill para que se estiren al ancho total */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+.panel-admin__tarjeta {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 32px;
+  box-shadow: var(--sombra-elegante);
+  border: 1px solid var(--borde-suave);
+  text-decoration: none;
+  display: flex;
+  align-items: center; /* Cambiado a horizontal para que se vea más "bloque" profesional */
+  gap: 24px;
+  transition: var(--transicion-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-admin__tarjeta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: var(--azul-institucional);
+  transition: var(--transicion-base);
+}
+
+.panel-admin__tarjeta:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--sombra-premium);
+  border-color: var(--azul-claro);
+}
+
+.panel-admin__tarjeta:hover::before {
+  height: 100%;
+}
+
+.panel-admin__icono-envolvente {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--azul-institucional);
+  flex-shrink: 0;
+  transition: var(--transicion-base);
+}
+
+.panel-admin__tarjeta:hover .panel-admin__icono-envolvente {
+  background: var(--azul-institucional);
+  color: var(--blanco-puro);
+}
+
+.panel-admin__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-admin__nombre {
+  font-family: var(--fuente-especial);
+  font-size: 1.2rem;
+  color: var(--texto-oscuro);
+}
+
+.panel-admin__descripcion {
+  font-size: 0.9rem;
+  color: var(--texto-gris);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .panel-admin__grilla {
+    grid-template-columns: 1fr;
+  }
+  
+  .panel-admin__tarjeta {
+    padding: 20px;
+    gap: 16px;
+  }
+}
+

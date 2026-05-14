@@ -1,0 +1,62 @@
+.columna-tablero {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 24px 20px;
+  min-height: 500px;
+  border: 1px solid var(--borde-suave);
+  transition: var(--transicion-base);
+}
+
+.columna-tablero--sobre {
+  border-color: var(--azul-vibrante);
+  background: rgba(var(--azul-vibrante-rgb), 0.05);
+  transform: scale(1.01);
+}
+
+.columna-tablero__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+}
+
+.columna-tablero__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.1rem;
+  color: var(--azul-institucional);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.columna-tablero__contador {
+  background: var(--azul-institucional);
+  color: var(--blanco-puro);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 30px;
+  min-width: 32px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(45, 62, 139, 0.2);
+}
+
+.columna-tablero__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.columna-tablero__vacia {
+  text-align: center;
+  color: var(--texto-gris);
+  font-size: 0.9rem;
+  padding: 40px 0;
+  opacity: 0.5;
+  font-style: italic;
+}
+

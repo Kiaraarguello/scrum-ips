@@ -1,0 +1,253 @@
+.gestion-usuarios {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.gestion-usuarios__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.gestion-usuarios__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.8rem;
+  color: var(--azul-institucional);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.gestion-usuarios__formulario {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 32px;
+  box-shadow: var(--sombra-premium);
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border: 1px solid var(--borde-suave);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.gestion-usuarios__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.gestion-usuarios__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.gestion-usuarios__tabla-envolvente {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  box-shadow: var(--sombra-premium);
+  overflow: hidden;
+  border: 1px solid var(--borde-suave);
+  animation: fadeIn 0.8s ease-out;
+}
+
+.gestion-usuarios__tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gestion-usuarios__tabla th {
+  background: rgba(var(--azul-vibrante-rgb), 0.03);
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--borde-suave);
+}
+
+.gestion-usuarios__tabla td {
+  padding: 18px 20px;
+  border-top: 1px solid var(--borde-suave);
+  font-size: 0.95rem;
+  color: var(--texto-oscuro);
+  transition: var(--transicion-base);
+}
+
+.gestion-usuarios__tabla tr:hover td {
+  background: rgba(var(--azul-vibrante-rgb), 0.01);
+}
+
+.gestion-usuarios__rol {
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.gestion-usuarios__rol--admin {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.gestion-usuarios__rol--usuario {
+  background: var(--fondo-suave);
+  color: var(--azul-institucional);
+}
+
+.gestion-usuarios__estado {
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.gestion-usuarios__estado--activo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.gestion-usuarios__estado--inactivo {
+  background: var(--rojo-critico-suave);
+  color: var(--rojo-critico);
+}
+
+.gestion-usuarios__acciones-fila {
+  display: flex;
+  gap: 8px;
+}
+
+/* Multi-sector en formulario */
+.gestion-usuarios__sectores-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gestion-usuarios__sectores-etiqueta {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+  margin-left: 4px;
+}
+
+.gestion-usuarios__sectores-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gestion-usuarios__sector-opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--borde-suave);
+  background: var(--fondo-pagina);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+  cursor: pointer;
+  transition: var(--transicion-base);
+  user-select: none;
+}
+
+.gestion-usuarios__sector-opcion:hover {
+  border-color: rgba(var(--azul-institucional-rgb), 0.4);
+  background: rgba(var(--azul-institucional-rgb), 0.05);
+}
+
+.gestion-usuarios__sector-opcion--marcado {
+  border-color: var(--azul-institucional);
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  color: var(--azul-institucional);
+  box-shadow: 0 0 0 2px rgba(var(--azul-institucional-rgb), 0.15);
+}
+
+.gestion-usuarios__sector-checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--azul-institucional);
+  flex-shrink: 0;
+}
+
+/* Multi-sector en tabla */
+.gestion-usuarios__sectores-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.gestion-usuarios__sin-sector {
+  color: var(--texto-gris);
+}
+
+.gestion-usuarios__sector-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--redondeado-pill);
+  background: rgba(var(--azul-institucional-rgb), 0.07);
+  color: var(--azul-institucional);
+  border: 1px solid rgba(var(--azul-institucional-rgb), 0.15);
+}
+
+.gestion-usuarios__sector-tag--activo {
+  background: var(--azul-institucional);
+  color: var(--blanco-puro);
+  border-color: var(--azul-institucional);
+}
+
+.gestion-usuarios__form-titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.1rem;
+  color: var(--azul-institucional);
+  margin: 0 0 8px 0;
+}
+@media (max-width: 768px) {
+  .gestion-usuarios__cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .gestion-usuarios__titulo { font-size: 1.5rem; }
+  
+  .gestion-usuarios__fila {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .gestion-usuarios__formulario {
+    padding: 24px 20px;
+  }
+
+  .gestion-usuarios__acciones {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .gestion-usuarios__acciones button {
+    width: 100%;
+  }
+
+  .gestion-usuarios__tabla-envolvente {
+    overflow-x: auto;
+  }
+
+  .gestion-usuarios__tabla th,
+  .gestion-usuarios__tabla td {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+  
+  .gestion-usuarios__acciones-fila {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

@@ -1,0 +1,149 @@
+.estadisticas-usuarios {
+  animation: fadeIn 0.4s ease-out;
+}
+.estadisticas-usuarios__titulo { font-family: var(--fuente-especial); font-size: 1.5rem; color: var(--azul-institucional); margin: 0 0 6px 0; }
+.estadisticas-usuarios__aclaracion { font-size: 0.82rem; color: var(--texto-gris); margin: 0 0 24px 0; }
+.estadisticas-usuarios__vacio { text-align: center; color: var(--texto-gris); padding: 40px; font-size: 0.88rem; }
+
+/* ── Resumen global ── */
+.kpi-resumen-global {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.kpi-resumen-card {
+  background: var(--blanco-puro);
+  border: 1px solid var(--borde-suave);
+  border-radius: var(--redondeado-tarjeta);
+  box-shadow: var(--sombra-elegante);
+  padding: 18px 16px;
+  text-align: center;
+}
+.kpi-resumen-num { font-size: 1.8rem; font-weight: 700; color: var(--azul-institucional); margin: 0 0 4px; }
+.kpi-resumen-label { font-size: 0.75rem; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 0.04em; margin: 0; }
+
+/* ── Gráficos fila ── */
+.kpi-graficos-fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-grafico-global {
+  background: var(--blanco-puro);
+  border: 1px solid var(--borde-suave);
+  border-radius: var(--redondeado-tarjeta);
+  box-shadow: var(--sombra-elegante);
+  padding: 18px 20px;
+}
+.kpi-barras-container { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.kpi-barra-item { display: flex; align-items: center; gap: 10px; }
+.kpi-barra-etiqueta { font-size: 0.78rem; color: var(--texto-oscuro); width: 80px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-barra-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+.kpi-barra-fill { height: 20px; border-radius: 4px; min-width: 4px; transition: width 0.5s ease; }
+.kpi-barra-fill--tiempo { background: #38bdf8; }
+.kpi-barra-num { font-size: 0.75rem; font-weight: 600; color: var(--texto-oscuro); white-space: nowrap; }
+
+/* ── Sección título ── */
+.kpi-seccion-titulo { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-gris); margin: 0 0 10px 0; }
+.kpi-seccion-titulo--grande { font-size: 0.9rem; margin: 4px 0 14px 0; color: var(--texto-oscuro); }
+
+/* ── Grid tarjetas ── */
+.kpi-tarjetas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+/* ── Tarjeta usuario ── */
+.kpi-tarjeta {
+  background: var(--blanco-puro);
+  border: 1px solid var(--borde-suave);
+  border-radius: var(--redondeado-tarjeta);
+  box-shadow: var(--sombra-elegante);
+  padding: 16px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s;
+}
+.kpi-tarjeta:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.kpi-tarjeta--destacada { border-color: #e0d7ff; }
+
+.kpi-tarjeta-cabecera { display: flex; justify-content: space-between; align-items: flex-start; }
+.kpi-tarjeta-identidad { display: flex; align-items: center; gap: 10px; }
+
+.kpi-medalla {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 700; flex-shrink: 0;
+  background: var(--fondo-suave); color: var(--texto-gris);
+}
+.kpi-medalla--oro  { background: #fef3c7; color: #b45309; }
+.kpi-medalla--plata{ background: #f1f5f9; color: #475569; }
+.kpi-medalla--bronce{ background: #fde8d8; color: #9a3412; }
+
+.kpi-nombre { font-size: 0.93rem; font-weight: 700; color: var(--texto-oscuro); margin: 0 0 2px; }
+.kpi-subtitulo { font-size: 0.74rem; color: var(--texto-gris); margin: 0; }
+
+.kpi-tarjeta-puntos { text-align: right; }
+.kpi-puntos-num { font-size: 1.5rem; font-weight: 800; color: var(--azul-institucional); }
+.kpi-puntos-label { font-size: 0.72rem; color: var(--texto-gris); display: block; margin-top: -2px; }
+
+/* ── Barra de progreso ── */
+.kpi-barra-fondo { width: 100%; height: 6px; background: var(--fondo-suave); border-radius: 4px; overflow: hidden; }
+.kpi-barra-relleno { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+
+/* ── Métricas en fila ── */
+.kpi-metricas-fila {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.kpi-metrica {
+  display: flex; align-items: flex-start; gap: 6px;
+  background: var(--fondo-suave); border-radius: 8px; padding: 8px 10px;
+  color: var(--texto-gris);
+}
+.kpi-metrica svg { margin-top: 2px; flex-shrink: 0; }
+.kpi-metrica-valor { font-size: 0.88rem; font-weight: 700; color: var(--texto-oscuro); margin: 0 0 1px; }
+.kpi-metrica-valor--alerta { color: #dc2626; }
+.kpi-metrica-etiqueta { font-size: 0.70rem; color: var(--texto-gris); margin: 0; }
+
+/* ── Detalle expandido ── */
+.kpi-detalle { border-top: 1px solid var(--borde-suave); padding-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.kpi-detalle-titulo { font-size: 0.76rem; font-weight: 700; color: var(--texto-gris); text-transform: uppercase; letter-spacing: 0.04em; margin: 0; }
+
+.kpi-criticidad-grafico { display: flex; flex-direction: column; gap: 6px; }
+.kpi-criticidad-barra { display: flex; height: 14px; border-radius: 6px; overflow: hidden; }
+.kpi-crit-alta  { background: #ef4444; transition: width 0.4s; }
+.kpi-crit-media { background: #f59e0b; transition: width 0.4s; }
+.kpi-crit-baja  { background: #22c55e; transition: width 0.4s; }
+
+.kpi-criticidad-leyenda { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.kpi-criticidad-leyenda span { font-size: 0.74rem; color: var(--texto-oscuro); }
+.kpi-crit-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.kpi-crit-dot--alta  { background: #ef4444; }
+.kpi-crit-dot--media { background: #f59e0b; }
+.kpi-crit-dot--baja  { background: #22c55e; }
+
+.kpi-detalle-estados { display: flex; gap: 8px; flex-wrap: wrap; }
+.kpi-estado-chip {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.74rem; padding: 4px 10px; border-radius: 20px; font-weight: 600;
+}
+.kpi-estado-chip--finalizada { background: #dcfce7; color: #166534; }
+.kpi-estado-chip--proceso    { background: #dbeafe; color: #1e40af; }
+.kpi-estado-chip--pendiente  { background: #fef9c3; color: #854d0e; }
+
+.kpi-sin-datos { font-size: 0.8rem; color: var(--texto-gris); }
+
+/* ── Toggle ── */
+.kpi-toggle {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.75rem; color: var(--azul-institucional);
+  padding: 0; align-self: center; margin-top: -4px;
+  font-weight: 600;
+}
+.kpi-toggle:hover { text-decoration: underline; }

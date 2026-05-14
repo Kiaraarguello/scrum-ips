@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_scrum
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: America/Argentina/Buenos_Aires
+      MYSQL_DATABASE: scrum
+      MYSQL_ROOT_PASSWORD: SreEzwH8hIjsQaaQyBzfm
+      MYSQL_USER: admin_scrum
+      MYSQL_PASSWORD: ZRgBP6luqspA6cPtkr60
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:quiero que el logo de la navbar tenga luz blanca de fondo, porque el logo es el mismo color que el fondo

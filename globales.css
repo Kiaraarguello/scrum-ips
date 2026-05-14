@@ -1,0 +1,184 @@
+/* 
+  Variables Globales de Estilo 
+*/
+
+@font-face {
+  font-family: 'Martel Sans Black';
+  src: url('./assets/fonts/fuente_especial/MartelSans-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Caprasimo';
+  src: url('./assets/fonts/fuente_secundaria_especial/Caprasimo-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Martel Sans';
+  src: url('./assets/fonts/fuente_especial/MartelSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Martel Sans';
+  src: url('./assets/fonts/fuente_especial/MartelSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Martel Sans';
+  src: url('./assets/fonts/fuente_especial/MartelSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Paleta de Colores Base - Renovada */
+  --azul-institucional: #2d3e8b;
+  --azul-claro: #4a90e2;
+  --azul-vibrante: #007bff;
+  --azul-vibrante-rgb: 0, 123, 255;
+  --blanco-puro: #ffffff;
+  --fondo-suave: #f0f5fa;
+  --texto-oscuro: #1a1a1a;
+  --texto-gris: #5a6b8a;
+  --gris-iconos: #8fa7c7;
+  --rojo-critico: #e63946;
+  --rojo-critico-suave: #fff0f0;
+  --borde-suave: #dbe4ee;
+
+  /* Otros Tokens de Diseño */
+  --fuente-principal: 'Outfit', 'Inter', sans-serif;
+  --fuente-especial: 'Martel Sans Black', sans-serif;
+  --redondeado-tarjeta: 24px;
+  --redondeado-campo: 14px;
+  --redondeado-boton: 50px; /* Mas redondeado como pidio el usuario */
+  
+  /* Animaciones y Efectos */
+  --transicion-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --sombra-premium: 0 10px 30px -5px rgba(45, 62, 139, 0.15);
+  --sombra-glow: 0 0 20px rgba(var(--azul-vibrante-rgb), 0.5);
+  --color-primario: var(--azul-institucional);
+  --color-primario-hover: #3a4eb1;
+}
+
+/* Reset y Estilos Base */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--fuente-principal);
+  background-color: var(--fondo-suave);
+  color: var(--texto-oscuro);
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* Utilidades Modernas */
+.modern-card {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  box-shadow: var(--sombra-premium);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: var(--transicion-base);
+}
+
+.modern-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -15px rgba(45, 62, 139, 0.2);
+}
+
+/* Botones Modernos con Efectos de Luz */
+.btn-modern {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: var(--redondeado-boton);
+  font-family: var(--fuente-principal);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: var(--transicion-base);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+}
+
+.btn-modern--primary {
+  background: var(--color-primario);
+  color: white;
+  box-shadow: 0 4px 15px rgba(45, 62, 139, 0.3);
+}
+
+.btn-modern--primary:hover {
+  background: var(--color-primario-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(45, 62, 139, 0.4), var(--sombra-glow);
+}
+
+.btn-modern--primary:active {
+  transform: translateY(0);
+}
+
+.btn-modern--secondary {
+  background: transparent;
+  color: var(--azul-institucional);
+  border: 2px solid var(--azul-institucional);
+}
+
+.btn-modern--secondary:hover {
+  background: var(--azul-institucional);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 62, 139, 0.1);
+}
+
+
+/* Inputs Modernos */
+.input-modern {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--redondeado-campo);
+  border: 2px solid var(--borde-suave);
+  font-family: var(--fuente-principal);
+  transition: var(--transicion-base);
+  outline: none;
+}
+
+.input-modern:focus {
+  border-color: var(--azul-claro);
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}

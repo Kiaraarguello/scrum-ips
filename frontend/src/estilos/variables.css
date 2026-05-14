@@ -1,0 +1,36 @@
+/* Tokens de criticidad, estados y semántica de dominio */
+
+:root {
+  /* Criticidad */
+  --rojo-critico:         #d64545;
+  --rojo-critico-rgb:     214, 69, 69;
+  --ambar-medio:          #d4900a;
+  --ambar-medio-rgb:      212, 144, 10;
+  --verde-suave:          #2e9e74;
+  --verde-suave-rgb:      46, 158, 116;
+
+  /* Fondos suaves de criticidad */
+  --rojo-critico-suave:   #fdeaea;
+  --ambar-medio-suave:    #fdf5e0;
+  --verde-suave-claro:    #e3f7ef;
+
+  /* Estados del tablero */
+  --estado-por-hacer-fondo:    #eef4ff;
+  --estado-por-hacer-borde:    #b8cef0;
+  --estado-en-proceso-fondo:   #fdf5e0;
+  --estado-en-proceso-borde:   #e0b458;
+  --estado-finalizada-fondo:   #e3f7ef;
+  --estado-finalizada-borde:   #2e9e74;
+
+  /* Rol / usuario */
+  --rol-admin-fondo:     #ede9fe;
+  --rol-admin-texto:     #5b21b6;
+  --rol-usuario-fondo:   var(--fondo-suave);
+  --rol-usuario-texto:   var(--azul-institucional);
+
+  /* Estado activo/inactivo */
+  --activo-fondo:        #dcfce7;
+  --activo-texto:        #166534;
+  --inactivo-fondo:      var(--rojo-critico-suave);
+  --inactivo-texto:      var(--rojo-critico);
+}

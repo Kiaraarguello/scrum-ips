@@ -1,0 +1,97 @@
+.gestion-sectores {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.gestion-sectores__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.gestion-sectores__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.5rem;
+  color: var(--azul-institucional);
+  margin: 0;
+}
+
+.gestion-sectores__formulario {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 24px;
+  box-shadow: var(--sombra-elegante);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--borde-suave);
+}
+
+.gestion-sectores__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.gestion-sectores__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gestion-sectores__item {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-campo);
+  padding: 16px 20px;
+  box-shadow: var(--sombra-elegante);
+  border: 1px solid var(--borde-suave);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gestion-sectores__nombre {
+  font-weight: 600;
+  color: var(--texto-oscuro);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.gestion-sectores__descripcion {
+  font-size: 0.8rem;
+  color: var(--texto-gris);
+  margin: 4px 0 0;
+}
+
+.gestion-sectores__acciones-item {
+  display: flex;
+  gap: 4px;
+}
+@media (max-width: 768px) {
+  .gestion-sectores__cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .gestion-sectores__acciones {
+    width: 100%;
+    display: flex;
+  }
+
+  .gestion-sectores__acciones button {
+    flex: 1;
+  }
+
+  .gestion-sectores__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .gestion-sectores__acciones-item {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,75 @@
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--redondeado-boton);
+  font-family: var(--fuente-principal);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion-base);
+  white-space: nowrap;
+  position: relative;
+  letter-spacing: 0.3px;
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.boton--primario {
+  background: var(--color-primario);
+  color: var(--blanco-puro);
+  box-shadow: 0 4px 15px rgba(45, 62, 139, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.boton--primario:hover:not(:disabled) {
+  background: var(--color-primario-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(45, 62, 139, 0.4), var(--sombra-glow);
+}
+
+.boton--secundario {
+  background: transparent;
+  color: var(--azul-institucional);
+  border: 2.5px solid var(--azul-institucional);
+}
+
+.boton--secundario:hover:not(:disabled) {
+  background: var(--azul-institucional);
+  color: var(--blanco-puro);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 62, 139, 0.15);
+}
+
+.boton--peligro {
+  background: var(--rojo-critico);
+  color: var(--blanco-puro);
+  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+}
+
+.boton--peligro:hover:not(:disabled) {
+  background: #c1121f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(230, 57, 70, 0.3);
+}
+
+.boton--fantasma {
+  background: transparent;
+  color: var(--texto-gris);
+  border: none;
+  padding: 8px 20px;
+}
+
+.boton--fantasma:hover:not(:disabled) {
+  background: rgba(45, 62, 139, 0.08);
+  color: var(--azul-institucional);
+}
+
+

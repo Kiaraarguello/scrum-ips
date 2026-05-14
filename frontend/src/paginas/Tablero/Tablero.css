@@ -1,0 +1,117 @@
+.tablero {
+  padding: 40px;
+  min-height: calc(100vh - 70px);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.tablero__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  animation: fadeIn 0.6s ease-out;
+  gap: 16px;
+}
+
+.tablero__cabecera-acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Indicador de sincronización */
+.tablero__sync {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blanco-puro);
+  border: 1px solid var(--borde-suave);
+  border-radius: var(--redondeado-pill);
+  padding: 6px 12px 6px 10px;
+  box-shadow: var(--sombra-xs);
+}
+
+.tablero__sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verde-suave);
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+.tablero__sync-dot--activo {
+  background: var(--ambar-medio);
+  animation: glowPulse 1s ease infinite;
+}
+
+.tablero__sync-hora {
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tablero__sync-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--texto-gris);
+  transition: var(--transicion-base);
+  flex-shrink: 0;
+}
+
+.tablero__sync-btn:hover:not(:disabled) {
+  color: var(--azul-institucional);
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+}
+
+.tablero__sync-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.tablero__spin {
+  animation: spin 0.8s linear infinite;
+}
+
+.tablero__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.8rem;
+  color: var(--azul-institucional);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.tablero__columnas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 1100px) {
+  .tablero {
+    padding: 24px;
+  }
+  
+  .tablero__columnas {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .tablero__columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
