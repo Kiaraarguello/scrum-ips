@@ -14,11 +14,12 @@ interface FormUsuario {
   apellido: string;
   email: string;
   password: string;
+  confirmar: string;
   rol: string;
   sector_ids: number[];
 }
 
-const FORM_VACIO: FormUsuario = { nombre: '', apellido: '', email: '', password: '', rol: 'usuario', sector_ids: [] };
+const FORM_VACIO: FormUsuario = { nombre: '', apellido: '', email: '', password: '', confirmar: '', rol: 'usuario', sector_ids: [] };
 
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -26,6 +27,7 @@ export default function GestionUsuarios() {
   const [editando, setEditando] = useState<number | null>(null);
   const [form, setForm] = useState<FormUsuario>(FORM_VACIO);
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [errorForm, setErrorForm] = useState('');
 
   useEffect(() => {
     listarUsuarios().then(setUsuarios);
@@ -45,6 +47,7 @@ export default function GestionUsuarios() {
       apellido: u.apellido,
       email: u.email,
       password: '',
+      confirmar: '',
       rol: u.rol,
       sector_ids: (u.sectores ?? []).map(s => s.id),
     });
@@ -62,6 +65,11 @@ export default function GestionUsuarios() {
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
+    setErrorForm('');
+    if (form.password && form.password !== form.confirmar) {
+      setErrorForm('Las contraseñas no coinciden.');
+      return;
+    }
     const payload = { nombre: form.nombre, apellido: form.apellido, email: form.email, rol: form.rol as 'admin' | 'usuario', sector_ids: form.sector_ids };
     if (editando) {
       const p: any = { ...payload };
@@ -100,14 +108,27 @@ export default function GestionUsuarios() {
             <CampoTexto etiqueta="Nombre" id="nombre" value={form.nombre} onChange={e => setForm(p => ({ ...p, nombre: e.target.value }))} required />
             <CampoTexto etiqueta="Apellido" id="apellido" value={form.apellido} onChange={e => setForm(p => ({ ...p, apellido: e.target.value }))} required />
           </div>
+          <CampoTexto etiqueta="Email" id="email" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required />
+          <div className="gestion-usuarios__separador">
+            <span>{editando !== null ? 'Cambiar contraseña (opcional)' : 'Contraseña'}</span>
+          </div>
           <div className="gestion-usuarios__fila">
-            <CampoTexto etiqueta="Email" id="email" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required />
             <CampoTexto
-              etiqueta={editando !== null ? 'Nueva contraseña (dejar vacío para no cambiar)' : 'Contraseña'}
+              etiqueta={editando !== null ? 'Nueva contraseña' : 'Contraseña'}
               id="pwd"
               type="password"
               value={form.password}
               onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+              placeholder={editando !== null ? 'Dejar vacío para no cambiar' : 'Mínimo 6 caracteres'}
+              required={editando === null}
+            />
+            <CampoTexto
+              etiqueta="Confirmar contraseña"
+              id="confirmar"
+              type="password"
+              value={form.confirmar}
+              onChange={e => setForm(p => ({ ...p, confirmar: e.target.value }))}
+              placeholder="Repetir contraseña"
               required={editando === null}
             />
           </div>
@@ -139,6 +160,7 @@ export default function GestionUsuarios() {
             </div>
           </div>}
 
+          {errorForm && <p className="gestion-usuarios__error">{errorForm}</p>}
           <div className="gestion-usuarios__acciones">
             <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
             <Boton type="submit">{editando ? 'Guardar cambios' : 'Crear usuario'}</Boton>

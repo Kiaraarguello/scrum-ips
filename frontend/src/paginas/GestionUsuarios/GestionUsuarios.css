@@ -209,6 +209,39 @@
   color: var(--azul-institucional);
   margin: 0 0 8px 0;
 }
+
+.gestion-usuarios__separador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.gestion-usuarios__separador::before,
+.gestion-usuarios__separador::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--borde-suave);
+}
+
+.gestion-usuarios__separador span {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gestion-usuarios__error {
+  font-size: 0.84rem;
+  color: var(--rojo-critico);
+  background: var(--rojo-critico-suave);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
 @media (max-width: 768px) {
   .gestion-usuarios__cabecera {
     flex-direction: column;

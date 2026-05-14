@@ -22,9 +22,11 @@ export default function Login() {
     try {
       const { token, usuario } = await login(email, password);
       iniciarSesion(token, usuario);
+      const tieneSectores = (usuario.sectores && usuario.sectores.length > 0) || usuario.ver_todos;
+
       if (usuario.rol === 'admin') {
         navegar('/admin');
-      } else if (!usuario.seleccion_completada) {
+      } else if (!usuario.seleccion_completada && !tieneSectores) {
         navegar('/seleccion-sector');
       } else {
         navegar('/tablero');

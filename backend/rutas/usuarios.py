@@ -38,6 +38,7 @@ def crear_usuario(datos: UsuarioCrear, db: Session = Depends(obtener_db), _: Usu
     if datos.sector_ids:
         usuario.sectores = _resolver_sectores(db, datos.sector_ids)
         usuario.sector_id = datos.sector_ids[0]
+        usuario.seleccion_completada = True
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
@@ -131,8 +132,11 @@ def actualizar_usuario(
 
     if sector_ids is not None:
         usuario.sectores = _resolver_sectores(db, sector_ids) if sector_ids else []
-        if usuario.sector_id not in sector_ids:
+        if usuario.sector_id not in [s.id for s in usuario.sectores]:
             usuario.sector_id = sector_ids[0] if sector_ids else None
+    
+    if sector_ids or usuario.ver_todos:
+        usuario.seleccion_completada = True
 
     db.commit()
     db.refresh(usuario)

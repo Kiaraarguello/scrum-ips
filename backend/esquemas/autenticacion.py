@@ -18,6 +18,9 @@ class UsuarioTokenSalida(BaseModel):
     email: str
     rol: str
     sector_id: int | None
+    ver_todos: bool = False
+    seleccion_completada: bool = False
+    sectores: list[dict] = []
 
     class Config:
         from_attributes = True
