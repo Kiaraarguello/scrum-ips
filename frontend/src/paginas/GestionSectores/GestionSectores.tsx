@@ -82,14 +82,19 @@ export default function GestionSectores() {
       </div>
 
       {mostrarForm && (
-        <form onSubmit={guardar} className="gestion-sectores__formulario">
-          <CampoTexto etiqueta="Nombre" id="nombre-sector" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-          <CampoTexto etiqueta="Descripcion (opcional)" id="desc-sector" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-          <div className="gestion-sectores__acciones">
-            <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
-            <Boton type="submit">{editando ? 'Guardar' : 'Crear'}</Boton>
-          </div>
-        </form>
+        <div className="modal-formulario__fondo" onClick={() => setMostrarForm(false)}>
+          <form onSubmit={guardar} className="modal-formulario__caja" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-formulario__titulo">{editando ? 'Editar Sector' : 'Nuevo Sector'}</h2>
+            <div className="modal-formulario__campos">
+              <CampoTexto etiqueta="Nombre" id="nombre-sector" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+              <CampoTexto etiqueta="Descripcion (opcional)" id="desc-sector" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
+            </div>
+            <div className="gestion-sectores__acciones">
+              <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
+              <Boton type="submit">{editando ? 'Guardar' : 'Crear'}</Boton>
+            </div>
+          </form>
+        </div>
       )}
 
       <div className="gestion-sectores__lista">

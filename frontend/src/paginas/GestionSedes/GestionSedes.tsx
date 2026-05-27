@@ -87,18 +87,23 @@ export default function GestionSedes() {
       </div>
 
       {mostrarForm && (
-        <form onSubmit={guardar} className="gestion-sedes__formulario">
-          <div className="gestion-sedes__fila">
-            <CampoTexto etiqueta="Nombre" id="nom-sede" {...campo('nombre')} required />
-            <CampoTexto etiqueta="Ciudad" id="ciu-sede" {...campo('ciudad')} required />
-          </div>
-          <CampoTexto etiqueta="Direccion" id="dir-sede" {...campo('direccion')} />
-          <CampoTexto etiqueta="Notas" id="not-sede" {...campo('notas')} />
-          <div className="gestion-sedes__acciones">
-            <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
-            <Boton type="submit">{editando ? 'Guardar' : 'Crear'}</Boton>
-          </div>
-        </form>
+        <div className="modal-formulario__fondo" onClick={() => setMostrarForm(false)}>
+          <form onSubmit={guardar} className="modal-formulario__caja" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-formulario__titulo">{editando ? 'Editar Sede' : 'Nueva Sede'}</h2>
+            <div className="modal-formulario__campos">
+              <div className="gestion-sedes__fila">
+                <CampoTexto etiqueta="Nombre" id="nom-sede" {...campo('nombre')} required />
+                <CampoTexto etiqueta="Ciudad" id="ciu-sede" {...campo('ciudad')} required />
+              </div>
+              <CampoTexto etiqueta="Direccion" id="dir-sede" {...campo('direccion')} />
+              <CampoTexto etiqueta="Notas" id="not-sede" {...campo('notas')} />
+            </div>
+            <div className="gestion-sedes__acciones">
+              <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
+              <Boton type="submit">{editando ? 'Guardar' : 'Crear'}</Boton>
+            </div>
+          </form>
+        </div>
       )}
 
       <div className="gestion-sedes__lista">

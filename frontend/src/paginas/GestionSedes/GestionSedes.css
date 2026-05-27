@@ -83,3 +83,69 @@
   font-size: 0.95rem;
 }
 
+/* Modales de Formulario */
+.modal-formulario__fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 62, 139, 0.18);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-formulario__caja {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(45, 62, 139, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-formulario__caja--ancho {
+  max-width: 780px;
+}
+
+.modal-formulario__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.4rem;
+  color: var(--azul-institucional);
+  margin: 0;
+}
+
+.modal-formulario__campos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-formulario__caja {
+    padding: 24px 20px;
+    max-height: 95vh;
+  }
+}
+
+
