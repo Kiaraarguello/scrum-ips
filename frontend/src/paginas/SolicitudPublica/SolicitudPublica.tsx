@@ -29,6 +29,10 @@ export default function SolicitudPublica() {
   const [telefono, setTelefono] = useState('');
 
   const [bloqueaAtencion, setBloqueaAtencion] = useState<boolean | null>(null);
+  const [esRemoto, setEsRemoto] = useState<boolean | null>(null);
+  const [rustdeskId, setRustdeskId] = useState('');
+  const [rustdeskPassword, setRustdeskPassword] = useState('');
+  const [tareaIdCreada, setTareaIdCreada] = useState<number | null>(null);
 
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -45,16 +49,28 @@ export default function SolicitudPublica() {
       setError('Completá los campos obligatorios: descripción y sede.');
       return;
     }
+    if (esRemoto === true && (!rustdeskId.trim() || !rustdeskPassword.trim())) {
+      setError('Por favor, ingresá tu ID y contraseña de RustDesk para soporte remoto.');
+      return;
+    }
+
     setEnviando(true);
     try {
-      await apiPublica.post('/publico/solicitud', {
+      let detalleFinal = detalle.trim();
+      if (esRemoto === true) {
+        const remotoInfo = `[SOPORTE REMOTO RUSTDESK]\nID de RustDesk: ${rustdeskId.trim()}\nContraseña: ${rustdeskPassword.trim()}`;
+        detalleFinal = detalleFinal ? `${remotoInfo}\n\nDetalle adicional:\n${detalleFinal}` : remotoInfo;
+      }
+
+      const respuesta = await apiPublica.post<{ ok: boolean; id: number }>('/publico/solicitud', {
         titulo: titulo.trim(),
-        detalle: detalle.trim() || undefined,
+        detalle: detalleFinal || undefined,
         criticidad,
         sede_id: Number(sedeId),
         nombre_contacto: nombre.trim() || undefined,
         telefono_contacto: telefono.trim() || undefined,
       });
+      setTareaIdCreada(respuesta.data.id);
       setEnviado(true);
     } catch {
       setError('Hubo un error al enviar la solicitud. Intentá de nuevo.');
@@ -67,6 +83,10 @@ export default function SolicitudPublica() {
     setTitulo(''); setDetalle(''); setCriticidad('baja');
     setSedeId(''); setNombre(''); setTelefono('');
     setBloqueaAtencion(null);
+    setEsRemoto(null);
+    setRustdeskId('');
+    setRustdeskPassword('');
+    setTareaIdCreada(null);
     setEnviado(false); setError('');
   }
 
@@ -76,6 +96,11 @@ export default function SolicitudPublica() {
         <div className="sp-caja sp-caja--exito">
           <div className="sp-exito-icono">✓</div>
           <h1 className="sp-exito-titulo">¡Solicitud enviada!</h1>
+          {tareaIdCreada !== null && (
+            <p className="sp-exito-numero">
+              Tu número de solicitud es el <strong>#{tareaIdCreada}</strong>
+            </p>
+          )}
           <p className="sp-exito-texto">
             El equipo de sistemas recibió tu solicitud y la va a atender a la brevedad.
           </p>
@@ -216,6 +241,71 @@ export default function SolicitudPublica() {
               />
             </div>
           </div>
+
+          {/* Asistencia Remota (RustDesk) */}
+          <div className="sp-campo">
+            <label className="sp-etiqueta">¿Tu problema puedo solucionarlo de forma remota? <span className="sp-opcional">(Requiere RustDesk)</span></label>
+            <div className="sp-bloqueo-opciones">
+              <label className={`sp-bloqueo-opcion ${esRemoto === true ? 'sp-bloqueo-opcion--activa sp-bloqueo-opcion--no' : ''}`}>
+                <input
+                  type="radio"
+                  name="esRemoto"
+                  className="sp-radio-oculto"
+                  checked={esRemoto === true}
+                  onChange={() => setEsRemoto(true)}
+                />
+                Sí
+              </label>
+              <label className={`sp-bloqueo-opcion ${esRemoto === false ? 'sp-bloqueo-opcion--activa sp-bloqueo-opcion--si' : ''}`}>
+                <input
+                  type="radio"
+                  name="esRemoto"
+                  className="sp-radio-oculto"
+                  checked={esRemoto === false}
+                  onChange={() => setEsRemoto(false)}
+                />
+                No
+              </label>
+            </div>
+          </div>
+
+          {esRemoto === true && (
+            <div className="sp-caja-remoto animate-fade-in">
+              <p className="sp-remoto-instrucciones">
+                Por favor, ingresá las credenciales de <strong>RustDesk</strong> para que podamos conectarnos a tu equipo.
+              </p>
+              <div className="sp-fila">
+                <div className="sp-campo">
+                  <label className="sp-etiqueta" htmlFor="sp-rustdesk-id">
+                    ID de RustDesk <span className="sp-requerido">*</span>
+                  </label>
+                  <input
+                    id="sp-rustdesk-id"
+                    className="sp-input"
+                    type="text"
+                    placeholder="Ej: 1 234 567 890"
+                    value={rustdeskId}
+                    onChange={e => setRustdeskId(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="sp-campo">
+                  <label className="sp-etiqueta" htmlFor="sp-rustdesk-pwd">
+                    Contraseña <span className="sp-requerido">*</span>
+                  </label>
+                  <input
+                    id="sp-rustdesk-pwd"
+                    className="sp-input"
+                    type="text"
+                    placeholder="Contraseña de RustDesk"
+                    value={rustdeskPassword}
+                    onChange={e => setRustdeskPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Detalle */}
           <div className="sp-campo">

@@ -204,3 +204,36 @@
 }
 .sp-exito-titulo { font-size: 1.4rem; font-weight: 700; color: #111827; margin: 0; }
 .sp-exito-texto  { font-size: 0.9rem; color: #6b7280; max-width: 360px; margin: 0; line-height: 1.5; }
+
+/* ── Asistencia Remota RustDesk ── */
+.sp-caja-remoto {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sp-remoto-instrucciones {
+  font-size: 0.8rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Número de solicitud éxito ── */
+.sp-exito-numero {
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin: 4px 0;
+  background: #f1f5f9;
+  padding: 8px 18px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 500;
+}
+.sp-exito-numero strong {
+  color: #1a56db;
+  font-weight: 700;
+}
