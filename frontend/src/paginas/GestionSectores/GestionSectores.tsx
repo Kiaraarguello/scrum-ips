@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, Search, X } from 'lucide-react';
 import type { Sector } from '../../tipos';
 import { listarSectores, crearSector, actualizarSector, eliminarSector } from '../../servicios/sectores';
 import Boton from '../../componentes/Boton/Boton';
@@ -13,6 +13,7 @@ export default function GestionSectores() {
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => { listarSectores().then(setSectores); }, []);
 
@@ -44,6 +45,15 @@ export default function GestionSectores() {
     }
   }
 
+  const sectoresFiltrados = sectores.filter((s) => {
+    const termino = busqueda.toLowerCase().trim();
+    if (!termino) return true;
+    return (
+      s.nombre.toLowerCase().includes(termino) ||
+      (s.descripcion && s.descripcion.toLowerCase().includes(termino))
+    );
+  });
+
   return (
     <div className="gestion-sectores pagina pagina--centrada">
       <Link to="/admin" className="btn-volver">
@@ -53,6 +63,22 @@ export default function GestionSectores() {
       <div className="gestion-sectores__cabecera">
         <h1 className="gestion-sectores__titulo">Sectores</h1>
         <Boton onClick={abrirCrear}><Plus size={16} /> Nuevo sector</Boton>
+      </div>
+
+      <div className="busqueda-contenedor">
+        <Search className="busqueda-icono" size={18} />
+        <input
+          type="text"
+          placeholder="Buscar sectores por nombre o descripción..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="busqueda-input"
+        />
+        {busqueda && (
+          <button type="button" onClick={() => setBusqueda('')} className="busqueda-limpiar" aria-label="Limpiar búsqueda">
+            <X size={16} />
+          </button>
+        )}
       </div>
 
       {mostrarForm && (
@@ -67,18 +93,24 @@ export default function GestionSectores() {
       )}
 
       <div className="gestion-sectores__lista">
-        {sectores.map((s) => (
-          <div key={s.id} className="gestion-sectores__item">
-            <div>
-              <p className="gestion-sectores__nombre">{s.nombre}</p>
-              {s.descripcion && <p className="gestion-sectores__descripcion">{s.descripcion}</p>}
+        {sectoresFiltrados.length === 0 ? (
+          <p className="gestion-sectores__no-resultados">
+            No se encontraron sectores que coincidan con la búsqueda.
+          </p>
+        ) : (
+          sectoresFiltrados.map((s) => (
+            <div key={s.id} className="gestion-sectores__item">
+              <div>
+                <p className="gestion-sectores__nombre">{s.nombre}</p>
+                {s.descripcion && <p className="gestion-sectores__descripcion">{s.descripcion}</p>}
+              </div>
+              <div className="gestion-sectores__acciones-item">
+                <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={18} /></Boton>
+                <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={18} /></Boton>
+              </div>
             </div>
-            <div className="gestion-sectores__acciones-item">
-              <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={18} /></Boton>
-              <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={18} /></Boton>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
