@@ -26,7 +26,6 @@ export default function ModalAsignarUsuario({ sectorId, usuarioIdsPrevios = [], 
       // También incluimos cualquier usuario previamente asignado para evitar que desaparezca de la lista.
       const filtrados = lista.filter((u) => 
         ((
-          u.rol === 'admin' ||
           u.sector_id === sectorId || 
           u.ver_todos || 
           u.sectores?.some((s) => s.id === sectorId) ||

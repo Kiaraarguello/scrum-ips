@@ -31,7 +31,7 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
     req.usuario.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
     req.usuario.sectores?.some(us => us.sector?.nombre?.toLowerCase() === 'todos los sectores');
 
-  if (!req.usuario.ver_todos && !perteneceATodosLosSectores) {
+  if (req.usuario.rol !== 'admin' && !req.usuario.ver_todos && !perteneceATodosLosSectores) {
     const sectorIds = req.usuario.sectores.map(us => us.sector_id);
     where.sector_id = { in: sectorIds };
   }

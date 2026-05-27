@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Monitor, LayoutGrid, FolderKanban, Shield } from 'lucide-react';
+import { LogOut, LayoutDashboard, Monitor, LayoutGrid, FolderKanban } from 'lucide-react';
 import { useAuth } from '../../contextos/ContextoAuth';
 import PanelNotificaciones from '../PanelNotificaciones/PanelNotificaciones';
 import logoSiglas from '../../assets/logo-siglas.svg';
@@ -34,14 +34,15 @@ export default function BarraNavegacion() {
           <Monitor size={16} />
           PCs
         </NavLink>
-        <NavLink to="/mi-panel" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
-          <LayoutDashboard size={16} />
-          Mi panel
-        </NavLink>
-        {usuario?.rol === 'admin' && (
+        {usuario?.rol === 'admin' ? (
           <NavLink to="/admin" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
-            <Shield size={16} />
+            <LayoutDashboard size={16} />
             Admin
+          </NavLink>
+        ) : (
+          <NavLink to="/mi-panel" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
+            <LayoutDashboard size={16} />
+            Mi panel
           </NavLink>
         )}
       </div>

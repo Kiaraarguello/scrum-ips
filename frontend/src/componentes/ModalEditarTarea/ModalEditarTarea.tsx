@@ -50,7 +50,6 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
     listarUsuarios().then((lista) => {
       const filtrados = lista.filter((u) => 
         ((
-          u.rol === 'admin' ||
           u.sector_id === numSectorId || 
           u.ver_todos || 
           u.sectores?.some((s) => s.id === numSectorId) ||
