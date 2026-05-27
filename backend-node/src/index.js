@@ -73,11 +73,11 @@ import { prisma } from './db.js';
 // Garantizar sector "Todos los sectores" de forma interna
 async function asegurarSectorTodos() {
   try {
-    const todosSectores = await prisma.sector.findFirst({
+    let todosSectores = await prisma.sector.findFirst({
       where: { nombre: 'Todos los sectores' }
     });
     if (!todosSectores) {
-      await prisma.sector.create({
+      todosSectores = await prisma.sector.create({
         data: {
           nombre: 'Todos los sectores',
           descripcion: 'Acceso a todos los sectores (Lógica interna del sistema)',
@@ -85,6 +85,40 @@ async function asegurarSectorTodos() {
         }
       });
       console.log('Sector "Todos los sectores" creado correctamente en base de datos.');
+    }
+
+    if (todosSectores) {
+      const sectorId = todosSectores.id;
+      // Buscar administradores que no tengan asignado este sector principal o que no tengan ver_todos
+      const admins = await prisma.usuario.findMany({
+        where: {
+          rol: 'admin',
+          activo: true,
+          OR: [
+            { sector_id: { not: sectorId } },
+            { sector_id: null },
+            { ver_todos: false }
+          ]
+        }
+      });
+
+      for (const admin of admins) {
+        await prisma.usuario.update({
+          where: { id: admin.id },
+          data: {
+            ver_todos: true,
+            seleccion_completada: true,
+            sector_id: sectorId,
+            sectores: {
+              connectOrCreate: {
+                where: { usuario_id_sector_id: { usuario_id: admin.id, sector_id: sectorId } },
+                create: { sector_id: sectorId }
+              }
+            }
+          }
+        });
+        console.log(`Usuario administrador ${admin.email} actualizado con sector "Todos los sectores" y ver_todos.`);
+      }
     }
   } catch (error) {
     console.error('Error al asegurar sector "Todos los sectores":', error);

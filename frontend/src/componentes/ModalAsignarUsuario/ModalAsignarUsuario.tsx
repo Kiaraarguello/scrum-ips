@@ -28,6 +28,7 @@ export default function ModalAsignarUsuario({ sectorId, usuarioIdsPrevios = [], 
         ((
           u.sector_id === sectorId || 
           u.ver_todos || 
+          u.rol === 'admin' ||
           u.sectores?.some((s) => s.id === sectorId) ||
           u.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
           u.sectores?.some((s) => s.nombre?.toLowerCase() === 'todos los sectores')

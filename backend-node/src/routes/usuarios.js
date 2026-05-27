@@ -48,7 +48,15 @@ router.post('/', requerirAdmin, async (req, res) => {
   if (existe) return res.status(400).json({ detail: 'El email ya esta registrado' });
 
   const data = { nombre, apellido, email, password_hash: hashearPassword(password), rol };
-  if (sector_ids.length > 0) {
+  if (rol === 'admin') {
+    const todosSectores = await prisma.sector.findFirst({ where: { nombre: 'Todos los sectores' } });
+    if (todosSectores) {
+      data.sector_id = todosSectores.id;
+      data.ver_todos = true;
+      data.seleccion_completada = true;
+      data.sectores = { create: [{ sector_id: todosSectores.id }] };
+    }
+  } else if (sector_ids.length > 0) {
     await resolverSectores(sector_ids);
     data.sector_id = sector_ids[0];
     data.seleccion_completada = true;
@@ -136,7 +144,17 @@ router.put('/:id', requerirAdmin, async (req, res) => {
   if (seleccion_completada !== undefined) data.seleccion_completada = seleccion_completada;
   if (activo !== undefined) data.activo = activo;
 
-  if (sector_ids !== undefined) {
+  const nuevoRol = rol !== undefined ? rol : usuario.rol;
+  if (nuevoRol === 'admin') {
+    const todosSectores = await prisma.sector.findFirst({ where: { nombre: 'Todos los sectores' } });
+    if (todosSectores) {
+      data.sector_id = todosSectores.id;
+      data.ver_todos = true;
+      data.seleccion_completada = true;
+      await prisma.usuarioSector.deleteMany({ where: { usuario_id: id } });
+      data.sectores = { create: [{ sector_id: todosSectores.id }] };
+    }
+  } else if (sector_ids !== undefined) {
     if (sector_ids.length > 0) await resolverSectores(sector_ids);
     await prisma.usuarioSector.deleteMany({ where: { usuario_id: id } });
     data.sectores = { create: sector_ids.map(sid => ({ sector_id: sid })) };
@@ -145,7 +163,10 @@ router.put('/:id', requerirAdmin, async (req, res) => {
       data.sector_id = sector_ids.length > 0 ? sector_ids[0] : null;
     }
   }
-  if ((sector_ids && sector_ids.length > 0) || ver_todos) data.seleccion_completada = true;
+
+  if (nuevoRol !== 'admin' && ((sector_ids && sector_ids.length > 0) || ver_todos)) {
+    data.seleccion_completada = true;
+  }
 
   const actualizado = await prisma.usuario.update({ where: { id }, data, include: INCLUDE_USUARIO });
   return res.json(serializarUsuario(actualizado));

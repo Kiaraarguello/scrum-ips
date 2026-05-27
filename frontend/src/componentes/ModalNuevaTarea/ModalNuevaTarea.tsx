@@ -50,6 +50,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
         ((
           u.sector_id === numSectorId || 
           u.ver_todos || 
+          u.rol === 'admin' ||
           u.sectores?.some((s) => s.id === numSectorId) ||
           u.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
           u.sectores?.some((s) => s.nombre?.toLowerCase() === 'todos los sectores')
