@@ -36,7 +36,7 @@ CREATE TABLE tareas (
   titulo VARCHAR(255) NOT NULL,
   nota_llamada TEXT,
   criticidad ENUM('alta','media','baja') NOT NULL DEFAULT 'baja',
-  estado ENUM('por_hacer','en_proceso','finalizada') NOT NULL DEFAULT 'por_hacer',
+  estado ENUM('por_hacer','en_proceso','finalizada','pendiente') NOT NULL DEFAULT 'por_hacer',
   sector_id INT NOT NULL,
   sede_id INT NOT NULL,
   numero_contacto VARCHAR(50) NULL,
@@ -45,6 +45,8 @@ CREATE TABLE tareas (
   fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   fecha_inicio DATETIME NULL,
   fecha_finalizacion DATETIME NULL,
+  solucion TEXT NULL,
+  pendiente_descripcion TEXT NULL,
   CONSTRAINT fk_tareas_sector FOREIGN KEY (sector_id) REFERENCES sectores(id) ON DELETE RESTRICT,
   CONSTRAINT fk_tareas_sede FOREIGN KEY (sede_id) REFERENCES sedes(id) ON DELETE RESTRICT,
   CONSTRAINT fk_tareas_creada_por FOREIGN KEY (creada_por) REFERENCES usuarios(id) ON DELETE RESTRICT,
@@ -71,7 +73,7 @@ CREATE TABLE pcs_registro (
   propietario VARCHAR(150) NULL,
   fecha_ingreso DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   fecha_salida DATETIME NULL,
-  estado ENUM('en_taller','entregada') NOT NULL DEFAULT 'en_taller',
+  estado ENUM('llegada','en_proceso','para_entregar','entregada') NOT NULL DEFAULT 'llegada',
   notas TEXT NULL,
   CONSTRAINT fk_pcs_sede FOREIGN KEY (sede_id) REFERENCES sedes(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

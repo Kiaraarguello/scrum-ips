@@ -17,4 +17,4 @@ services:
       - mysql_data:/var/lib/mysql
 
 volumes:
-  mysql_data:quiero que el logo de la navbar tenga luz blanca de fondo, porque el logo es el mismo color que el fondo
+  mysql_data:

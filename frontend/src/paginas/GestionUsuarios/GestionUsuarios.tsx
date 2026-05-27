@@ -168,38 +168,36 @@ export default function GestionUsuarios() {
         </form>
       )}
 
-      <div className="gestion-usuarios__tabla-envolvente">
-        <table className="gestion-usuarios__tabla">
-          <thead>
-            <tr>
-              <th>Nombre</th><th>Email</th><th>Rol</th><th>Sectores</th><th>Estado</th><th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((u) => (
-              <tr key={u.id}>
-                <td>{u.nombre} {u.apellido}</td>
-                <td>{u.email}</td>
-                <td><span className={`gestion-usuarios__rol gestion-usuarios__rol--${u.rol}`}>{u.rol}</span></td>
-                <td>
-                  <div className="gestion-usuarios__sectores-lista">
-                    {(u.sectores ?? []).length === 0
-                      ? <span className="gestion-usuarios__sin-sector">—</span>
-                      : (u.sectores ?? []).map(s => (
-                          <span key={s.id} className={`gestion-usuarios__sector-tag ${s.id === u.sector_id ? 'gestion-usuarios__sector-tag--activo' : ''}`}>{s.nombre}</span>
-                        ))
-                    }
-                  </div>
-                </td>
-                <td><span className={`gestion-usuarios__estado ${u.activo ? 'gestion-usuarios__estado--activo' : 'gestion-usuarios__estado--inactivo'}`}>{u.activo ? 'Activo' : 'Inactivo'}</span></td>
-                <td className="gestion-usuarios__acciones-fila">
-                  <Boton variante="fantasma" onClick={() => abrirEditar(u)}><Pencil size={14} /></Boton>
-                  <Boton variante="peligro" onClick={() => borrar(u.id)}><Trash2 size={14} /></Boton>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="gestion-usuarios__lista">
+        {usuarios.map((u) => (
+          <div key={u.id} className="gestion-usuarios__item">
+            <div className="gestion-usuarios__info">
+              <div className="gestion-usuarios__nombre-fila">
+                <span className="gestion-usuarios__nombre">{u.nombre} {u.apellido}</span>
+                <span className={`gestion-usuarios__rol gestion-usuarios__rol--${u.rol}`}>{u.rol}</span>
+                <span className={`gestion-usuarios__estado ${u.activo ? 'gestion-usuarios__estado--activo' : 'gestion-usuarios__estado--inactivo'}`}>{u.activo ? 'Activo' : 'Inactivo'}</span>
+              </div>
+              <p className="gestion-usuarios__detalle">
+                <strong>Email:</strong> {u.email}
+              </p>
+              <div className="gestion-usuarios__sectores-seccion">
+                <span className="gestion-usuarios__sectores-label">Sectores:</span>
+                <div className="gestion-usuarios__sectores-lista">
+                  {(u.sectores ?? []).length === 0
+                    ? <span className="gestion-usuarios__sin-sector">—</span>
+                    : (u.sectores ?? []).map(s => (
+                        <span key={s.id} className={`gestion-usuarios__sector-tag ${s.id === u.sector_id ? 'gestion-usuarios__sector-tag--activo' : ''}`}>{s.nombre}</span>
+                      ))
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="gestion-usuarios__acciones-item">
+              <Boton variante="fantasma" onClick={() => abrirEditar(u)}><Pencil size={18} /></Boton>
+              <Boton variante="peligro" onClick={() => borrar(u.id)}><Trash2 size={18} /></Boton>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

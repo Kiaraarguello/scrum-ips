@@ -81,8 +81,8 @@ export default function GestionSedes() {
               <p className="gestion-sedes__detalle">{s.ciudad}{s.direccion ? ` - ${s.direccion}` : ''}</p>
             </div>
             <div className="gestion-sedes__acciones-item">
-              <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={14} /></Boton>
-              <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={14} /></Boton>
+              <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={18} /></Boton>
+              <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={18} /></Boton>
             </div>
           </div>
         ))}

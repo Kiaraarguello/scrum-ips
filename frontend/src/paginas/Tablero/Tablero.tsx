@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Tarea, EstadoTarea } from '../../tipos';
 import { listarTareas, moverTarea, eliminarTarea } from '../../servicios/tareas';
 import { ordenarPorCriticidad } from '../../utilidades/pesoCriticidad';
 import { useAuth } from '../../contextos/ContextoAuth';
 import ColumnaTablero from '../../componentes/ColumnaTablero/ColumnaTablero';
 import ModalNuevaTarea from '../../componentes/ModalNuevaTarea/ModalNuevaTarea';
+import ModalEditarTarea from '../../componentes/ModalEditarTarea/ModalEditarTarea';
 import ModalAsignarUsuario from '../../componentes/ModalAsignarUsuario/ModalAsignarUsuario';
+import ModalFinalizarTarea from '../../componentes/ModalFinalizarTarea/ModalFinalizarTarea';
 import Boton from '../../componentes/Boton/Boton';
 import './Tablero.css';
 
@@ -21,9 +24,12 @@ interface Props {
 
 export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
   const { usuario } = useAuth();
+  const navegar = useNavigate();
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [tareaParaEditar, setTareaParaEditar] = useState<Tarea | null>(null);
   const [tareaParaAsignar, setTareaParaAsignar] = useState<{ tarea: Tarea; nuevoEstado: string } | null>(null);
+  const [tareaParaFinalizar, setTareaParaFinalizar] = useState<Tarea | null>(null);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
   const [actualizando, setActualizando] = useState(false);
   const arrastrando = useRef(false);
@@ -89,6 +95,11 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       return;
     }
 
+    if (nuevoEstado === 'finalizada') {
+      setTareaParaFinalizar(tarea);
+      return;
+    }
+
     setTareas((prev) => prev.map((t) => (t.id === idTarea ? { ...t, estado: nuevoEstado } : t)));
     try {
       await moverTarea(idTarea, nuevoEstado);
@@ -97,15 +108,50 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     }
   }
 
-  async function confirmarAsignacion(usuarioId: number) {
+  async function confirmarFinalizacion(nuevoEstado: 'finalizada' | 'pendiente', descripcion: string) {
+    if (!tareaParaFinalizar) return;
+    const tId = tareaParaFinalizar.id;
+    setTareaParaFinalizar(null);
+
+    // Actualización optimista
+    setTareas((prev) =>
+      prev.map((t) => {
+        if (t.id === tId) {
+          return {
+            ...t,
+            estado: nuevoEstado,
+            solucion: nuevoEstado === 'finalizada' ? descripcion : t.solucion,
+            pendiente_descripcion: nuevoEstado === 'pendiente' ? descripcion : t.pendiente_descripcion
+          };
+        }
+        return t;
+      })
+    );
+
+    try {
+      const actualizada = await moverTarea(
+        tId,
+        nuevoEstado,
+        undefined,
+        nuevoEstado === 'finalizada' ? descripcion : undefined,
+        nuevoEstado === 'pendiente' ? descripcion : undefined
+      );
+      setTareas((prev) => prev.map((t) => (t.id === tId ? actualizada : t)));
+    } catch {
+      cargar();
+    }
+  }
+
+  async function confirmarAsignacion(usuarioIds: number[]) {
     if (!tareaParaAsignar) return;
     const { tarea, nuevoEstado } = tareaParaAsignar;
     setTareaParaAsignar(null);
     setTareas((prev) =>
-      prev.map((t) => (t.id === tarea.id ? { ...t, estado: nuevoEstado as EstadoTarea, asignado_a: usuarioId } : t))
+      prev.map((t) => (t.id === tarea.id ? { ...t, estado: nuevoEstado as EstadoTarea } : t))
     );
     try {
-      await moverTarea(tarea.id, nuevoEstado, usuarioId);
+      const actualizada = await moverTarea(tarea.id, nuevoEstado, usuarioIds);
+      setTareas((prev) => prev.map((t) => (t.id === tarea.id ? actualizada : t)));
     } catch {
       cargar();
     }
@@ -145,6 +191,10 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
               <RefreshCw size={14} className={actualizando ? 'tablero__spin' : ''} />
             </button>
           </div>
+          <Boton variante="secundario" onClick={() => navegar('/pendientes')} style={{ marginRight: '8px' }}>
+            <Clock size={16} style={{ marginRight: '6px' }} />
+            Pendientes
+          </Boton>
           <Boton onClick={() => setMostrarModal(true)}>
             <Plus size={16} />
             Nueva tarea
@@ -161,7 +211,13 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       >
         <div className="tablero__columnas">
           {COLUMNAS.map((estado) => (
-            <ColumnaTablero key={estado} estado={estado} tareas={tareasPorEstado(estado)} onEliminarTarea={archivarTarea} />
+            <ColumnaTablero 
+              key={estado} 
+              estado={estado} 
+              tareas={tareasPorEstado(estado)} 
+              onClickTarea={(t) => setTareaParaEditar(t)} 
+              onEliminarTarea={archivarTarea} 
+            />
           ))}
         </div>
       </DndContext>
@@ -177,9 +233,28 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       {tareaParaAsignar && (
         <ModalAsignarUsuario
           sectorId={tareaParaAsignar.tarea.sector_id}
-          usuarioIdPrevio={tareaParaAsignar.tarea.asignado_a}
+          usuarioIdsPrevios={tareaParaAsignar.tarea.asignados?.map((u) => u.id) ?? []}
           onConfirmar={confirmarAsignacion}
           onCancelar={() => { setTareaParaAsignar(null); }}
+        />
+      )}
+
+      {tareaParaEditar && (
+        <ModalEditarTarea
+          tarea={tareaParaEditar}
+          onCerrar={() => setTareaParaEditar(null)}
+          onActualizada={() => {
+            setTareaParaEditar(null);
+            cargar();
+          }}
+        />
+      )}
+
+      {tareaParaFinalizar && (
+        <ModalFinalizarTarea
+          tarea={tareaParaFinalizar}
+          onCerrar={() => setTareaParaFinalizar(null)}
+          onConfirmar={confirmarFinalizacion}
         />
       )}
     </div>

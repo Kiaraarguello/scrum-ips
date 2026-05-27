@@ -1,0 +1,98 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+import autenticacion from './routes/autenticacion.js';
+import usuarios from './routes/usuarios.js';
+import sectores from './routes/sectores.js';
+import sedes from './routes/sedes.js';
+import tareas from './routes/tareas.js';
+import historial from './routes/historial.js';
+import pcs from './routes/pcs.js';
+import alertas from './routes/alertas.js';
+import estadisticas from './routes/estadisticas.js';
+import proyectos from './routes/proyectos.js';
+import publico from './routes/publico.js';
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+const corsOrigenes = (process.env.CORS_ORIGENES || 'http://localhost:5173').split(',');
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || corsOrigenes.includes(origin)) return cb(null, true);
+    cb(null, false);
+  },
+  credentials: true,
+}));
+app.use(express.json());
+
+// Middleware global de manejo de errores async
+app.use((req, res, next) => {
+  const originalNext = next;
+  req.asyncNext = (fn) => {
+    Promise.resolve(fn()).catch(originalNext);
+  };
+  next();
+});
+
+app.use('/api/auth', autenticacion);
+app.use('/api/usuarios', usuarios);
+app.use('/api/sectores', sectores);
+app.use('/api/sedes', sedes);
+app.use('/api/tareas', tareas);
+app.use('/api/historial', historial);
+app.use('/api/pcs', pcs);
+app.use('/api/alertas', alertas);
+app.use('/api/estadisticas', estadisticas);
+app.use('/api/proyectos', proyectos);
+app.use('/api/publico', publico);
+
+// Servir frontend
+const distPath = join(__dirname, '../public');
+app.use(express.static(distPath));
+app.get('*', (req, res) => {
+  res.sendFile(join(distPath, 'index.html'));
+});
+
+// Manejador de errores global
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const detail = err.detail || err.message || 'Error interno del servidor';
+  console.error(err);
+  return res.status(status).json({ detail });
+});
+
+import { prisma } from './db.js';
+
+// Garantizar sector "Todos los sectores" de forma interna
+async function asegurarSectorTodos() {
+  try {
+    const todosSectores = await prisma.sector.findFirst({
+      where: { nombre: 'Todos los sectores' }
+    });
+    if (!todosSectores) {
+      await prisma.sector.create({
+        data: {
+          nombre: 'Todos los sectores',
+          descripcion: 'Acceso a todos los sectores (Lógica interna del sistema)',
+          activo: true
+        }
+      });
+      console.log('Sector "Todos los sectores" creado correctamente en base de datos.');
+    }
+  } catch (error) {
+    console.error('Error al asegurar sector "Todos los sectores":', error);
+  }
+}
+
+app.listen(PORT, async () => {
+  await asegurarSectorTodos();
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
+

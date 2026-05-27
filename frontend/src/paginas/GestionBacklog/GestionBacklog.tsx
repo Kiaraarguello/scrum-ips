@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, FolderKanban, Trash2, Calendar, Users, Shield, User as UserIcon, Check } from 'lucide-react';
+import { Plus, FolderKanban, Trash2, Calendar, Shield, User as UserIcon, Check } from 'lucide-react';
 import { useAuth } from '../../contextos/ContextoAuth';
 import { listarProyectos, crearProyecto, eliminarProyecto, type Proyecto } from '../../servicios/proyectos';
 import { listarUsuarios } from '../../servicios/usuarios';

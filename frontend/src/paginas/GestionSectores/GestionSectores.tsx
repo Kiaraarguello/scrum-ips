@@ -33,8 +33,15 @@ export default function GestionSectores() {
   }
 
   async function borrar(id: number) {
-    await eliminarSector(id);
-    setSectores((prev) => prev.filter((s) => s.id !== id));
+    const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este sector?');
+    if (!confirmar) return;
+    
+    try {
+      await eliminarSector(id);
+      setSectores((prev) => prev.filter((s) => s.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar sector:', error);
+    }
   }
 
   return (
@@ -67,8 +74,8 @@ export default function GestionSectores() {
               {s.descripcion && <p className="gestion-sectores__descripcion">{s.descripcion}</p>}
             </div>
             <div className="gestion-sectores__acciones-item">
-              <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={14} /></Boton>
-              <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={14} /></Boton>
+              <Boton variante="fantasma" onClick={() => abrirEditar(s)}><Pencil size={18} /></Boton>
+              <Boton variante="peligro" onClick={() => borrar(s.id)}><Trash2 size={18} /></Boton>
             </div>
           </div>
         ))}

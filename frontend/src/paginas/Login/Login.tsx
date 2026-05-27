@@ -24,15 +24,13 @@ export default function Login() {
       iniciarSesion(token, usuario);
       const tieneSectores = (usuario.sectores && usuario.sectores.length > 0) || usuario.ver_todos;
 
-      if (usuario.rol === 'admin') {
-        navegar('/admin');
-      } else if (!usuario.seleccion_completada && !tieneSectores) {
+      if (!usuario.seleccion_completada && !tieneSectores) {
         navegar('/seleccion-sector');
       } else {
         navegar('/tablero');
       }
     } catch {
-      setError('Email o contrasena incorrectos');
+      setError('Email o contraseña incorrectos');
     } finally {
       setCargando(false);
     }
@@ -55,7 +53,7 @@ export default function Login() {
             autoFocus
           />
           <CampoTexto
-            etiqueta="Contrasena"
+            etiqueta="Contraseña"
             id="password"
             type="password"
             value={password}

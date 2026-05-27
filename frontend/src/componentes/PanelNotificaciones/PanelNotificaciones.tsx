@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { Bell, X, CheckCheck } from 'lucide-react';
 import { useNotificaciones } from '../../contextos/ContextoNotificaciones';
 import { tiempoRelativo } from '../../utilidades/formatoFecha';
-import Boton from '../Boton/Boton';
 import './PanelNotificaciones.css';
 
 export default function PanelNotificaciones() {

@@ -22,8 +22,19 @@ export async function actualizarTarea(id: number, payload: Partial<Tarea>): Prom
   return data;
 }
 
-export async function moverTarea(id: number, nuevo_estado: string, asignado_a?: number): Promise<Tarea> {
-  const { data } = await api.put<Tarea>(`/tareas/${id}/mover`, { nuevo_estado, asignado_a });
+export async function moverTarea(
+  id: number, 
+  nuevo_estado: string, 
+  usuarioIds?: number[],
+  solucion?: string,
+  pendiente_descripcion?: string
+): Promise<Tarea> {
+  const { data } = await api.put<Tarea>(`/tareas/${id}/mover`, { 
+    nuevo_estado, 
+    asignado_ids: usuarioIds,
+    solucion,
+    pendiente_descripcion
+  });
   return data;
 }
 

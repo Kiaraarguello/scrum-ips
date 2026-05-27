@@ -60,3 +60,52 @@
   font-style: italic;
 }
 
+.columna-tablero__grupo-tareas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.columna-tablero__grupo-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columna-tablero__subseccion-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  user-select: none;
+}
+
+.columna-tablero__subseccion-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #dbeafe;
+  color: #1e40af;
+  white-space: nowrap;
+}
+
+.columna-tablero__subseccion-tag--otras {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.columna-tablero__subseccion-linea {
+  height: 2px;
+  flex-grow: 1;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 2px;
+}
+
+.columna-tablero__subseccion-tag--otras + .columna-tablero__subseccion-linea {
+  background: linear-gradient(90deg, rgba(71, 85, 105, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+

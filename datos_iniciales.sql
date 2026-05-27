@@ -13,6 +13,5 @@ INSERT INTO sedes (nombre, ciudad, direccion, activo) VALUES
 
 -- Hash bcrypt de 'Admin1234'
 INSERT INTO usuarios (nombre, apellido, email, password_hash, rol, sector_id, activo) VALUES
-  ('Administrador', 'Principal', 'admin@empresa.com',
-   '$2b$12$a5rAavQfbeq3qIy9sX3ODe7/HJFtQjwx91A4CRSIPkFKgMESl8AIS',
+  ('Administrador', 'Principal', 'kiaramarguello@gmail.com', 'cmPJ6X472vGV4K',
    'admin', NULL, 1);

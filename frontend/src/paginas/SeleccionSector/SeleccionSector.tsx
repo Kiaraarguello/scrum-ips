@@ -12,7 +12,7 @@ export default function SeleccionSector() {
   const [seleccionados, setSeleccionados] = useState<number[]>([]);
   const [verTodos, setVerTodos] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  const { usuario, actualizarUsuario } = useAuth();
+  const { actualizarUsuario } = useAuth();
   const navegar = useNavigate();
 
   useEffect(() => {

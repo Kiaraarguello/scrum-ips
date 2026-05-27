@@ -12,23 +12,40 @@
 .modal-nueva-tarea__caja {
   background: var(--blanco-puro);
   border-radius: var(--redondeado-tarjeta);
-  padding: 36px;
+  padding: 26px 30px;
   width: 100%;
-  max-width: 560px;
+  max-width: 780px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 24px 64px rgba(69, 91, 164, 0.2);
+}
+
+/* Custom premium scrollbar for modal box */
+.modal-nueva-tarea__caja::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-nueva-tarea__caja::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-nueva-tarea__caja::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+}
+.modal-nueva-tarea__caja::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.2);
 }
 
 .modal-nueva-tarea__titulo {
   font-family: var(--fuente-especial);
   font-size: 1.3rem;
   color: var(--azul-institucional);
-  margin: 0 0 24px 0;
+  margin: 0 0 16px 0;
 }
 
 .modal-nueva-tarea__formulario {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .modal-nueva-tarea__fila {

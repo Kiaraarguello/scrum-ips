@@ -1,0 +1,111 @@
+.modal-editar-pc__fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-editar-pc__caja {
+  background: var(--blanco-puro, #ffffff);
+  border-radius: 18px;
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--sombra-premium, 0 20px 50px rgba(15, 23, 42, 0.15));
+  border: 1px solid rgba(69, 91, 164, 0.08);
+}
+
+.modal-editar-pc__caja::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-editar-pc__caja::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-editar-pc__caja::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+}
+
+.modal-editar-pc__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--texto-oscuro, #1e2a45);
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
+}
+
+.modal-editar-pc__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-editar-pc__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.modal-editar-pc__campo-completo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-editar-pc__textarea {
+  padding: 10px 14px;
+  border: 1.5px solid var(--borde-suave, #e2e8f0);
+  border-radius: var(--redondeado-campo, 8px);
+  font-family: var(--fuente-principal);
+  font-size: 0.95rem;
+  color: var(--texto-oscuro, #0f172a);
+  background: var(--blanco-puro, #ffffff);
+  resize: vertical;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.modal-editar-pc__textarea:focus {
+  border-color: var(--azul-institucional, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.modal-editar-pc__error {
+  font-size: 0.82rem;
+  color: var(--rojo-critico, #ef4444);
+  margin: 0;
+}
+
+.modal-editar-pc__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 600px) {
+  .modal-editar-pc__fila {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .modal-editar-pc__caja {
+    padding: 20px;
+    margin: 16px;
+  }
+}

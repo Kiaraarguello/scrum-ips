@@ -8,6 +8,7 @@ import { formatearFecha } from '../../utilidades/formatoFecha';
 import Boton from '../../componentes/Boton/Boton';
 import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
 import Selector from '../../componentes/Selector/Selector';
+import ModalEditarPC from '../../componentes/ModalEditarPC/ModalEditarPC';
 import './RegistroPCs.css';
 
 interface FormPc {
@@ -18,38 +19,53 @@ interface FormPc {
   propietario: string;
   notas: string;
 }
-const VACIO: FormPc = { nombre_interno: '', descripcion: '', ciudad: '', sede_id: '', propietario: '', notas: '' };
+const VACIO: FormPc = { nombre_interno: '', propietario: '', descripcion: '', ciudad: '', sede_id: '', notas: '' };
+
+const ETIQUETAS_ESTADO: Record<string, string> = {
+  llegada: 'Llegada',
+  en_proceso: 'En proceso',
+  para_entregar: 'Listo para entregar',
+  entregada: 'Entregada',
+};
 
 export default function RegistroPCs() {
   const { usuario } = useAuth();
   const [pcs, setPcs] = useState<PcRegistro[]>([]);
   const [sedes, setSedes] = useState<Sede[]>([]);
   const [mostrarForm, setMostrarForm] = useState(false);
-  const [editando, setEditando] = useState<number | null>(null);
+  const [pcParaEditar, setPcParaEditar] = useState<PcRegistro | null>(null);
   const [form, setForm] = useState<FormPc>(VACIO);
 
+  const ordenarPcs = (lista: PcRegistro[]) => {
+    const PESO_ESTADO: Record<string, number> = {
+      llegada: 1,
+      en_proceso: 2,
+      para_entregar: 3,
+      entregada: 4,
+    };
+    return [...lista].sort((a, b) => {
+      const pesoA = PESO_ESTADO[a.estado] ?? 99;
+      const pesoB = PESO_ESTADO[b.estado] ?? 99;
+      if (pesoA !== pesoB) return pesoA - pesoB;
+      return new Date(b.fecha_ingreso).getTime() - new Date(a.fecha_ingreso).getTime();
+    });
+  };
+
   useEffect(() => {
-    listarPcs().then(setPcs);
+    listarPcs().then((lista) => setPcs(ordenarPcs(lista)));
     listarSedes().then(setSedes);
   }, []);
 
-  function abrirCrear() { setEditando(null); setForm(VACIO); setMostrarForm(true); }
+  function abrirCrear() { setForm(VACIO); setMostrarForm(true); }
   function abrirEditar(pc: PcRegistro) {
-    setEditando(pc.id);
-    setForm({ nombre_interno: pc.nombre_interno, descripcion: pc.descripcion ?? '', ciudad: pc.ciudad ?? '', sede_id: String(pc.sede_id ?? ''), propietario: pc.propietario ?? '', notas: pc.notas ?? '' });
-    setMostrarForm(true);
+    setPcParaEditar(pc);
   }
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     const payload = { ...form, sede_id: form.sede_id ? Number(form.sede_id) : undefined };
-    if (editando) {
-      const act = await actualizarPc(editando, payload);
-      setPcs((prev) => prev.map((p) => (p.id === editando ? act : p)));
-    } else {
-      const nueva = await crearPc(payload);
-      setPcs((prev) => [nueva, ...prev]);
-    }
+    const nueva = await crearPc(payload);
+    setPcs((prev) => ordenarPcs([nueva, ...prev]));
     setMostrarForm(false);
   }
 
@@ -60,7 +76,7 @@ export default function RegistroPCs() {
 
   async function marcarEntregada(pc: PcRegistro) {
     const act = await actualizarPc(pc.id, { estado: 'entregada', fecha_salida: new Date().toISOString() });
-    setPcs((prev) => prev.map((p) => (p.id === pc.id ? act : p)));
+    setPcs((prev) => ordenarPcs(prev.map((p) => (p.id === pc.id ? act : p))));
   }
 
   const campo = (k: keyof FormPc) => ({
@@ -94,7 +110,7 @@ export default function RegistroPCs() {
           <CampoTexto etiqueta="Notas internas" id="not-pc" {...campo('notas')} />
           <div className="registro-pcs__acciones">
             <Boton type="button" variante="secundario" onClick={() => setMostrarForm(false)}>Cancelar</Boton>
-            <Boton type="submit">{editando ? 'Guardar' : 'Registrar'}</Boton>
+            <Boton type="submit">Registrar</Boton>
           </div>
         </form>
       )}
@@ -116,11 +132,11 @@ export default function RegistroPCs() {
                 <td>{formatearFecha(pc.fecha_ingreso)}</td>
                 <td>
                   <span className={`registro-pcs__estado registro-pcs__estado--${pc.estado}`}>
-                    {pc.estado === 'en_taller' ? 'En taller' : 'Entregada'}
+                    {ETIQUETAS_ESTADO[pc.estado] ?? pc.estado}
                   </span>
                 </td>
                 <td className="registro-pcs__acciones-fila">
-                  {pc.estado === 'en_taller' && (
+                  {pc.estado !== 'entregada' && (
                     <Boton variante="secundario" onClick={() => marcarEntregada(pc)}>Entregar</Boton>
                   )}
                   <Boton variante="fantasma" onClick={() => abrirEditar(pc)}><Pencil size={14} /></Boton>
@@ -134,6 +150,17 @@ export default function RegistroPCs() {
         </table>
         {pcs.length === 0 && <p className="registro-pcs__vacio">Sin PCs registradas</p>}
       </div>
+
+      {pcParaEditar && (
+        <ModalEditarPC
+          pc={pcParaEditar}
+          onCerrar={() => setPcParaEditar(null)}
+          onActualizada={() => {
+            setPcParaEditar(null);
+            listarPcs().then((lista) => setPcs(ordenarPcs(lista)));
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                   Int      @id @default(autoincrement())
+  nombre               String   @db.VarChar(100)
+  apellido             String   @db.VarChar(100)
+  email                String   @unique @db.VarChar(255)
+  password_hash        String   @db.VarChar(255)
+  rol                  String   @default("usuario") @db.VarChar(20)
+  sector_id            Int?
+  ver_todos            Boolean  @default(false)
+  seleccion_completada Boolean  @default(false)
+  activo               Boolean  @default(true)
+  fecha_creacion       DateTime @default(now())
+
+  sector                Sector?          @relation("SectorActivo", fields: [sector_id], references: [id])
+  sectores              UsuarioSector[]
+  tareas_creadas        Tarea[]          @relation("TareaCreador")
+  tareas_asignadas      Tarea[]          @relation("TareaAsignados")
+  movimientos_historial HistorialTarea[]
+  proyectos             ProyectoUsuario[]
+  alertas               AlertaAdmin[]
+
+  @@map("usuarios")
+}
+
+model Sector {
+  id             Int      @id @default(autoincrement())
+  nombre         String   @unique @db.VarChar(100)
+  descripcion    String?  @db.Text
+  activo         Boolean  @default(true)
+  fecha_creacion DateTime @default(now())
+
+  usuarios_activos   Usuario[]       @relation("SectorActivo")
+  usuarios_asignados UsuarioSector[]
+  tareas             Tarea[]
+
+  @@map("sectores")
+}
+
+model UsuarioSector {
+  usuario_id Int
+  sector_id  Int
+  usuario    Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  sector     Sector  @relation(fields: [sector_id], references: [id], onDelete: Cascade)
+
+  @@id([usuario_id, sector_id])
+  @@map("usuario_sectores")
+}
+
+model Sede {
+  id             Int      @id @default(autoincrement())
+  nombre         String   @unique @db.VarChar(100)
+  ciudad         String   @db.VarChar(100)
+  direccion      String?  @db.VarChar(255)
+  notas          String?  @db.Text
+  activo         Boolean  @default(true)
+  fecha_creacion DateTime @default(now())
+
+  tareas Tarea[]
+  pcs    PcRegistro[]
+
+  @@map("sedes")
+}
+
+model Proyecto {
+  id             Int      @id @default(autoincrement())
+  nombre         String   @db.VarChar(100)
+  descripcion    String?  @db.Text
+  fecha_creacion DateTime @default(now())
+  activo         Boolean  @default(true)
+
+  tareas   Tarea[]
+  usuarios ProyectoUsuario[]
+
+  @@map("proyectos")
+}
+
+model ProyectoUsuario {
+  proyecto_id Int
+  usuario_id  Int
+  proyecto    Proyecto @relation(fields: [proyecto_id], references: [id], onDelete: Cascade)
+  usuario     Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@id([proyecto_id, usuario_id])
+  @@map("proyecto_usuarios")
+}
+
+model Tarea {
+  id                 Int       @id @default(autoincrement())
+  titulo             String    @db.VarChar(255)
+  nota_llamada       String?   @db.Text
+  criticidad         String    @default("baja") @db.VarChar(10)
+  estado             String    @default("por_hacer") @db.VarChar(20)
+  sector_id          Int
+  sede_id            Int
+  numero_contacto    String?   @db.VarChar(50)
+  creada_por         Int
+  fecha_creacion     DateTime  @default(now())
+  fecha_inicio       DateTime?
+  fecha_finalizacion DateTime?
+  proyecto_id        Int?
+  solucion           String?   @db.Text
+  pendiente_descripcion String? @db.Text
+  activo             Boolean   @default(true)
+
+  sector    Sector    @relation(fields: [sector_id], references: [id])
+  sede      Sede      @relation(fields: [sede_id], references: [id])
+  creador   Usuario   @relation("TareaCreador", fields: [creada_por], references: [id])
+  asignados Usuario[] @relation("TareaAsignados")
+  proyecto  Proyecto? @relation(fields: [proyecto_id], references: [id], onDelete: Cascade)
+  historial HistorialTarea[]
+
+  @@map("tareas")
+}
+
+model HistorialTarea {
+  id               Int      @id @default(autoincrement())
+  tarea_id         Int
+  usuario_id       Int
+  estado_anterior  String?  @db.VarChar(50)
+  estado_nuevo     String   @db.VarChar(50)
+  fecha_movimiento DateTime @default(now())
+
+  tarea   Tarea   @relation(fields: [tarea_id], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+
+  @@map("historial_tareas")
+}
+
+model PcRegistro {
+  id             Int       @id @default(autoincrement())
+  nombre_interno String    @db.VarChar(150)
+  descripcion    String?   @db.Text
+  ciudad         String?   @db.VarChar(100)
+  sede_id        Int?
+  propietario    String?   @db.VarChar(150)
+  fecha_ingreso  DateTime  @default(now())
+  fecha_salida   DateTime?
+  estado         String    @default("llegada") @db.VarChar(20)
+  notas          String?   @db.Text
+
+  sede    Sede?         @relation(fields: [sede_id], references: [id])
+  alertas AlertaAdmin[]
+
+  @@map("pcs_registro")
+}
+
+model AlertaAdmin {
+  id             Int      @id @default(autoincrement())
+  tipo           String   @db.VarChar(30)
+  mensaje        String   @db.VarChar(500)
+  tarea_id       Int?
+  pc_id          Int?
+  usuario_id     Int?
+  leida          Boolean  @default(false)
+  fecha_creacion DateTime @default(now())
+
+  pc      PcRegistro? @relation(fields: [pc_id], references: [id], onDelete: SetNull)
+  usuario Usuario?    @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("alertas_admin")
+}

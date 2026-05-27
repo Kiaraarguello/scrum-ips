@@ -32,7 +32,7 @@ export interface Usuario {
 }
 
 export type Criticidad = 'alta' | 'media' | 'baja';
-export type EstadoTarea = 'por_hacer' | 'en_proceso' | 'finalizada';
+export type EstadoTarea = 'por_hacer' | 'en_proceso' | 'finalizada' | 'pendiente';
 
 export interface UsuarioResumen {
   id: number;
@@ -60,15 +60,20 @@ export interface Tarea {
   sede_id: number;
   numero_contacto: string | null;
   creada_por: number;
-  asignado_a: number | null;
+  asignado_a?: number | null;
+  asignado_ids?: number[];
+  proyecto_id: number | null;
   fecha_creacion: string;
   fecha_inicio: string | null;
   fecha_finalizacion: string | null;
+  solucion?: string | null;
+  pendiente_descripcion?: string | null;
   activo: boolean;
   sector?: SectorResumen | null;
   sede?: SedeResumen | null;
   creador?: UsuarioResumen | null;
   asignado?: UsuarioResumen | null;
+  asignados?: UsuarioResumen[];
 }
 
 export interface HistorialMovimiento {
@@ -91,7 +96,7 @@ export interface PcRegistro {
   propietario: string | null;
   fecha_ingreso: string;
   fecha_salida: string | null;
-  estado: 'en_taller' | 'entregada';
+  estado: 'llegada' | 'en_proceso' | 'para_entregar' | 'entregada';
   notas: string | null;
   sede?: SedeResumen | null;
 }

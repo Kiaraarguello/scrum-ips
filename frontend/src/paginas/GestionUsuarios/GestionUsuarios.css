@@ -118,6 +118,7 @@
 
 .gestion-usuarios__acciones-fila {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -242,6 +243,87 @@
   padding: 10px 14px;
   margin: 0;
 }
+
+/* Lista y Tarjetas de Usuarios (Estilo Sede Premium) */
+.gestion-usuarios__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gestion-usuarios__item {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 20px 24px;
+  box-shadow: var(--sombra-premium);
+  border: 1px solid var(--borde-suave);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  transition: var(--transicion-base);
+}
+
+.gestion-usuarios__item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-premium-hover, 0 15px 35px rgba(0, 0, 0, 0.08));
+  border-color: rgba(var(--azul-institucional-rgb, 0, 102, 204), 0.2);
+}
+
+.gestion-usuarios__info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.gestion-usuarios__nombre-fila {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gestion-usuarios__nombre {
+  font-family: var(--fuente-especial);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+  margin: 0;
+}
+
+.gestion-usuarios__detalle {
+  font-size: 0.9rem;
+  color: var(--texto-gris);
+  margin: 0;
+}
+
+.gestion-usuarios__detalle strong {
+  color: var(--texto-oscuro);
+  font-weight: 600;
+}
+
+.gestion-usuarios__sectores-seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gestion-usuarios__sectores-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.gestion-usuarios__acciones-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
   .gestion-usuarios__cabecera {
     flex-direction: column;
@@ -282,5 +364,23 @@
   .gestion-usuarios__acciones-fila {
     flex-direction: column;
     gap: 4px;
+  }
+
+  /* Tarjetas responsive */
+  .gestion-usuarios__item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 20px;
+    gap: 16px;
+  }
+  
+  .gestion-usuarios__acciones-item {
+    justify-content: flex-end;
+    border-top: 1px solid var(--borde-suave);
+    padding-top: 12px;
+  }
+
+  .gestion-usuarios__nombre-fila {
+    gap: 8px;
   }
 }

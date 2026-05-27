@@ -11,7 +11,9 @@
 .registro-pcs__nombre { font-weight: 600; margin: 0; }
 .registro-pcs__desc { font-size: 0.78rem; color: var(--texto-gris); margin: 3px 0 0; }
 .registro-pcs__estado { padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-.registro-pcs__estado--en_taller { background: var(--ambar-medio-suave); color: var(--ambar-medio); }
-.registro-pcs__estado--entregada { background: var(--verde-suave-claro); color: var(--verde-suave); }
+.registro-pcs__estado--llegada { background: var(--estado-por-hacer-fondo, #eef4ff); color: var(--azul-institucional, #455ba4); }
+.registro-pcs__estado--en_proceso { background: var(--ambar-medio-suave, #fdf5e0); color: var(--ambar-medio, #d4900a); }
+.registro-pcs__estado--para_entregar { background: #f3e8ff; color: #7e22ce; }
+.registro-pcs__estado--entregada { background: var(--verde-suave-claro, #e3f7ef); color: var(--verde-suave, #2e9e74); }
 .registro-pcs__acciones-fila { display: flex; gap: 4px; align-items: center; }
 .registro-pcs__vacio { text-align: center; color: var(--texto-gris); padding: 40px; font-size: 0.88rem; }

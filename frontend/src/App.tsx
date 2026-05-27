@@ -6,6 +6,7 @@ import BarraNavegacion from './componentes/BarraNavegacion/BarraNavegacion';
 import Login from './paginas/Login/Login';
 import SeleccionSector from './paginas/SeleccionSector/SeleccionSector';
 import Tablero from './paginas/Tablero/Tablero';
+import Pendiente from './paginas/Pendiente/Pendiente';
 import MiPanel from './paginas/MiPanel/MiPanel';
 import PanelAdmin from './paginas/PanelAdmin/PanelAdmin';
 import GestionUsuarios from './paginas/GestionUsuarios/GestionUsuarios';
@@ -48,6 +49,14 @@ export default function App() {
               element={
                 <RutaProtegida>
                   <LayoutConBarra><Tablero /></LayoutConBarra>
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/pendientes"
+              element={
+                <RutaProtegida>
+                  <LayoutConBarra><Pendiente /></LayoutConBarra>
                 </RutaProtegida>
               }
             />

@@ -1,0 +1,217 @@
+.modal-finalizar-tarea__fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-finalizar-tarea__caja {
+  background: var(--blanco-puro, #ffffff);
+  border-radius: 18px;
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--sombra-premium, 0 20px 50px rgba(15, 23, 42, 0.15));
+  border: 1px solid rgba(69, 91, 164, 0.08);
+}
+
+.modal-finalizar-tarea__caja::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-finalizar-tarea__caja::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-finalizar-tarea__caja::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+}
+
+.modal-finalizar-tarea__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-finalizar-tarea__icono-estado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  transition: var(--transicion-base);
+}
+
+.modal-finalizar-tarea__icono-estado--finalizar {
+  background-color: var(--verde-suave-claro, #e3f7ef);
+  color: var(--verde-suave, #2e9e74);
+}
+
+.modal-finalizar-tarea__icono-estado--pendiente {
+  background-color: var(--ambar-medio-suave, #fdf5e0);
+  color: var(--ambar-medio, #d4900a);
+}
+
+.modal-finalizar-tarea__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--texto-oscuro, #1e2a45);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.modal-finalizar-tarea__tarea-titulo {
+  font-size: 0.92rem;
+  color: var(--texto-gris, #6b7a99);
+  margin: -12px 0 20px 0;
+  font-weight: 500;
+  display: block;
+}
+
+.modal-finalizar-tarea__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* iOS Toggle Container */
+.modal-finalizar-tarea__toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(var(--azul-institucional-rgb), 0.04);
+  padding: 14px 18px;
+  border-radius: var(--redondeado-campo, 12px);
+  border: 1px dashed var(--borde-suave);
+  cursor: pointer;
+  transition: var(--transicion-base);
+}
+
+.modal-finalizar-tarea__toggle-container:hover {
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  border-color: rgba(var(--azul-institucional-rgb), 0.2);
+}
+
+.modal-finalizar-tarea__toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-finalizar-tarea__toggle-titulo {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+}
+
+.modal-finalizar-tarea__toggle-desc {
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+}
+
+/* iOS Switch Style */
+.modal-finalizar-tarea__switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.modal-finalizar-tarea__switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.modal-finalizar-tarea__slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #cbd5e1;
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.modal-finalizar-tarea__slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+input:checked + .modal-finalizar-tarea__slider {
+  background-color: var(--ambar-medio, #d4900a);
+}
+
+input:checked + .modal-finalizar-tarea__slider:before {
+  transform: translateX(22px);
+}
+
+/* Input textareas */
+.modal-finalizar-tarea__nota-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-finalizar-tarea__textarea {
+  padding: 12px 16px;
+  border: 1.5px solid var(--borde-suave, #e2e8f0);
+  border-radius: var(--redondeado-campo, 12px);
+  font-family: var(--fuente-principal);
+  font-size: 0.95rem;
+  color: var(--texto-oscuro, #0f172a);
+  background: var(--blanco-puro, #ffffff);
+  resize: vertical;
+  transition: var(--transicion-base);
+  outline: none;
+}
+
+.modal-finalizar-tarea__textarea:focus {
+  border-color: var(--azul-institucional, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(var(--azul-institucional-rgb), 0.15);
+}
+
+.modal-finalizar-tarea__textarea::placeholder {
+  color: #a1b0cb;
+}
+
+.modal-finalizar-tarea__error {
+  font-size: 0.82rem;
+  color: var(--rojo-critico, #ef4444);
+  margin: 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal-finalizar-tarea__acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

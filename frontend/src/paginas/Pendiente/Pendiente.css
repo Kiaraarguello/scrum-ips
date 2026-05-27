@@ -1,0 +1,201 @@
+.pendiente-pag {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+  animation: fadeIn 0.4s ease-out;
+}
+
+.pendiente-pag__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.pendiente-pag__cabecera-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pendiente-pag__titulo {
+  font-family: var(--fuente-especial);
+  font-size: 1.8rem;
+  color: var(--azul-institucional);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.pendiente-pag__subtitulo {
+  font-size: 0.9rem;
+  color: var(--texto-gris);
+  font-weight: 500;
+}
+
+/* Card list / grid */
+.pendiente-pag__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+/* Custom pending task card */
+.pendiente-tarjeta {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  border: 1px solid var(--borde-suave);
+  box-shadow: var(--sombra-elegante);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transicion-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.pendiente-tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-premium);
+  border-color: rgba(var(--azul-institucional-rgb), 0.2);
+}
+
+.pendiente-tarjeta__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.pendiente-tarjeta__fecha {
+  font-size: 0.75rem;
+  color: var(--texto-gris);
+  font-weight: 600;
+}
+
+.pendiente-tarjeta__titulo {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Pending Reason Box */
+.pendiente-tarjeta__motivo-box {
+  background: var(--ambar-medio-suave, #fdf5e0);
+  border-left: 4px solid var(--ambar-medio, #d4900a);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #78350f;
+  line-height: 1.5;
+}
+
+.pendiente-tarjeta__motivo-etiqueta {
+  font-weight: 700;
+  display: block;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  color: var(--ambar-medio);
+}
+
+.pendiente-tarjeta__motivo-texto {
+  font-weight: 500;
+}
+
+/* Metadata list */
+.pendiente-tarjeta__meta-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(var(--azul-institucional-rgb), 0.06);
+  padding-top: 14px;
+}
+
+.pendiente-tarjeta__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--texto-gris);
+  font-weight: 500;
+}
+
+.pendiente-tarjeta__meta-item svg {
+  color: var(--gris-iconos);
+}
+
+.pendiente-tarjeta__meta-item--equipo {
+  color: var(--texto-oscuro);
+  font-weight: 600;
+}
+
+/* Action button at bottom */
+.pendiente-tarjeta__acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Empty State Styling */
+.pendiente-pag__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  border: 1px dashed var(--borde-suave);
+  padding: 60px 40px;
+  max-width: 500px;
+  margin: 60px auto 0 auto;
+  box-shadow: var(--sombra-elegante);
+  animation: scaleIn 0.3s ease-out;
+}
+
+.pendiente-pag__vacio-icono {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--verde-suave-claro);
+  color: var(--verde-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 16px rgba(46, 158, 116, 0.15);
+}
+
+.pendiente-pag__vacio-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+  margin-bottom: 8px;
+}
+
+.pendiente-pag__vacio-desc {
+  font-size: 0.9rem;
+  color: var(--texto-gris);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .pendiente-pag {
+    padding: 20px 16px;
+  }
+  .pendiente-pag__cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pendiente-pag__grid {
+    grid-template-columns: 1fr;
+  }
+}
