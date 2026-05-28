@@ -36,6 +36,14 @@ export default function RegistroPCs() {
   const [pcParaEditar, setPcParaEditar] = useState<PcRegistro | null>(null);
   const [form, setForm] = useState<FormPc>(VACIO);
 
+  // Estados para los filtros y paginación
+  const [filtroNombre, setFiltroNombre] = useState('');
+  const [filtroSede, setFiltroSede] = useState('todos');
+  const [filtroEstado, setFiltroEstado] = useState('todos');
+  const [filtroIngreso, setFiltroIngreso] = useState('todos');
+  const [filtroCiudad, setFiltroCiudad] = useState('todos');
+  const [paginaActual, setPaginaActual] = useState(1);
+
   const ordenarPcs = (lista: PcRegistro[]) => {
     const PESO_ESTADO: Record<string, number> = {
       llegada: 1,
@@ -55,6 +63,88 @@ export default function RegistroPCs() {
     listarPcs().then((lista) => setPcs(ordenarPcs(lista)));
     listarSedes().then(setSedes);
   }, []);
+
+  // Resetear a la página 1 cuando cambia algún filtro
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [filtroNombre, filtroSede, filtroEstado, filtroIngreso, filtroCiudad]);
+
+  // Extraer lista única de ciudades registradas para el filtro
+  const ciudadesDisponibles = Array.from(
+    new Set(
+      pcs
+        .map((p) => p.ciudad?.trim())
+        .filter((c): c is string => !!c)
+    )
+  ).sort();
+
+  // Filtrado reactivo del lado del cliente
+  const pcsFiltradas = pcs.filter((pc) => {
+    // 1. Nombre interno (búsqueda manual parcial, case-insensitive)
+    if (filtroNombre.trim()) {
+      const q = filtroNombre.toLowerCase().trim();
+      if (!pc.nombre_interno.toLowerCase().includes(q)) {
+        return false;
+      }
+    }
+
+    // 2. Sede
+    if (filtroSede !== 'todos') {
+      if (filtroSede === 'sin_sede') {
+        if (pc.sede_id !== null && pc.sede_id !== undefined) {
+          return false;
+        }
+      } else {
+        if (pc.sede_id?.toString() !== filtroSede) {
+          return false;
+        }
+      }
+    }
+
+    // 3. Estado
+    if (filtroEstado !== 'todos' && pc.estado !== filtroEstado) {
+      return false;
+    }
+
+    // 4. Ciudad
+    if (filtroCiudad !== 'todos' && pc.ciudad?.trim() !== filtroCiudad) {
+      return false;
+    }
+
+    // 5. Fecha de ingreso
+    if (filtroIngreso !== 'todos') {
+      const fechaIngreso = new Date(pc.fecha_ingreso);
+      const hoy = new Date();
+      const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+      if (filtroIngreso === 'hoy') {
+        if (fechaIngreso < inicioHoy) return false;
+      } else if (filtroIngreso === 'semana') {
+        const haceUnaSemana = new Date(inicioHoy);
+        haceUnaSemana.setDate(haceUnaSemana.getDate() - 7);
+        if (fechaIngreso < haceUnaSemana) return false;
+      } else if (filtroIngreso === 'mes') {
+        const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        if (fechaIngreso < inicioMes) return false;
+      } else if (filtroIngreso === 'anio') {
+        const inicioAnio = new Date(hoy.getFullYear(), 0, 1);
+        if (fechaIngreso < inicioAnio) return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Paginación
+  const limitePorPagina = 20;
+  const totalPaginas = Math.ceil(pcsFiltradas.length / limitePorPagina);
+  const paginaSegura = paginaActual > totalPaginas ? Math.max(1, totalPaginas) : paginaActual;
+  const indiceInicial = (paginaSegura - 1) * limitePorPagina;
+  const pcsPaginadas = pcsFiltradas.slice(indiceInicial, indiceInicial + limitePorPagina);
+
+  const irAPagina = (n: number) => {
+    setPaginaActual(Math.max(1, Math.min(n, totalPaginas)));
+  };
 
   function abrirCrear() { setForm(VACIO); setMostrarForm(true); }
   function abrirEditar(pc: PcRegistro) {
@@ -91,6 +181,61 @@ export default function RegistroPCs() {
         <Boton onClick={abrirCrear}><Plus size={16} /> Registrar PC</Boton>
       </div>
 
+      {/* Contenedor de Filtros de Ancho Completo */}
+      <div className="registro-pcs__filtros">
+        <CampoTexto
+          etiqueta="Buscar por nombre interno"
+          id="filtro-nombre"
+          placeholder="Escriba un nombre..."
+          value={filtroNombre}
+          onChange={(e) => setFiltroNombre(e.target.value)}
+        />
+        <Selector
+          etiqueta="Filtrar por Sede"
+          id="filtro-sede"
+          value={filtroSede}
+          onChange={(e) => setFiltroSede(e.target.value)}
+          opciones={[
+            { valor: 'todos', etiqueta: 'Todas las sedes' },
+            { valor: 'sin_sede', etiqueta: 'Sin sede' },
+            ...sedes.map((s) => ({ valor: s.id.toString(), etiqueta: s.nombre })),
+          ]}
+        />
+        <Selector
+          etiqueta="Filtrar por Estado"
+          id="filtro-estado"
+          value={filtroEstado}
+          onChange={(e) => setFiltroEstado(e.target.value)}
+          opciones={[
+            { valor: 'todos', etiqueta: 'Todos los estados' },
+            ...Object.entries(ETIQUETAS_ESTADO).map(([valor, etiqueta]) => ({ valor, etiqueta })),
+          ]}
+        />
+        <Selector
+          etiqueta="Filtrar por Ingreso"
+          id="filtro-ingreso"
+          value={filtroIngreso}
+          onChange={(e) => setFiltroIngreso(e.target.value)}
+          opciones={[
+            { valor: 'todos', etiqueta: 'Cualquier fecha' },
+            { valor: 'hoy', etiqueta: 'Hoy' },
+            { valor: 'semana', etiqueta: 'Últimos 7 días' },
+            { valor: 'mes', etiqueta: 'Este mes' },
+            { valor: 'anio', etiqueta: 'Este año' },
+          ]}
+        />
+        <Selector
+          etiqueta="Filtrar por Ciudad"
+          id="filtro-ciudad"
+          value={filtroCiudad}
+          onChange={(e) => setFiltroCiudad(e.target.value)}
+          opciones={[
+            { valor: 'todos', etiqueta: 'Todas las ciudades' },
+            ...ciudadesDisponibles.map((c) => ({ valor: c, etiqueta: c })),
+          ]}
+        />
+      </div>
+
       {mostrarForm && (
         <form onSubmit={guardar} className="registro-pcs__formulario">
           <div className="registro-pcs__fila">
@@ -121,7 +266,7 @@ export default function RegistroPCs() {
             <tr><th>Nombre</th><th>Propietario</th><th>Sede</th><th>Ingreso</th><th>Estado</th><th></th></tr>
           </thead>
           <tbody>
-            {pcs.map((pc) => (
+            {pcsPaginadas.map((pc) => (
               <tr key={pc.id}>
                 <td>
                   <p className="registro-pcs__nombre">{pc.nombre_interno}</p>
@@ -148,7 +293,49 @@ export default function RegistroPCs() {
             ))}
           </tbody>
         </table>
-        {pcs.length === 0 && <p className="registro-pcs__vacio">Sin PCs registradas</p>}
+        {pcsFiltradas.length === 0 && (
+          <p className="registro-pcs__vacio">
+            {pcs.length === 0 ? 'Sin PCs registradas' : 'No se encontraron PCs que coincidan con los filtros'}
+          </p>
+        )}
+
+        {totalPaginas > 1 && (
+          <div className="registro-pcs__paginacion">
+            <div className="registro-pcs__paginacion-info">
+              Mostrando <strong>{indiceInicial + 1}</strong> - <strong>{Math.min(indiceInicial + limitePorPagina, pcsFiltradas.length)}</strong> de <strong>{pcsFiltradas.length}</strong> PCs
+            </div>
+            <div className="registro-pcs__paginacion-controles">
+              <Boton
+                variante="secundario"
+                onClick={() => irAPagina(paginaSegura - 1)}
+                disabled={paginaSegura === 1}
+                className="registro-pcs__paginacion-btn"
+              >
+                Anterior
+              </Boton>
+              
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
+                <Boton
+                  key={n}
+                  variante={paginaSegura === n ? 'primario' : 'secundario'}
+                  onClick={() => irAPagina(n)}
+                  className={`registro-pcs__paginacion-btn ${paginaSegura === n ? 'registro-pcs__paginacion-btn--activa' : ''}`}
+                >
+                  {n}
+                </Boton>
+              ))}
+
+              <Boton
+                variante="secundario"
+                onClick={() => irAPagina(paginaSegura + 1)}
+                disabled={paginaSegura === totalPaginas}
+                className="registro-pcs__paginacion-btn"
+              >
+                Siguiente
+              </Boton>
+            </div>
+          </div>
+        )}
       </div>
 
       {pcParaEditar && (

@@ -17,3 +17,73 @@
 .registro-pcs__estado--entregada { background: var(--verde-suave-claro, #e3f7ef); color: var(--verde-suave, #2e9e74); }
 .registro-pcs__acciones-fila { display: flex; gap: 4px; align-items: center; }
 .registro-pcs__vacio { text-align: center; color: var(--texto-gris); padding: 40px; font-size: 0.88rem; }
+
+/* Contenedor de Filtros de Ancho Completo */
+.registro-pcs__filtros {
+  background: var(--blanco-puro);
+  border-radius: var(--redondeado-tarjeta);
+  padding: 20px 24px;
+  box-shadow: var(--sombra-elegante);
+  margin-bottom: 24px;
+  border: 1px solid var(--borde-suave);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+@media (max-width: 1024px) {
+  .registro-pcs__filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .registro-pcs__filtros {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Controles de Paginación */
+.registro-pcs__paginacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--fondo-suave);
+  border-top: 1px solid var(--borde-suave);
+}
+
+.registro-pcs__paginacion-info {
+  font-size: 0.88rem;
+  color: var(--texto-gris);
+}
+
+.registro-pcs__paginacion-info strong {
+  color: var(--texto-oscuro);
+  font-weight: 600;
+}
+
+.registro-pcs__paginacion-controles {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.registro-pcs__paginacion-btn {
+  padding: 6px 12px !important;
+  font-size: 0.82rem !important;
+  min-width: 36px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .registro-pcs__paginacion {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
