@@ -28,6 +28,14 @@ model Usuario {
   proyectos             ProyectoUsuario[]
   alertas               AlertaAdmin[]
 
+  auditorias_sesiones   AuditoriaSesion[]
+  auditorias_usuarios   AuditoriaUsuario[]
+  auditorias_sectores   AuditoriaSector[]
+  auditorias_sedes      AuditoriaSede[]
+  auditorias_tareas     AuditoriaTarea[]
+  auditorias_pcs        AuditoriaPc[]
+  auditorias_proyectos  AuditoriaProyecto[]
+
   @@map("usuarios")
 }
 
@@ -167,4 +175,109 @@ model AlertaAdmin {
   usuario Usuario?    @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
 
   @@map("alertas_admin")
+}
+
+model AuditoriaSesion {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_sesiones")
+}
+
+model AuditoriaUsuario {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_usuarios")
+}
+
+model AuditoriaSector {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_sectores")
+}
+
+model AuditoriaSede {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_sedes")
+}
+
+model AuditoriaTarea {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_tareas")
+}
+
+model AuditoriaPc {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_pcs")
+}
+
+model AuditoriaProyecto {
+  id             Int      @id @default(autoincrement())
+  usuario_id     Int?
+  email          String?  @db.VarChar(255)
+  accion         String   @db.VarChar(100)
+  detalles       String?  @db.Text
+  ip             String?  @db.VarChar(45)
+  estado_codigo  Int
+  fecha_creacion DateTime @default(now())
+
+  usuario        Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  @@map("auditoria_proyectos")
 }

@@ -91,3 +91,90 @@ CREATE TABLE alertas_admin (
   CONSTRAINT fk_alertas_pc FOREIGN KEY (pc_id) REFERENCES pcs_registro(id) ON DELETE SET NULL,
   CONSTRAINT fk_alertas_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tablas de Auditoría Modular y Organizada
+
+CREATE TABLE auditoria_sesiones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_sesion_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_usuario_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_sectores (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_sector_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_sedes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_sede_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_tareas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_tarea_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_pcs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_pc_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE auditoria_proyectos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NULL,
+  email VARCHAR(255) NULL,
+  accion VARCHAR(100) NOT NULL,
+  detalles TEXT NULL,
+  ip VARCHAR(45) NULL,
+  estado_codigo INT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_aud_proyecto_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

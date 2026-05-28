@@ -17,6 +17,7 @@ import alertas from './routes/alertas.js';
 import estadisticas from './routes/estadisticas.js';
 import proyectos from './routes/proyectos.js';
 import publico from './routes/publico.js';
+import { middlewareAuditoria } from './middleware/auditoria.js';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -31,6 +32,7 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+app.use(middlewareAuditoria);
 
 // Middleware global de manejo de errores async
 app.use((req, res, next) => {
