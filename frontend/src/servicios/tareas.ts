@@ -1,5 +1,5 @@
 import api from './api';
-import type { Tarea } from '../tipos';
+import type { Tarea, HistorialMovimiento } from '../tipos';
 
 export async function listarTareas(proyectoId?: number): Promise<Tarea[]> {
   const url = proyectoId ? `/tareas?proyecto_id=${proyectoId}` : '/tareas';
@@ -40,4 +40,9 @@ export async function moverTarea(
 
 export async function eliminarTarea(id: number): Promise<void> {
   await api.delete(`/tareas/${id}`);
+}
+
+export async function obtenerHistorialTarea(id: number): Promise<HistorialMovimiento[]> {
+  const { data } = await api.get<HistorialMovimiento[]>(`/tareas/${id}/historial`);
+  return data;
 }

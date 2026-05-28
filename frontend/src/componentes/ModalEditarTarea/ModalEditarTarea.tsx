@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import type { Tarea, Sector, Sede, Usuario } from '../../tipos';
+import type { Tarea, Sector, Sede, Usuario, HistorialMovimiento } from '../../tipos';
 import { listarSectores } from '../../servicios/sectores';
 import { listarSedes } from '../../servicios/sedes';
-import { actualizarTarea } from '../../servicios/tareas';
+import { actualizarTarea, obtenerHistorialTarea } from '../../servicios/tareas';
 import { listarUsuarios } from '../../servicios/usuarios';
 import { useAuth } from '../../contextos/ContextoAuth';
-import { Check, Edit, X, Calendar, User, Phone, MapPin, Layers, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Check, Edit, X, Phone, MapPin, Layers, AlertCircle, CheckCircle2, History, ChevronDown, ChevronUp, User, Calendar } from 'lucide-react';
 import CampoTexto from '../CampoTexto/CampoTexto';
 import Selector from '../Selector/Selector';
 import Boton from '../Boton/Boton';
@@ -47,10 +47,17 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
   const [error, setError] = useState('');
   const { usuario: usuarioLogueado } = useAuth();
 
+  const [historial, setHistorial] = useState<HistorialMovimiento[]>([]);
+  const [historialAbierto, setHistorialAbierto] = useState(false);
+
   useEffect(() => {
     listarSectores().then(setSectores);
     listarSedes().then(setSedes);
-  }, []);
+    
+    obtenerHistorialTarea(tarea.id)
+      .then(setHistorial)
+      .catch((err) => console.error('Error al cargar historial:', err));
+  }, [tarea.id]);
 
   useEffect(() => {
     if (!sectorId) {
@@ -208,15 +215,34 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                 
                 <div className="modal-editar-tarea__sidebar-lista">
                   
-                  <div className="modal-editar-tarea__sidebar-item">
-                    <User size={15} className="modal-editar-tarea__sidebar-icono" />
-                    <div>
-                      <span className="modal-editar-tarea__sidebar-label">Creado por</span>
-                      <span className="modal-editar-tarea__sidebar-valor">
-                        {tarea.creador ? `${tarea.creador.nombre} ${tarea.creador.apellido}` : 'Sistema / Desconocido'}
-                      </span>
-                    </div>
-                  </div>
+                  {(() => {
+                    if (tarea.nota_llamada && tarea.nota_llamada.startsWith('Contacto:')) {
+                      const lineaContacto = tarea.nota_llamada.split('\n')[0];
+                      const contactoNombre = lineaContacto.replace('Contacto:', '').trim();
+                      return (
+                        <div className="modal-editar-tarea__sidebar-item">
+                          <User size={15} className="modal-editar-tarea__sidebar-icono" />
+                          <div>
+                            <span className="modal-editar-tarea__sidebar-label">Creado por</span>
+                            <span className="modal-editar-tarea__sidebar-valor" style={{ whiteSpace: 'pre-line', lineHeight: '1.25' }}>
+                              {`Sede: ${tarea.sede?.nombre || 'No especificada'}\n${contactoNombre}`}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="modal-editar-tarea__sidebar-item">
+                        <User size={15} className="modal-editar-tarea__sidebar-icono" />
+                        <div>
+                          <span className="modal-editar-tarea__sidebar-label">Creado por</span>
+                          <span className="modal-editar-tarea__sidebar-valor">
+                            {tarea.creador ? `${tarea.creador.nombre} ${tarea.creador.apellido}` : 'Sistema / Desconocido'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div className="modal-editar-tarea__sidebar-item">
                     <Calendar size={15} className="modal-editar-tarea__sidebar-icono" />
@@ -226,29 +252,124 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                     </div>
                   </div>
 
-                  {tarea.fecha_inicio && (
-                    <div className="modal-editar-tarea__sidebar-item">
-                      <Calendar size={15} className="modal-editar-tarea__sidebar-icono" />
-                      <div>
-                        <span className="modal-editar-tarea__sidebar-label">Fecha Inicio</span>
-                        <span className="modal-editar-tarea__sidebar-valor">{formatearFechaHora(tarea.fecha_inicio)}</span>
-                      </div>
+                  <div className="modal-editar-tarea__sidebar-item">
+                    <Calendar size={15} className="modal-editar-tarea__sidebar-icono" />
+                    <div>
+                      <span className="modal-editar-tarea__sidebar-label">Fecha Inicio</span>
+                      <span className="modal-editar-tarea__sidebar-valor" style={{ fontSize: '0.8rem' }}>
+                        {(() => {
+                          const movimiento = historial.find(h => h.estado_nuevo === 'en_proceso');
+                          if (movimiento) {
+                            const usr = movimiento.usuario ? ` por ${movimiento.usuario.nombre} ${movimiento.usuario.apellido}` : '';
+                            return `${formatearFechaHora(movimiento.fecha_movimiento)}${usr}`;
+                          }
+                          return 'No empezado';
+                        })()}
+                      </span>
                     </div>
-                  )}
+                  </div>
 
-                  {tarea.fecha_finalizacion && (
-                    <div className="modal-editar-tarea__sidebar-item">
-                      <Calendar size={15} className="modal-editar-tarea__sidebar-icono" />
-                      <div>
-                        <span className="modal-editar-tarea__sidebar-label">Fecha Finalización</span>
-                        <span className="modal-editar-tarea__sidebar-valor">{formatearFechaHora(tarea.fecha_finalizacion)}</span>
-                      </div>
+                  <div className="modal-editar-tarea__sidebar-item">
+                    <Calendar size={15} className="modal-editar-tarea__sidebar-icono" />
+                    <div>
+                      <span className="modal-editar-tarea__sidebar-label">Fecha Finalización</span>
+                      <span className="modal-editar-tarea__sidebar-valor" style={{ fontSize: '0.8rem' }}>
+                        {(() => {
+                          if (tarea.estado !== 'finalizada') {
+                            return 'No finalizada';
+                          }
+                          const movimiento = historial.find(h => h.estado_nuevo === 'finalizada');
+                          if (movimiento) {
+                            const usr = movimiento.usuario ? ` por ${movimiento.usuario.nombre} ${movimiento.usuario.apellido}` : '';
+                            return `${formatearFechaHora(movimiento.fecha_movimiento)}${usr}`;
+                          }
+                          return 'No empezado';
+                        })()}
+                      </span>
                     </div>
-                  )}
+                  </div>
+
+                  <div className="modal-editar-tarea__sidebar-item">
+                    <AlertCircle size={15} className="modal-editar-tarea__sidebar-icono" />
+                    <div>
+                      <span className="modal-editar-tarea__sidebar-label">Pendiente</span>
+                      <span className="modal-editar-tarea__sidebar-valor" style={{ fontSize: '0.8rem' }}>
+                        {(() => {
+                          const indexEntrada = historial.findIndex(h => h.estado_nuevo === 'pendiente');
+                          if (indexEntrada === -1) return 'No';
+                          
+                          const entrada = historial[indexEntrada];
+                          const fechaEntradaStr = formatearFechaHora(entrada.fecha_movimiento);
+                          
+                          if (indexEntrada > 0) {
+                            const salida = historial[indexEntrada - 1];
+                            const fechaSalidaStr = formatearFechaHora(salida.fecha_movimiento);
+                            return `Sí (De ${fechaEntradaStr} a ${fechaSalidaStr})`;
+                          } else {
+                            return `Actualmente (Desde ${fechaEntradaStr})`;
+                          }
+                        })()}
+                      </span>
+                    </div>
+                  </div>
 
                 </div>
               </div>
 
+            </div>
+
+            {/* Botón y Sección de Historial Desplegable */}
+            <div className="modal-editar-tarea__historial-contenedor" style={{ marginTop: '4px', width: '100%' }}>
+              <button 
+                type="button" 
+                className="modal-editar-tarea__historial-toggle-btn"
+                onClick={() => setHistorialAbierto(!historialAbierto)}
+              >
+                <History size={15} />
+                <span>{historialAbierto ? 'Ocultar Historial' : 'Ver Historial de Cambios'}</span>
+                {historialAbierto ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+              </button>
+
+              {historialAbierto && (
+                <div className="modal-editar-tarea__historial-lista animate-slide-down">
+                  {historial.length === 0 ? (
+                    <p className="modal-editar-tarea__historial-vacio">No hay registros de movimientos para esta tarea.</p>
+                  ) : (
+                    <div className="modal-editar-tarea__historial-timeline">
+                      {historial.map((mov) => {
+                        const mapEstado = (est: string | null) => {
+                          if (!est) return 'Creado';
+                          const mapping: Record<string, string> = {
+                            'por_hacer': 'Por hacer',
+                            'en_proceso': 'En proceso',
+                            'finalizada': 'Finalizada',
+                            'pendiente': 'Pendiente'
+                          };
+                          return mapping[est] || est;
+                        };
+                        return (
+                          <div key={mov.id} className="modal-editar-tarea__historial-item">
+                            <div className="modal-editar-tarea__historial-indicador"></div>
+                            <div className="modal-editar-tarea__historial-contenido">
+                              <div className="modal-editar-tarea__historial-meta">
+                                <span className="modal-editar-tarea__historial-usuario">
+                                  {mov.usuario ? `${mov.usuario.nombre} ${mov.usuario.apellido}` : 'Usuario'}
+                                </span>
+                                <span className="modal-editar-tarea__historial-fecha">
+                                  {formatearFechaHora(mov.fecha_movimiento)}
+                                </span>
+                              </div>
+                              <p className="modal-editar-tarea__historial-texto">
+                                Movió la tarea de <span className="modal-editar-tarea__historial-estado-badge">{mapEstado(mov.estado_anterior)}</span> a <span className={`modal-editar-tarea__historial-estado-badge modal-editar-tarea__historial-estado-badge--${mov.estado_nuevo}`}>{mapEstado(mov.estado_nuevo)}</span>
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Sección Inferior: Notas y Equipos */}
@@ -315,6 +436,8 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                   </p>
                 )}
               </div>
+
+
 
             </div>
 

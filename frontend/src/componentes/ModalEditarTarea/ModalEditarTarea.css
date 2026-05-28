@@ -430,3 +430,231 @@
     width: 100%;
   }
 }
+
+/* Auditoría / Registro de Tiempos */
+.modal-editar-tarea__auditoria-seccion {
+  margin-top: 14px;
+  border-top: 1px solid var(--borde-suave, #e2e8f0);
+  padding-top: 16px;
+}
+
+.modal-editar-tarea__auditoria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-editar-tarea__auditoria-card {
+  background: var(--fondo-suave, #f8fafc);
+  border: 1px solid var(--borde-suave, #e2e8f0);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-editar-tarea__auditoria-card:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130, 246, 0.01);
+}
+
+.modal-editar-tarea__auditoria-titulo {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--texto-gris, #64748b);
+  letter-spacing: 0.04em;
+}
+
+.modal-editar-tarea__auditoria-valor {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--texto-oscuro, #0f172a);
+  word-break: break-word;
+}
+
+.modal-editar-tarea__auditoria-valor--no {
+  color: var(--texto-gris, #94a3b8);
+  font-weight: 600;
+  font-style: italic;
+}
+
+.modal-editar-tarea__auditoria-valor--pendiente {
+  color: var(--texto-gris, #0f172a);
+}
+
+.modal-editar-tarea__auditoria-subvalor {
+  font-size: 0.76rem;
+  color: var(--texto-gris, #64748b);
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* Historial de Cambios */
+.modal-editar-tarea__historial-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-editar-tarea__historial-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--borde-suave, #e2e8f0);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--texto-oscuro, #475569);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: flex-start;
+  transition: all 0.2s ease;
+}
+
+.modal-editar-tarea__historial-toggle-btn:hover {
+  background: rgba(15, 23, 42, 0.03);
+  border-color: var(--texto-gris, #94a3b8);
+  color: var(--texto-oscuro, #0f172a);
+}
+
+.modal-editar-tarea__historial-lista {
+  background: var(--fondo-suave, #f8fafc);
+  border: 1px solid var(--borde-suave, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+/* Custom premium scrollbar for history box */
+.modal-editar-tarea__historial-lista::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-editar-tarea__historial-lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-editar-tarea__historial-lista::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+}
+
+.modal-editar-tarea__historial-vacio {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--texto-gris, #94a3b8);
+  font-style: italic;
+  text-align: center;
+}
+
+.modal-editar-tarea__historial-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  padding-left: 14px;
+}
+
+.modal-editar-tarea__historial-timeline::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--borde-suave, #e2e8f0);
+}
+
+.modal-editar-tarea__historial-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.modal-editar-tarea__historial-indicador {
+  position: absolute;
+  left: -14px;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--texto-gris, #94a3b8);
+  border: 2px solid var(--fondo-suave, #f8fafc);
+  z-index: 1;
+}
+
+.modal-editar-tarea__historial-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-editar-tarea__historial-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-editar-tarea__historial-usuario {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--texto-oscuro, #1e293b);
+}
+
+.modal-editar-tarea__historial-fecha {
+  font-size: 0.74rem;
+  color: var(--texto-gris, #64748b);
+  font-weight: 500;
+}
+
+.modal-editar-tarea__historial-texto {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--texto-oscuro, #475569);
+  line-height: 1.4;
+}
+
+.modal-editar-tarea__historial-estado-badge {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(100, 116, 139, 0.08);
+  color: #475569;
+}
+
+.modal-editar-tarea__historial-estado-badge--por_hacer {
+  background: rgba(100, 116, 139, 0.08);
+  color: #475569;
+}
+
+.modal-editar-tarea__historial-estado-badge--en_proceso {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+}
+
+.modal-editar-tarea__historial-estado-badge--finalizada {
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+}
+
+.modal-editar-tarea__historial-estado-badge--pendiente {
+  background: rgba(245, 158, 11, 0.08);
+  color: #d97706;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

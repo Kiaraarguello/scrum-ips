@@ -46,6 +46,18 @@ router.get('/:id', obtenerUsuarioActual, async (req, res) => {
   return res.json(tarea);
 });
 
+router.get('/:id/historial', obtenerUsuarioActual, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const historial = await prisma.historialTarea.findMany({
+    where: { tarea_id: id },
+    include: {
+      usuario: { select: { id: true, nombre: true, apellido: true } },
+    },
+    orderBy: { fecha_movimiento: 'desc' },
+  });
+  return res.json(historial);
+});
+
 router.post('/', obtenerUsuarioActual, async (req, res) => {
   const { titulo, nota_llamada, criticidad = 'baja', sector_id, sede_id, numero_contacto, proyecto_id, asignado_ids } = req.body;
   const data = { 
