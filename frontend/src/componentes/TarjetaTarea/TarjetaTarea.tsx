@@ -35,6 +35,7 @@ export default function TarjetaTarea({ tarea, onClick, onEliminar, esMia }: Prop
     >
       <div className="tarjeta-tarea__cabecera">
         <div className="tarjeta-tarea__cabecera-izquierda">
+          <span className="tarjeta-tarea__id-badge">#{tarea.id}</span>
           <BadgeCriticidad criticidad={tarea.criticidad} />
           {tarea.asignados && tarea.asignados.length > 0 && (
             <span 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
-import { Plus, RefreshCw, Clock } from 'lucide-react';
+import { Plus, RefreshCw, Clock, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Tarea, EstadoTarea } from '../../tipos';
 import { listarTareas, moverTarea, eliminarTarea } from '../../servicios/tareas';
@@ -26,6 +26,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
   const { usuario } = useAuth();
   const navegar = useNavigate();
   const [tareas, setTareas] = useState<Tarea[]>([]);
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
   const [tareaParaEditar, setTareaParaEditar] = useState<Tarea | null>(null);
   const [tareaParaAsignar, setTareaParaAsignar] = useState<{ tarea: Tarea; nuevoEstado: string } | null>(null);
@@ -76,7 +77,22 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
   const sensores = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
   function tareasPorEstado(estado: EstadoTarea) {
-    return ordenarPorCriticidad(tareas.filter((t) => t.estado === estado));
+    let filtradas = tareas.filter((t) => t.estado === estado);
+    if (filtroBusqueda.trim()) {
+      const query = filtroBusqueda.toLowerCase().trim();
+      filtradas = filtradas.filter((t) => {
+        const idMatch = t.id.toString() === query || `#${t.id}`.toLowerCase() === query;
+        const tituloMatch = t.titulo.toLowerCase().includes(query);
+        const notaMatch = t.nota_llamada?.toLowerCase().includes(query) ?? false;
+        const contactoMatch = t.numero_contacto?.toLowerCase().includes(query) ?? false;
+        const sedeMatch = t.sede?.nombre.toLowerCase().includes(query) ?? false;
+        const sectorMatch = t.sector?.nombre.toLowerCase().includes(query) ?? false;
+        const creadorMatch = t.creador ? `${t.creador.nombre} ${t.creador.apellido}`.toLowerCase().includes(query) : false;
+        const asignadosMatch = t.asignados?.some(u => `${u.nombre} ${u.apellido}`.toLowerCase().includes(query)) ?? false;
+        return idMatch || tituloMatch || notaMatch || contactoMatch || sedeMatch || sectorMatch || creadorMatch || asignadosMatch;
+      });
+    }
+    return ordenarPorCriticidad(filtradas);
   }
 
   async function manejarDragEnd(evento: DragEndEvent) {
@@ -199,6 +215,24 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
             <Plus size={16} />
             Nueva tarea
           </Boton>
+        </div>
+      </div>
+
+      <div className="tablero__filtro-barra">
+        <div className="tablero__busqueda-contenedor">
+          <Search size={16} className="tablero__busqueda-icono" />
+          <input
+            type="text"
+            className="tablero__busqueda-input"
+            placeholder="Buscar por ID, título, sector, sede, contacto, equipo..."
+            value={filtroBusqueda}
+            onChange={(e) => setFiltroBusqueda(e.target.value)}
+          />
+          {filtroBusqueda && (
+            <button className="tablero__busqueda-limpiar" onClick={() => setFiltroBusqueda('')} title="Limpiar búsqueda">
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
