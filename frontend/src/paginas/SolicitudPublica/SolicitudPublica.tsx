@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiPublica from '../../servicios/apiPublica';
+import logoSiglas from '../../assets/logo-siglas.svg';
 import './SolicitudPublica.css';
 
 interface Sede { id: number; nombre: string; }
@@ -45,12 +46,37 @@ export default function SolicitudPublica() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    if (!titulo.trim() || !sedeId) {
-      setError('Completá los campos obligatorios: descripción y sede.');
+
+    if (!titulo.trim()) {
+      setError('Por favor, completá qué necesitás.');
+      return;
+    }
+    if (!sedeId) {
+      setError('Por favor, seleccioná tu sede.');
+      return;
+    }
+    if (bloqueaAtencion === null) {
+      setError('Por favor, indicá si el problema imposibilita la atención al público.');
+      return;
+    }
+    if (!nombre.trim()) {
+      setError('Por favor, ingresá tu nombre.');
+      return;
+    }
+    if (!telefono.trim()) {
+      setError('Por favor, ingresá tu teléfono de contacto.');
+      return;
+    }
+    if (esRemoto === null) {
+      setError('Por favor, indicá si el problema se puede solucionar de forma remota.');
       return;
     }
     if (esRemoto === true && (!rustdeskId.trim() || !rustdeskPassword.trim())) {
       setError('Por favor, ingresá tu ID y contraseña de RustDesk para soporte remoto.');
+      return;
+    }
+    if (!detalle.trim()) {
+      setError('Por favor, ingresá el detalle adicional.');
       return;
     }
 
@@ -59,16 +85,16 @@ export default function SolicitudPublica() {
       let detalleFinal = detalle.trim();
       if (esRemoto === true) {
         const remotoInfo = `[SOPORTE REMOTO RUSTDESK]\nID de RustDesk: ${rustdeskId.trim()}\nContraseña: ${rustdeskPassword.trim()}`;
-        detalleFinal = detalleFinal ? `${remotoInfo}\n\nDetalle adicional:\n${detalleFinal}` : remotoInfo;
+        detalleFinal = `${remotoInfo}\n\nDetalle adicional:\n${detalleFinal}`;
       }
 
       const respuesta = await apiPublica.post<{ ok: boolean; id: number }>('/publico/solicitud', {
         titulo: titulo.trim(),
-        detalle: detalleFinal || undefined,
+        detalle: detalleFinal,
         criticidad,
         sede_id: Number(sedeId),
-        nombre_contacto: nombre.trim() || undefined,
-        telefono_contacto: telefono.trim() || undefined,
+        nombre_contacto: nombre.trim(),
+        telefono_contacto: telefono.trim(),
       });
       setTareaIdCreada(respuesta.data.id);
       setEnviado(true);
@@ -116,7 +142,7 @@ export default function SolicitudPublica() {
     <div className="sp-fondo">
       <div className="sp-caja">
         <div className="sp-encabezado">
-          <div className="sp-logo">IPS</div>
+          <img src={logoSiglas} alt="IPS" className="sp-logo-img" />
           <div>
             <h1 className="sp-titulo">Solicitud de soporte</h1>
             <p className="sp-subtitulo">Sistemas — IPS Misiones</p>
@@ -163,7 +189,9 @@ export default function SolicitudPublica() {
 
           {/* Bloqueo atención al público */}
           <div className="sp-campo">
-            <label className="sp-etiqueta">¿Este problema imposibilita la atención al público?</label>
+            <label className="sp-etiqueta">
+              ¿Este problema imposibilita la atención al público? <span className="sp-requerido">*</span>
+            </label>
             <div className="sp-bloqueo-opciones">
               <label className={`sp-bloqueo-opcion ${bloqueaAtencion === true ? 'sp-bloqueo-opcion--activa sp-bloqueo-opcion--si' : ''}`}>
                 <input
@@ -190,7 +218,9 @@ export default function SolicitudPublica() {
 
           {/* Criticidad */}
           <div className="sp-campo">
-            <label className="sp-etiqueta">Urgencia</label>
+            <label className="sp-etiqueta">
+              Urgencia <span className="sp-requerido">*</span>
+            </label>
             <div className="sp-criticidad-opciones">
               {(['baja', 'media', 'alta'] as Criticidad[]).map(c => (
                 <label
@@ -216,7 +246,7 @@ export default function SolicitudPublica() {
           <div className="sp-fila">
             <div className="sp-campo">
               <label className="sp-etiqueta" htmlFor="sp-nombre">
-                Nombre <span className="sp-opcional">(opcional)</span>
+                Nombre <span className="sp-requerido">*</span>
               </label>
               <input
                 id="sp-nombre"
@@ -225,11 +255,12 @@ export default function SolicitudPublica() {
                 placeholder="Tu nombre"
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
+                required
               />
             </div>
             <div className="sp-campo">
               <label className="sp-etiqueta" htmlFor="sp-telefono">
-                Teléfono <span className="sp-opcional">(opcional)</span>
+                Teléfono <span className="sp-requerido">*</span>
               </label>
               <input
                 id="sp-telefono"
@@ -238,13 +269,16 @@ export default function SolicitudPublica() {
                 placeholder="Número o interno"
                 value={telefono}
                 onChange={e => setTelefono(e.target.value)}
+                required
               />
             </div>
           </div>
 
           {/* Asistencia Remota (RustDesk) */}
           <div className="sp-campo">
-            <label className="sp-etiqueta">¿Tu problema puedo solucionarlo de forma remota? <span className="sp-opcional">(Requiere RustDesk)</span></label>
+            <label className="sp-etiqueta">
+              ¿Tu problema puedo solucionarlo de forma remota? <span className="sp-requerido">*</span> <span className="sp-opcional">(Requiere RustDesk)</span>
+            </label>
             <div className="sp-bloqueo-opciones">
               <label className={`sp-bloqueo-opcion ${esRemoto === true ? 'sp-bloqueo-opcion--activa sp-bloqueo-opcion--no' : ''}`}>
                 <input
@@ -310,7 +344,7 @@ export default function SolicitudPublica() {
           {/* Detalle */}
           <div className="sp-campo">
             <label className="sp-etiqueta" htmlFor="sp-detalle">
-              Detalle adicional <span className="sp-opcional">(opcional)</span>
+              Detalle adicional <span className="sp-requerido">*</span>
             </label>
             <textarea
               id="sp-detalle"
@@ -319,6 +353,7 @@ export default function SolicitudPublica() {
               value={detalle}
               onChange={e => setDetalle(e.target.value)}
               rows={4}
+              required
             />
           </div>
 

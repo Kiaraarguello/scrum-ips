@@ -25,6 +25,22 @@ router.get('/sedes', async (req, res) => {
 router.post('/solicitud', async (req, res) => {
   const { titulo, detalle, criticidad = 'baja', sede_id, nombre_contacto, telefono_contacto } = req.body;
 
+  if (!titulo || !titulo.trim()) {
+    return res.status(400).json({ detail: 'El campo título es obligatorio' });
+  }
+  if (!sede_id) {
+    return res.status(400).json({ detail: 'El campo sede es obligatorio' });
+  }
+  if (!nombre_contacto || !nombre_contacto.trim()) {
+    return res.status(400).json({ detail: 'El campo nombre es obligatorio' });
+  }
+  if (!telefono_contacto || !telefono_contacto.trim()) {
+    return res.status(400).json({ detail: 'El campo teléfono es obligatorio' });
+  }
+  if (!detalle || !detalle.trim()) {
+    return res.status(400).json({ detail: 'El campo detalle es obligatorio' });
+  }
+
   const admin = await prisma.usuario.findFirst({ where: { rol: 'admin', activo: true } });
   if (!admin) return res.status(503).json({ detail: 'Sistema no disponible' });
 
