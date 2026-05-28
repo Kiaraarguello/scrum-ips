@@ -7,6 +7,7 @@ import { listarSectores } from '../../servicios/sectores';
 import Boton from '../../componentes/Boton/Boton';
 import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
 import Selector from '../../componentes/Selector/Selector';
+import { useAuth } from '../../contextos/ContextoAuth';
 import './GestionUsuarios.css';
 
 interface FormUsuario {
@@ -22,6 +23,8 @@ interface FormUsuario {
 const FORM_VACIO: FormUsuario = { nombre: '', apellido: '', email: '', password: '', confirmar: '', rol: 'usuario', sector_ids: [] };
 
 export default function GestionUsuarios() {
+  const { usuario: usuarioActual } = useAuth();
+  const esAdminNormal = usuarioActual?.rol === 'admin';
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [sectores, setSectores] = useState<Sector[]>([]);
   const [editando, setEditando] = useState<number | null>(null);
@@ -134,13 +137,15 @@ export default function GestionUsuarios() {
                   required={editando === null}
                 />
               </div>
-              <Selector
-                etiqueta="Rol"
-                id="rol"
-                value={form.rol}
-                onChange={e => setForm(p => ({ ...p, rol: e.target.value, sector_ids: e.target.value === 'admin' ? [] : p.sector_ids }))}
-                opciones={[{ valor: 'usuario', etiqueta: 'Usuario' }, { valor: 'admin', etiqueta: 'Admin' }]}
-              />
+              {!esAdminNormal && (
+                <Selector
+                  etiqueta="Rol"
+                  id="rol"
+                  value={form.rol}
+                  onChange={e => setForm(p => ({ ...p, rol: e.target.value, sector_ids: e.target.value === 'admin' ? [] : p.sector_ids }))}
+                  opciones={[{ valor: 'usuario', etiqueta: 'Usuario' }, { valor: 'admin', etiqueta: 'Admin' }]}
+                />
+              )}
 
               {form.rol === 'usuario' && <div className="gestion-usuarios__sectores-campo">
                 <span className="gestion-usuarios__sectores-etiqueta">Sectores asignados</span>
@@ -178,7 +183,7 @@ export default function GestionUsuarios() {
             <div className="gestion-usuarios__info">
               <div className="gestion-usuarios__nombre-fila">
                 <span className="gestion-usuarios__nombre">{u.nombre} {u.apellido}</span>
-                <span className={`gestion-usuarios__rol gestion-usuarios__rol--${u.rol}`}>{u.rol}</span>
+                {!esAdminNormal && <span className={`gestion-usuarios__rol gestion-usuarios__rol--${u.rol}`}>{u.rol}</span>}
                 <span className={`gestion-usuarios__estado ${u.activo ? 'gestion-usuarios__estado--activo' : 'gestion-usuarios__estado--inactivo'}`}>{u.activo ? 'Activo' : 'Inactivo'}</span>
               </div>
               <p className="gestion-usuarios__detalle">

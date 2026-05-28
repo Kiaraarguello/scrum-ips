@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { obtenerUsuarioActual, requerirAdmin } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
 
 const router = Router();
 const LIMITE_DIAS = 7;

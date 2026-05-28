@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { obtenerUsuarioActual, requerirAdmin } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
 import { hashearPassword } from '../seguridad.js';
 
 const router = Router();
@@ -42,7 +42,7 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
 });
 
 // POST /api/usuarios
-router.post('/', requerirAdmin, async (req, res) => {
+router.post('/', requerirAdminOSuperior, async (req, res) => {
   const { nombre, apellido, email, password, rol = 'usuario', sector_ids = [] } = req.body;
   const existe = await prisma.usuario.findFirst({ where: { email } });
   if (existe) return res.status(400).json({ detail: 'El email ya esta registrado' });
@@ -127,7 +127,7 @@ router.put('/yo/sector', obtenerUsuarioActual, async (req, res) => {
 });
 
 // PUT /api/usuarios/:id
-router.put('/:id', requerirAdmin, async (req, res) => {
+router.put('/:id', requerirAdminOSuperior, async (req, res) => {
   const id = parseInt(req.params.id);
   const usuario = await prisma.usuario.findUnique({ where: { id } });
   if (!usuario) return res.status(404).json({ detail: 'Usuario no encontrado' });
@@ -173,7 +173,7 @@ router.put('/:id', requerirAdmin, async (req, res) => {
 });
 
 // DELETE /api/usuarios/:id
-router.delete('/:id', requerirAdmin, async (req, res) => {
+router.delete('/:id', requerirAdminOSuperior, async (req, res) => {
   const id = parseInt(req.params.id);
   const usuario = await prisma.usuario.findUnique({ where: { id } });
   if (!usuario) return res.status(404).json({ detail: 'Usuario no encontrado' });

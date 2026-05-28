@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Monitor, LayoutGrid, FolderKanban } from 'lucide-react';
+import { LogOut, LayoutDashboard, Monitor, LayoutGrid, FolderKanban, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../contextos/ContextoAuth';
 import PanelNotificaciones from '../PanelNotificaciones/PanelNotificaciones';
 import logoSiglas from '../../assets/logo-siglas.svg';
@@ -34,7 +34,7 @@ export default function BarraNavegacion() {
           <Monitor size={16} />
           PCs
         </NavLink>
-        {usuario?.rol === 'admin' ? (
+        {['admin', 'super_admin', 'super_usuario'].includes(usuario?.rol || '') ? (
           <NavLink to="/admin" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
             <LayoutDashboard size={16} />
             Admin
@@ -45,11 +45,17 @@ export default function BarraNavegacion() {
             Mi panel
           </NavLink>
         )}
+        {usuario?.rol === 'super_usuario' && (
+          <NavLink to="/admin/auditoria" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
+            <ShieldAlert size={16} />
+            Auditoría
+          </NavLink>
+        )}
       </div>
 
       <div className="barra-navegacion__acciones">
         <span className="barra-navegacion__usuario">{usuario?.nombre}</span>
-        {usuario?.rol === 'admin' && <PanelNotificaciones />}
+        {['super_admin', 'super_usuario'].includes(usuario?.rol || '') && <PanelNotificaciones />}
         <button className="barra-navegacion__salir" onClick={manejarSalir} title="Cerrar sesion">
           <LogOut size={18} />
         </button>

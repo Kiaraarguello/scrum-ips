@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Users, Layers, Building2, History, BarChart2, FolderKanban } from 'lucide-react';
+import { useAuth } from '../../contextos/ContextoAuth';
 import './PanelAdmin.css';
 
 const ACCESOS = [
@@ -12,11 +13,20 @@ const ACCESOS = [
 ];
 
 export default function PanelAdmin() {
+  const { usuario } = useAuth();
+  
+  const accesosFiltrados = ACCESOS.filter(acceso => {
+    if (acceso.ruta === '/admin/estadisticas' && !['super_admin', 'super_usuario'].includes(usuario?.rol || '')) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="panel-admin pagina pagina--centrada">
       <h1 className="panel-admin__titulo">Panel de Administración</h1>
       <div className="panel-admin__grilla">
-        {ACCESOS.map(({ ruta, icono: Icono, titulo, descripcion }) => (
+        {accesosFiltrados.map(({ ruta, icono: Icono, titulo, descripcion }) => (
           <Link key={ruta} to={ruta} className="panel-admin__tarjeta">
             <div className="panel-admin__icono-envolvente">
               <Icono size={28} />

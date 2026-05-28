@@ -19,6 +19,7 @@ import GestionBacklog from './paginas/GestionBacklog/GestionBacklog';
 import ProyectoDetalle from './paginas/ProyectoDetalle/ProyectoDetalle';
 import NoEncontrada from './paginas/NoEncontrada/NoEncontrada';
 import SolicitudPublica from './paginas/SolicitudPublica/SolicitudPublica';
+import PanelAuditoria from './paginas/PanelAuditoria/PanelAuditoria';
 
 function LayoutConBarra({ children }: { children: React.ReactNode }) {
   return (
@@ -79,7 +80,7 @@ export default function App() {
             <Route
               path="/admin"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><PanelAdmin /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -87,7 +88,7 @@ export default function App() {
             <Route
               path="/admin/usuarios"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><GestionUsuarios /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -95,7 +96,7 @@ export default function App() {
             <Route
               path="/admin/sectores"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><GestionSectores /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -103,7 +104,7 @@ export default function App() {
             <Route
               path="/admin/sedes"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><GestionSedes /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -111,7 +112,7 @@ export default function App() {
             <Route
               path="/admin/historial"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><HistorialTareas /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -119,8 +120,16 @@ export default function App() {
             <Route
               path="/admin/estadisticas"
               element={
-                <RutaProtegida soloAdmin>
+                <RutaProtegida rolesPermitidos={['super_admin', 'super_usuario']}>
                   <LayoutConBarra><EstadisticasUsuarios /></LayoutConBarra>
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/admin/auditoria"
+              element={
+                <RutaProtegida rolesPermitidos={['super_usuario']}>
+                  <LayoutConBarra><PanelAuditoria /></LayoutConBarra>
                 </RutaProtegida>
               }
             />

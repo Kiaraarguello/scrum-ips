@@ -1,4 +1,4 @@
-﻿import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { prisma } from '../db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secreto_desarrollo';
@@ -32,10 +32,28 @@ export async function obtenerUsuarioActual(req, res, next) {
   });
 }
 
-export async function requerirAdmin(req, res, next) {
+export async function requerirAdminOSuperior(req, res, next) {
   await obtenerUsuarioActual(req, res, () => {
-    if (req.usuario.rol !== 'admin') {
-      return res.status(403).json({ detail: 'Se requiere rol admin' });
+    if (!['admin', 'super_admin', 'super_usuario'].includes(req.usuario.rol)) {
+      return res.status(403).json({ detail: 'Se requiere rol de administrador o superior' });
+    }
+    next();
+  });
+}
+
+export async function requerirSuperAdminOSuperior(req, res, next) {
+  await obtenerUsuarioActual(req, res, () => {
+    if (!['super_admin', 'super_usuario'].includes(req.usuario.rol)) {
+      return res.status(403).json({ detail: 'Se requiere rol de super administrador' });
+    }
+    next();
+  });
+}
+
+export async function requerirSuperUsuario(req, res, next) {
+  await obtenerUsuarioActual(req, res, () => {
+    if (req.usuario.rol !== 'super_usuario') {
+      return res.status(403).json({ detail: 'Se requiere rol de super usuario' });
     }
     next();
   });

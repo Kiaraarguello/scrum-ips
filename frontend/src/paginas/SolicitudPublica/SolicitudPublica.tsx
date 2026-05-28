@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiPublica from '../../servicios/apiPublica';
 import logoSiglas from '../../assets/logo-siglas.svg';
+import Selector from '../../componentes/Selector/Selector';
 import './SolicitudPublica.css';
 
 interface Sede { id: number; nombre: string; }
@@ -173,18 +174,16 @@ export default function SolicitudPublica() {
             <label className="sp-etiqueta" htmlFor="sp-sede">
               Sede <span className="sp-requerido">*</span>
             </label>
-            <select
+            <Selector
               id="sp-sede"
-              className="sp-select"
               value={sedeId}
               onChange={e => setSedeId(e.target.value)}
               required
-            >
-              <option value="">Seleccioná tu sede</option>
-              {sedes.map(s => (
-                <option key={s.id} value={s.id}>{s.nombre}</option>
-              ))}
-            </select>
+              opciones={[
+                { valor: '', etiqueta: 'Seleccioná tu sede' },
+                ...sedes.map(s => ({ valor: s.id, etiqueta: s.nombre }))
+              ]}
+            />
           </div>
 
           {/* Bloqueo atención al público */}

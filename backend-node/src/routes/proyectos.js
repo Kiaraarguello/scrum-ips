@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { requerirAdmin } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -24,17 +24,33 @@ function serializarProyecto(p) {
 }
 
 // GET /api/proyectos/
-router.get('/', async (req, res) => {
+router.get('/', obtenerUsuarioActual, async (req, res) => {
+  const uid = req.usuario.id;
+  const esSuper = ['super_admin', 'super_usuario'].includes(req.usuario.rol);
+  
+  const where = { activo: true };
+  if (!esSuper) {
+    where.usuarios = { some: { usuario_id: uid } };
+  }
+
   const proyectos = await prisma.proyecto.findMany({
-    where: { activo: true },
+    where,
     include: INCLUDE_PROYECTO,
   });
   return res.json(proyectos.map(serializarProyecto));
 });
 
+
 // POST /api/proyectos/
-router.post('/', requerirAdmin, async (req, res) => {
+router.post('/', requerirAdminOSuperior, async (req, res) => {
   const { nombre, descripcion, activo = true, usuarios_ids = [] } = req.body;
+  const uid = req.usuario.id;
+  
+  // Si no es super, asegurar que el admin quede incluido en su propio proyecto
+  if (!['super_admin', 'super_usuario'].includes(req.usuario.rol) && !usuarios_ids.includes(uid)) {
+    usuarios_ids.push(uid);
+  }
+
   const proyecto = await prisma.proyecto.create({
     data: {
       nombre,
@@ -58,10 +74,22 @@ router.get('/:proyecto_id', async (req, res) => {
 });
 
 // DELETE /api/proyectos/:proyecto_id
-router.delete('/:proyecto_id', requerirAdmin, async (req, res) => {
+router.delete('/:proyecto_id', requerirAdminOSuperior, async (req, res) => {
   const id = parseInt(req.params.proyecto_id);
-  const proyecto = await prisma.proyecto.findUnique({ where: { id } });
+  const uid = req.usuario.id;
+  const esSuper = ['super_admin', 'super_usuario'].includes(req.usuario.rol);
+
+  const proyecto = await prisma.proyecto.findUnique({ 
+    where: { id },
+    include: { usuarios: true }
+  });
+  
   if (!proyecto) return res.status(404).json({ detail: 'Proyecto no encontrado' });
+
+  if (!esSuper && !proyecto.usuarios.some(u => u.usuario_id === uid)) {
+    return res.status(403).json({ detail: 'No tienes permiso para eliminar este backlog' });
+  }
+
   await prisma.proyecto.update({ where: { id }, data: { activo: false } });
   return res.status(204).send();
 });

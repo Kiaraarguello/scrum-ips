@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { obtenerUsuarioActual, requerirAdmin } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -58,7 +58,7 @@ router.put('/:id', obtenerUsuarioActual, async (req, res) => {
 });
 
 // DELETE /api/pcs/:id
-router.delete('/:id', requerirAdmin, async (req, res) => {
+router.delete('/:id', requerirAdminOSuperior, async (req, res) => {
   const id = parseInt(req.params.id);
   const pc = await prisma.pcRegistro.findUnique({ where: { id } });
   if (!pc) return res.status(404).json({ detail: 'PC no encontrada' });

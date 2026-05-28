@@ -21,7 +21,7 @@ export interface Usuario {
   nombre: string;
   apellido: string;
   email: string;
-  rol: 'admin' | 'usuario';
+  rol: 'super_usuario' | 'super_admin' | 'admin' | 'usuario';
   sector_id: number | null;
   ver_todos: boolean;
   seleccion_completada: boolean;

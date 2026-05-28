@@ -90,6 +90,10 @@
   border-color: var(--azul-institucional, #3b82f6);
 }
 
+.historial-tareas__select-selector {
+  min-width: 170px;
+}
+
 /* Tabla del Historial */
 .historial-tareas__tabla-envolvente { 
   background: var(--blanco-puro); 

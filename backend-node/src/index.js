@@ -17,6 +17,7 @@ import alertas from './routes/alertas.js';
 import estadisticas from './routes/estadisticas.js';
 import proyectos from './routes/proyectos.js';
 import publico from './routes/publico.js';
+import auditoria from './routes/auditoria.js';
 import { middlewareAuditoria } from './middleware/auditoria.js';
 
 const app = express();
@@ -54,6 +55,7 @@ app.use('/api/alertas', alertas);
 app.use('/api/estadisticas', estadisticas);
 app.use('/api/proyectos', proyectos);
 app.use('/api/publico', publico);
+app.use('/api/auditoria', auditoria);
 
 // Servir frontend
 const distPath = join(__dirname, '../public');

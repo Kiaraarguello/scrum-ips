@@ -4,6 +4,7 @@ import { ArrowLeft, Search } from 'lucide-react';
 import type { HistorialMovimiento } from '../../tipos';
 import { listarHistorial } from '../../servicios/historial';
 import { formatearFechaHora } from '../../utilidades/formatoFecha';
+import Selector from '../../componentes/Selector/Selector';
 import './HistorialTareas.css';
 
 const ETIQUETAS: Record<string, string> = {
@@ -85,28 +86,30 @@ export default function HistorialTareas() {
         <div className="historial-tareas__controles-derecha">
           <div className="historial-tareas__filtro-item">
             <span className="historial-tareas__filtro-label">Ordenar:</span>
-            <select
+            <Selector
               value={orden}
               onChange={(e) => setOrden(e.target.value)}
-              className="historial-tareas__select"
-            >
-              <option value="reciente">Más reciente</option>
-              <option value="antiguo">Más antiguo</option>
-            </select>
+              className="historial-tareas__select-selector"
+              opciones={[
+                { valor: 'reciente', etiqueta: 'Más reciente' },
+                { valor: 'antiguo', etiqueta: 'Más antiguo' }
+              ]}
+            />
           </div>
           <div className="historial-tareas__filtro-item">
             <span className="historial-tareas__filtro-label">Estado:</span>
-            <select
+            <Selector
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value)}
-              className="historial-tareas__select"
-            >
-              <option value="todos">Todos los estados</option>
-              <option value="por_hacer">Por hacer</option>
-              <option value="en_proceso">En proceso</option>
-              <option value="finalizada">Finalizada</option>
-              <option value="pendiente">Pendiente</option>
-            </select>
+              className="historial-tareas__select-selector"
+              opciones={[
+                { valor: 'todos', etiqueta: 'Todos los estados' },
+                { valor: 'por_hacer', etiqueta: 'Por hacer' },
+                { valor: 'en_proceso', etiqueta: 'En proceso' },
+                { valor: 'finalizada', etiqueta: 'Finalizada' },
+                { valor: 'pendiente', etiqueta: 'Pendiente' }
+              ]}
+            />
           </div>
         </div>
       </div>
