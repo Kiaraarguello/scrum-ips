@@ -9,6 +9,12 @@
   margin-bottom: 32px;
 }
 
+.gestion-usuarios__cabecera-acciones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .gestion-usuarios__titulo {
   font-family: var(--fuente-especial);
   font-size: 1.8rem;

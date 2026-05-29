@@ -3,6 +3,7 @@ import { ProveedorAuth } from './contextos/ContextoAuth';
 import { ProveedorNotificaciones } from './contextos/ContextoNotificaciones';
 import RutaProtegida from './componentes/RutaProtegida/RutaProtegida';
 import BarraNavegacion from './componentes/BarraNavegacion/BarraNavegacion';
+import BannerIncognito from './componentes/BannerIncognito/BannerIncognito';
 import Login from './paginas/Login/Login';
 import SeleccionSector from './paginas/SeleccionSector/SeleccionSector';
 import Tablero from './paginas/Tablero/Tablero';
@@ -20,6 +21,7 @@ import ProyectoDetalle from './paginas/ProyectoDetalle/ProyectoDetalle';
 import NoEncontrada from './paginas/NoEncontrada/NoEncontrada';
 import SolicitudPublica from './paginas/SolicitudPublica/SolicitudPublica';
 import PanelAuditoria from './paginas/PanelAuditoria/PanelAuditoria';
+import AdministradorPermisos from './paginas/AdministradorPermisos/AdministradorPermisos';
 
 function LayoutConBarra({ children }: { children: React.ReactNode }) {
   return (
@@ -35,6 +37,7 @@ export default function App() {
     <ProveedorAuth>
       <ProveedorNotificaciones>
         <BrowserRouter>
+          <BannerIncognito />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route
@@ -90,6 +93,14 @@ export default function App() {
               element={
                 <RutaProtegida rolesPermitidos={['admin', 'super_admin', 'super_usuario']}>
                   <LayoutConBarra><GestionUsuarios /></LayoutConBarra>
+                </RutaProtegida>
+              }
+            />
+            <Route
+              path="/admin/permisos"
+              element={
+                <RutaProtegida rolesPermitidos={['super_admin', 'super_usuario']}>
+                  <LayoutConBarra><AdministradorPermisos /></LayoutConBarra>
                 </RutaProtegida>
               }
             />

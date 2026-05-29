@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { UserPlus, Pencil, Trash2, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserPlus, Pencil, Trash2, ArrowLeft, Shield } from 'lucide-react';
 import type { Usuario, Sector } from '../../tipos';
 import { listarUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario } from '../../servicios/usuarios';
 import { listarSectores } from '../../servicios/sectores';
@@ -25,6 +25,7 @@ const FORM_VACIO: FormUsuario = { nombre: '', apellido: '', email: '', password:
 export default function GestionUsuarios() {
   const { usuario: usuarioActual } = useAuth();
   const esAdminNormal = usuarioActual?.rol === 'admin';
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [sectores, setSectores] = useState<Sector[]>([]);
   const [editando, setEditando] = useState<number | null>(null);
@@ -99,7 +100,14 @@ export default function GestionUsuarios() {
       </Link>
       <div className="gestion-usuarios__cabecera">
         <h1 className="gestion-usuarios__titulo">Usuarios</h1>
-        <Boton onClick={abrirCrear}><UserPlus size={16} /> Nuevo usuario</Boton>
+        <div className="gestion-usuarios__cabecera-acciones">
+          {['super_admin', 'super_usuario'].includes(usuarioActual?.rol || '') && (
+            <Boton onClick={() => navigate('/admin/permisos')} variante="secundario">
+              <Shield size={16} /> Administrar permisos
+            </Boton>
+          )}
+          <Boton onClick={abrirCrear}><UserPlus size={16} /> Nuevo usuario</Boton>
+        </div>
       </div>
 
       {mostrarForm && (

@@ -1,0 +1,457 @@
+.permisos-admin {
+  animation: fadeIn 0.4s ease-out;
+  padding-bottom: 60px;
+}
+
+.permisos-admin__cabecera {
+  margin-bottom: 32px;
+}
+
+.permisos-admin__titulo {
+  font-family: var(--fuente-especial, 'Outfit', 'Inter', sans-serif);
+  font-size: 2rem;
+  color: var(--azul-institucional, #0d1e3d);
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.permisos-admin__subtitulo {
+  font-size: 0.95rem;
+  color: var(--texto-gris, #64748b);
+  margin: 0;
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+/* Grid de Tarjetas de Roles */
+.permisos-admin__roles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.permisos-admin__rol-card {
+  background: #ffffff;
+  border: 1px solid var(--borde-suave, #e2e8f0);
+  border-radius: var(--redondeado-tarjeta, 16px);
+  padding: 28px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: var(--sombra-premium, 0 10px 30px rgba(0, 0, 0, 0.04));
+  overflow: hidden;
+}
+
+/* Efectos Hover de las tarjetas */
+.permisos-admin__rol-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.permisos-admin__rol-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.permisos-admin__rol-nombre {
+  font-family: var(--fuente-especial, 'Outfit', 'Inter', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.permisos-admin__rol-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  margin-bottom: 14px;
+}
+
+.permisos-admin__rol-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tematización por Rol: SUPER USUARIO */
+.permisos-admin__rol-card--super .permisos-admin__rol-icon-wrapper {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+.permisos-admin__rol-card--super .permisos-admin__rol-badge {
+  background: #fef3c7;
+  color: #d97706;
+}
+.permisos-admin__rol-card--super.permisos-admin__rol-card--activo {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px #f59e0b, 0 15px 35px rgba(245, 158, 11, 0.15);
+}
+.permisos-admin__rol-card--super.permisos-admin__rol-card--activo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+/* Tematización por Rol: ADMINISTRADOR */
+.permisos-admin__rol-card--admin .permisos-admin__rol-icon-wrapper {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+.permisos-admin__rol-card--admin .permisos-admin__rol-badge {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.permisos-admin__rol-card--admin.permisos-admin__rol-card--activo {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6, 0 15px 35px rgba(59, 128, 246, 0.15);
+}
+.permisos-admin__rol-card--admin.permisos-admin__rol-card--activo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+/* Tematización por Rol: USUARIO */
+.permisos-admin__rol-card--usuario .permisos-admin__rol-icon-wrapper {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+.permisos-admin__rol-card--usuario .permisos-admin__rol-badge {
+  background: #d1fae5;
+  color: #059669;
+}
+.permisos-admin__rol-card--usuario.permisos-admin__rol-card--activo {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981, 0 15px 35px rgba(16, 185, 129, 0.15);
+}
+.permisos-admin__rol-card--usuario.permisos-admin__rol-card--activo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Editor de Permisos (Caja Modern-Card) */
+.permisos-admin__editor-caja {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--borde-suave, #e2e8f0);
+  box-shadow: var(--sombra-premium, 0 10px 30px rgba(0, 0, 0, 0.04));
+  animation: slideUp 0.4s ease-out;
+}
+
+.permisos-admin__editor-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+  gap: 20px;
+}
+
+.permisos-admin__editor-titulo {
+  font-family: var(--fuente-especial, 'Outfit', 'Inter', sans-serif);
+  font-size: 1.4rem;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+
+.permisos-admin__rol-destacado {
+  color: var(--azul-institucional, #2563eb);
+  position: relative;
+}
+
+.permisos-admin__editor-subtitulo {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Botón de Impersonación Incógnito */
+.btn-visualizar-incognito {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.btn-visualizar-incognito:hover {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25);
+}
+
+.btn-visualizar-incognito:active {
+  transform: translateY(1px);
+}
+
+.btn-visualizar-incognito:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estructura de módulos de permisos */
+.permisos-admin__modulos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.permisos-admin__modulo-item {
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 20px 24px;
+  background: #fafbfe;
+}
+
+.permisos-admin__modulo-titulo {
+  font-family: var(--fuente-especial, 'Outfit', 'Inter', sans-serif);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(37, 99, 235, 0.1);
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+.permisos-admin__permisos-lista {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.permisos-admin__permiso-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.permisos-admin__permiso-fila:hover {
+  border-color: rgba(37, 99, 235, 0.2);
+  background: rgba(37, 99, 235, 0.01);
+  transform: translateX(2px);
+}
+
+.permisos-admin__permiso-fila--activo {
+  border-color: rgba(37, 99, 235, 0.25);
+  background: rgba(37, 99, 235, 0.03);
+}
+
+/* Custom Checkbox */
+.permisos-admin__checkbox-wrapper {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.permisos-admin__checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.permisos-admin__checkbox-custom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.permisos-admin__checkbox:checked ~ .permisos-admin__checkbox-custom {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.permisos-admin__permiso-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.permisos-admin__permiso-nombre {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.permisos-admin__permiso-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Pie del Editor */
+.permisos-admin__editor-pie {
+  margin-top: 32px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.permisos-admin__help-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.permisos-admin__help-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.permisos-admin__pie-botones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.toast-guardado-simulado {
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+  .permisos-admin__roles-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .permisos-admin__permisos-lista {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .permisos-admin__editor-caja {
+    padding: 20px;
+  }
+
+  .permisos-admin__editor-cabecera {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .permisos-admin__editor-acciones-top {
+    width: 100%;
+  }
+
+  .btn-visualizar-incognito {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .permisos-admin__editor-pie {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .permisos-admin__pie-botones {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .permisos-admin__pie-botones button {
+    width: 100%;
+  }
+  
+  .toast-guardado-simulado {
+    justify-content: center;
+  }
+}

@@ -15,3 +15,8 @@ export async function obtenerUsuarioActual(): Promise<Usuario> {
   const { data } = await api.get<Usuario>('/auth/yo');
   return data;
 }
+
+export async function impersonarRol(rol: string): Promise<RespuestaLogin> {
+  const { data } = await api.post<RespuestaLogin>('/auth/impersonate', { rol });
+  return data;
+}

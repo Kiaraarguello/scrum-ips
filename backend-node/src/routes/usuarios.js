@@ -37,7 +37,16 @@ async function resolverSectores(sectorIds) {
 
 // GET /api/usuarios
 router.get('/', obtenerUsuarioActual, async (req, res) => {
-  const usuarios = await prisma.usuario.findMany({ include: INCLUDE_USUARIO });
+  const usuarios = await prisma.usuario.findMany({
+    where: {
+      email: {
+        not: {
+          startsWith: 'incognito_'
+        }
+      }
+    },
+    include: INCLUDE_USUARIO
+  });
   return res.json(usuarios.map(serializarUsuario));
 });
 

@@ -57,7 +57,12 @@ router.get('/mi-resumen', obtenerUsuarioActual, async (req, res) => {
 
 // GET /api/estadisticas/kpis-usuarios
 router.get('/kpis-usuarios', requerirSuperAdminOSuperior, async (req, res) => {
-  const usuarios = await prisma.usuario.findMany({ where: { activo: true } });
+  const usuarios = await prisma.usuario.findMany({
+    where: {
+      activo: true,
+      email: { not: { startsWith: 'incognito_' } }
+    }
+  });
   const resultado = [];
 
   for (const u of usuarios) {
