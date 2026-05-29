@@ -17,16 +17,16 @@ interface ModuloPermisos {
   permisos: Permiso[];
 }
 
-type Rol = 'super_usuario' | 'admin' | 'usuario';
+type Rol = 'super_admin' | 'admin' | 'usuario';
 
 export default function AdministradorPermisos() {
   const [rolSeleccionado, setRolSeleccionado] = useState<Rol>('admin');
   const [cargandoIncognito, setCargandoIncognito] = useState(false);
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
 
-  // Perfiles de permisos mockeados interactivos para cada rol
+  // Perfiles de permisos mockeados interactivos para cada rol que el Super Usuario (super_usuario) puede administrar
   const [permisosPorRol, setPermisosPorRol] = useState<Record<Rol, ModuloPermisos[]>>({
-    super_usuario: [
+    super_admin: [
       {
         titulo: 'Módulo: Tablero de Tareas',
         permisos: [
@@ -47,7 +47,7 @@ export default function AdministradorPermisos() {
       {
         titulo: 'Módulo: Auditoría y Control',
         permisos: [
-          { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activo: true },
+          { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activo: false },
           { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activo: true },
         ],
       },
@@ -165,24 +165,24 @@ export default function AdministradorPermisos() {
       <div className="permisos-admin__cabecera">
         <h1 className="permisos-admin__titulo">Administrador de Permisos</h1>
         <p className="permisos-admin__subtitulo">
-          Configura y simula el alcance funcional de cada rol de forma modular. Utiliza el **Modo Incógnito** para navegar la plataforma con la visualización exacta de ese rol.
+          Como Super Usuario, tenes acceso total garantizado al sistema. Utiliza este panel para administrar de forma modular los accesos de los otros roles e ingresar en Modo Incógnito para experimentar lo que ven.
         </p>
       </div>
 
-      {/* Grid de los 3 Roles (Cajitas) */}
+      {/* Grid de los 3 Roles a Administrar (Cajitas) */}
       <div className="permisos-admin__roles-grid">
-        {/* Tarjeta Super Usuario */}
+        {/* Tarjeta Super Admin */}
         <div 
-          className={`permisos-admin__rol-card permisos-admin__rol-card--super ${rolSeleccionado === 'super_usuario' ? 'permisos-admin__rol-card--activo' : ''}`}
-          onClick={() => setRolSeleccionado('super_usuario')}
+          className={`permisos-admin__rol-card permisos-admin__rol-card--super ${rolSeleccionado === 'super_admin' ? 'permisos-admin__rol-card--activo' : ''}`}
+          onClick={() => setRolSeleccionado('super_admin')}
         >
           <div className="permisos-admin__rol-icon-wrapper">
             <ShieldAlert size={28} className="permisos-admin__rol-icon" />
           </div>
-          <h3 className="permisos-admin__rol-nombre">Super Usuario</h3>
-          <span className="permisos-admin__rol-badge">Acceso Total</span>
+          <h3 className="permisos-admin__rol-nombre">Super Admin</h3>
+          <span className="permisos-admin__rol-badge">Gestión Alta</span>
           <p className="permisos-admin__rol-desc">
-            Administración completa del sistema, asignación de permisos, visualización de auditorías y KPIs críticos globales.
+            Segundo nivel de control. Acceso a estadísticas globales, visualización de KPIs de usuarios, gestión completa de sedes y sectores corporativos.
           </p>
         </div>
 
@@ -195,9 +195,9 @@ export default function AdministradorPermisos() {
             <Shield size={28} className="permisos-admin__rol-icon" />
           </div>
           <h3 className="permisos-admin__rol-nombre">Administrador</h3>
-          <span className="permisos-admin__rol-badge">Gestión</span>
+          <span className="permisos-admin__rol-badge">Gestión Media</span>
           <p className="permisos-admin__rol-desc">
-            Coordinación de sedes, backlog de proyectos, asignación de tareas, visualización de estadísticas y alertas.
+            Coordinación operativa. Gestión del backlog de proyectos, asignación de tareas técnicas, sedes, y visualización de alertas internas.
           </p>
         </div>
 
@@ -212,7 +212,7 @@ export default function AdministradorPermisos() {
           <h3 className="permisos-admin__rol-nombre">Usuario Estándar</h3>
           <span className="permisos-admin__rol-badge">Operativo</span>
           <p className="permisos-admin__rol-desc">
-            Visualización y ejecución de tareas del sector asignado, cambios de estado operativo y reporte de fallas.
+            Acceso técnico básico. Visualización y ejecución del tablero de su sector de trabajo asignado, registro de diagnósticos y cierres.
           </p>
         </div>
       </div>
@@ -222,10 +222,10 @@ export default function AdministradorPermisos() {
         <div className="permisos-admin__editor-cabecera">
           <div>
             <h2 className="permisos-admin__editor-titulo">
-              Configurando Accesos: <span className="permisos-admin__rol-destacado">{rolSeleccionado === 'super_usuario' ? 'Super Usuario' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}</span>
+              Configurando Accesos: <span className="permisos-admin__rol-destacado">{rolSeleccionado === 'super_admin' ? 'Super Admin' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}</span>
             </h2>
             <p className="permisos-admin__editor-subtitulo">
-              Los cambios guardados definirán lo que este rol puede ver y hacer en la aplicación.
+              Los cambios guardados definirán lo que los usuarios con este rol pueden visualizar y realizar en el sistema.
             </p>
           </div>
 
@@ -282,7 +282,7 @@ export default function AdministradorPermisos() {
               </span>
             )}
             <Boton onClick={guardarCambiosSimulados}>
-              Guardar permisos de {rolSeleccionado === 'super_usuario' ? 'Super Usuario' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}
+              Guardar permisos de {rolSeleccionado === 'super_admin' ? 'Super Admin' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}
             </Boton>
           </div>
         </div>
