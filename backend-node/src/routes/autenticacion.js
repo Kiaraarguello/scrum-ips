@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { verificarPassword, crearToken } from '../seguridad.js';
 import { obtenerUsuarioActual } from '../middleware/auth.js';
+import { obtenerPermisosRol } from './permisos.js';
 
 const router = Router();
 
@@ -34,7 +35,9 @@ router.post('/login', async (req, res) => {
     }
 
     const token = crearToken({ sub: String(usuario.id), rol: usuario.rol });
-    return res.json({ token, usuario: serializarUsuarioToken(usuario) });
+    const userPayload = serializarUsuarioToken(usuario);
+    userPayload.permisos = await obtenerPermisosRol(usuario.rol);
+    return res.json({ token, usuario: userPayload });
   } catch (error) {
     console.error('Error en /api/auth/login:', error);
     return res.status(500).json({
@@ -48,6 +51,7 @@ router.post('/login', async (req, res) => {
 // GET /api/auth/yo
 router.get('/yo', obtenerUsuarioActual, async (req, res) => {
   const u = req.usuario;
+  const permisos = await obtenerPermisosRol(u.rol);
   return res.json({
     id: u.id,
     nombre: u.nombre,
@@ -61,6 +65,7 @@ router.get('/yo', obtenerUsuarioActual, async (req, res) => {
     fecha_creacion: u.fecha_creacion,
     sector: u.sector ? { id: u.sector.id, nombre: u.sector.nombre } : null,
     sectores: (u.sectores || []).map(us => ({ id: us.sector.id, nombre: us.sector.nombre })),
+    permisos: permisos,
   });
 });
 
@@ -109,6 +114,7 @@ router.post('/impersonate', obtenerUsuarioActual, async (req, res) => {
 
     // Generar el token JWT de la sesión incógnita
     const token = crearToken({ sub: String(usuarioIncognito.id), rol: usuarioIncognito.rol });
+    const permisos = await obtenerPermisosRol(usuarioIncognito.rol);
 
     return res.json({
       token,
@@ -121,7 +127,8 @@ router.post('/impersonate', obtenerUsuarioActual, async (req, res) => {
         sector_id: usuarioIncognito.sector_id,
         ver_todos: usuarioIncognito.ver_todos,
         seleccion_completada: usuarioIncognito.seleccion_completada,
-        sectores: []
+        sectores: [],
+        permisos: permisos
       }
     });
   } catch (error) {

@@ -34,7 +34,7 @@ export default function BarraNavegacion() {
           <Monitor size={16} />
           PCs
         </NavLink>
-        {['admin', 'super_admin', 'super_usuario'].includes(usuario?.rol || '') ? (
+        {usuario?.permisos?.admin_panel === true || usuario?.rol === 'super_usuario' ? (
           <NavLink to="/admin" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
             <LayoutDashboard size={16} />
             Admin
@@ -45,7 +45,7 @@ export default function BarraNavegacion() {
             Mi panel
           </NavLink>
         )}
-        {usuario?.rol === 'super_usuario' && (
+        {(usuario?.permisos?.auditoria_logs === true || usuario?.rol === 'super_usuario') && (
           <NavLink to="/admin/auditoria" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
             <ShieldAlert size={16} />
             Auditoría

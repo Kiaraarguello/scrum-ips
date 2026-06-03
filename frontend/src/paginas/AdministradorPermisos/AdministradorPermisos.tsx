@@ -1,110 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, ShieldAlert, User, Check, Eye, HelpCircle } from 'lucide-react';
 import { impersonarRol } from '../../servicios/autenticacion';
+import { obtenerTodosLosPermisos, guardarPermisosRol, type ModuloPermisos } from '../../servicios/permisos';
 import Boton from '../../componentes/Boton/Boton';
 import './AdministradorPermisos.css';
-
-interface Permiso {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  activo: boolean;
-}
-
-interface ModuloPermisos {
-  titulo: string;
-  permisos: Permiso[];
-}
 
 type Rol = 'super_admin' | 'admin' | 'usuario';
 
 export default function AdministradorPermisos() {
   const [rolSeleccionado, setRolSeleccionado] = useState<Rol>('admin');
   const [cargandoIncognito, setCargandoIncognito] = useState(false);
+  const [cargandoDatos, setCargandoDatos] = useState(true);
   const [guardadoExitoso, setGuardadoExitoso] = useState(false);
+  const [guardando, setGuardando] = useState(false);
 
-  // Perfiles de permisos mockeados interactivos para cada rol que el Super Usuario (super_usuario) puede administrar
+  // Perfiles de permisos cargados de la base de datos
   const [permisosPorRol, setPermisosPorRol] = useState<Record<Rol, ModuloPermisos[]>>({
-    super_admin: [
-      {
-        titulo: 'Módulo: Tablero de Tareas',
-        permisos: [
-          { id: 'tablero_ver', nombre: 'Ver tablero completo', descripcion: 'Acceso de lectura a todas las columnas del tablero.', activo: true },
-          { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activo: true },
-          { id: 'tablero_mover', nombre: 'Mover y cambiar estados', descripcion: 'Iniciar, pausar o cancelar tareas en curso.', activo: true },
-          { id: 'tablero_finalizar', nombre: 'Finalizar tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activo: true },
-        ],
-      },
-      {
-        titulo: 'Módulo: Administración General',
-        permisos: [
-          { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activo: true },
-          { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activo: true },
-          { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activo: true },
-        ],
-      },
-      {
-        titulo: 'Módulo: Auditoría y Control',
-        permisos: [
-          { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activo: false },
-          { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activo: true },
-        ],
-      },
-    ],
-    admin: [
-      {
-        titulo: 'Módulo: Tablero de Tareas',
-        permisos: [
-          { id: 'tablero_ver', nombre: 'Ver tablero completo', descripcion: 'Acceso de lectura a todas las columnas del tablero.', activo: true },
-          { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activo: true },
-          { id: 'tablero_mover', nombre: 'Mover y cambiar estados', descripcion: 'Iniciar, pausar o cancelar tareas en curso.', activo: true },
-          { id: 'tablero_finalizar', nombre: 'Finalizar tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activo: true },
-        ],
-      },
-      {
-        titulo: 'Módulo: Administración General',
-        permisos: [
-          { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activo: true },
-          { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activo: false },
-          { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activo: true },
-        ],
-      },
-      {
-        titulo: 'Módulo: Auditoría y Control',
-        permisos: [
-          { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activo: false },
-          { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activo: true },
-        ],
-      },
-    ],
-    usuario: [
-      {
-        titulo: 'Módulo: Tablero de Tareas',
-        permisos: [
-          { id: 'tablero_ver', nombre: 'Ver tablero de mi sector', descripcion: 'Acceso de lectura limitado a tareas de su sector asignado.', activo: true },
-          { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activo: true },
-          { id: 'tablero_mover', nombre: 'Mover mis tareas', descripcion: 'Iniciar o pausar únicamente tareas que le fueron asignadas.', activo: true },
-          { id: 'tablero_finalizar', nombre: 'Finalizar mis tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activo: true },
-        ],
-      },
-      {
-        titulo: 'Módulo: Administración General',
-        permisos: [
-          { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activo: false },
-          { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activo: false },
-          { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activo: false },
-        ],
-      },
-      {
-        titulo: 'Módulo: Auditoría y Control',
-        permisos: [
-          { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activo: false },
-          { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activo: false },
-        ],
-      },
-    ],
+    super_admin: [],
+    admin: [],
+    usuario: [],
   });
+
+  // Carga inicial de base de datos
+  useEffect(() => {
+    async function cargar() {
+      try {
+        const data = await obtenerTodosLosPermisos();
+        setPermisosPorRol(data as Record<Rol, ModuloPermisos[]>);
+      } catch (err) {
+        console.error('Error al cargar permisos:', err);
+        alert('No se pudo cargar la configuración de permisos del servidor.');
+      } finally {
+        setCargandoDatos(false);
+      }
+    }
+    cargar();
+  }, []);
 
   // Manejar el cambio en los checkboxes de permisos interactivos
   function togglePermiso(moduloIndex: number, permisoIndex: number) {
@@ -148,11 +80,32 @@ export default function AdministradorPermisos() {
     }
   }
 
-  function guardarCambiosSimulados() {
-    setGuardadoExitoso(true);
-    setTimeout(() => {
-      setGuardadoExitoso(false);
-    }, 3000);
+  async function guardarCambiosReales() {
+    setGuardando(true);
+    setGuardadoExitoso(false);
+    try {
+      await guardarPermisosRol(rolSeleccionado, permisosPorRol[rolSeleccionado]);
+      setGuardadoExitoso(true);
+      setTimeout(() => {
+        setGuardadoExitoso(false);
+      }, 4000);
+    } catch (err) {
+      console.error('Error al guardar permisos:', err);
+      alert('Ocurrió un error al guardar los permisos en el servidor.');
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  if (cargandoDatos || !permisosPorRol[rolSeleccionado] || permisosPorRol[rolSeleccionado].length === 0) {
+    return (
+      <div className="permisos-admin pagina pagina--centrada" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <div style={{ textAlign: 'center', color: 'var(--color-texto-secundario)' }}>
+          <div className="tablero__spin" style={{ display: 'inline-block', border: '3px solid var(--color-borde)', borderTop: '3px solid var(--color-primario)', borderRadius: '50%', width: '32px', height: '32px', marginBottom: '16px' }} />
+          <div>Cargando configuración de permisos...</div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -273,16 +226,16 @@ export default function AdministradorPermisos() {
         <div className="permisos-admin__editor-pie">
           <div className="permisos-admin__help-text">
             <HelpCircle size={16} className="permisos-admin__help-icon" />
-            <span>Los permisos dinámicos definitivos se integrarán utilizando la lista estructurada del cliente.</span>
+            <span>Los cambios guardados se aplicarán instantáneamente a todos los usuarios con este rol.</span>
           </div>
           <div className="permisos-admin__pie-botones">
             {guardadoExitoso && (
-              <span className="toast-guardado-simulado animate-fade-in">
-                <Check size={14} /> Permisos guardados temporalmente
+              <span className="toast-guardado-simulado animate-fade-in" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <Check size={14} /> ¡Permisos guardados y activos!
               </span>
             )}
-            <Boton onClick={guardarCambiosSimulados}>
-              Guardar permisos de {rolSeleccionado === 'super_admin' ? 'Super Admin' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}
+            <Boton onClick={guardarCambiosReales} disabled={guardando}>
+              {guardando ? 'Guardando...' : `Guardar permisos de ${rolSeleccionado === 'super_admin' ? 'Super Admin' : rolSeleccionado === 'admin' ? 'Administrador' : 'Usuario'}`}
             </Boton>
           </div>
         </div>

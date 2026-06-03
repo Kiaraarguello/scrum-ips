@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior, requerirPermiso } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -9,13 +9,13 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
   return res.json(sedes);
 });
 
-router.post('/', requerirAdminOSuperior, async (req, res) => {
+router.post('/', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const { nombre, ciudad, direccion, notas, activo } = req.body;
   const sede = await prisma.sede.create({ data: { nombre, ciudad, direccion, notas, activo } });
   return res.status(201).json(sede);
 });
 
-router.put('/:id', requerirAdminOSuperior, async (req, res) => {
+router.put('/:id', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const id = parseInt(req.params.id);
   const sede = await prisma.sede.findUnique({ where: { id } });
   if (!sede) return res.status(404).json({ detail: 'Sede no encontrada' });
@@ -30,7 +30,7 @@ router.put('/:id', requerirAdminOSuperior, async (req, res) => {
   return res.json(actualizada);
 });
 
-router.delete('/:id', requerirAdminOSuperior, async (req, res) => {
+router.delete('/:id', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const id = parseInt(req.params.id);
   const sede = await prisma.sede.findUnique({ where: { id } });
   if (!sede) return res.status(404).json({ detail: 'Sede no encontrada' });

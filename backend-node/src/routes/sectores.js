@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { obtenerUsuarioActual, requerirAdminOSuperior } from '../middleware/auth.js';
+import { obtenerUsuarioActual, requerirAdminOSuperior, requerirPermiso } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -11,13 +11,13 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
   return res.json(sectores);
 });
 
-router.post('/', requerirAdminOSuperior, async (req, res) => {
+router.post('/', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const { nombre, descripcion, activo } = req.body;
   const sector = await prisma.sector.create({ data: { nombre, descripcion, activo } });
   return res.status(201).json(sector);
 });
 
-router.put('/:id', requerirAdminOSuperior, async (req, res) => {
+router.put('/:id', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const id = parseInt(req.params.id);
   const sector = await prisma.sector.findUnique({ where: { id } });
   if (!sector) return res.status(404).json({ detail: 'Sector no encontrado' });
@@ -30,7 +30,7 @@ router.put('/:id', requerirAdminOSuperior, async (req, res) => {
   return res.json(actualizado);
 });
 
-router.delete('/:id', requerirAdminOSuperior, async (req, res) => {
+router.delete('/:id', requerirPermiso('admin_sectores_sedes'), async (req, res) => {
   const id = parseInt(req.params.id);
   const sector = await prisma.sector.findUnique({ where: { id } });
   if (!sector) return res.status(404).json({ detail: 'Sector no encontrado' });

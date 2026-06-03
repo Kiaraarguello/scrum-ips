@@ -16,8 +16,16 @@ export default function PanelAdmin() {
   const { usuario } = useAuth();
   
   const accesosFiltrados = ACCESOS.filter(acceso => {
-    if (acceso.ruta === '/admin/estadisticas' && !['super_admin', 'super_usuario'].includes(usuario?.rol || '')) {
-      return false;
+    if (usuario?.rol === 'super_usuario') return true;
+
+    if (acceso.ruta === '/admin/usuarios') {
+      return usuario?.permisos?.admin_usuarios === true;
+    }
+    if (acceso.ruta === '/admin/sectores' || acceso.ruta === '/admin/sedes') {
+      return usuario?.permisos?.admin_sectores_sedes === true;
+    }
+    if (acceso.ruta === '/admin/estadisticas') {
+      return usuario?.permisos?.auditoria_stats === true;
     }
     return true;
   });

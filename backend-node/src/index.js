@@ -18,6 +18,7 @@ import estadisticas from './routes/estadisticas.js';
 import proyectos from './routes/proyectos.js';
 import publico from './routes/publico.js';
 import auditoria from './routes/auditoria.js';
+import permisos from './routes/permisos.js';
 import { middlewareAuditoria } from './middleware/auditoria.js';
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api/estadisticas', estadisticas);
 app.use('/api/proyectos', proyectos);
 app.use('/api/publico', publico);
 app.use('/api/auditoria', auditoria);
+app.use('/api/permisos', permisos);
 
 // Servir frontend
 const distPath = join(__dirname, '../public');

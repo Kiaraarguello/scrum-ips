@@ -281,3 +281,13 @@ model AuditoriaProyecto {
 
   @@map("auditoria_proyectos")
 }
+
+model PermisoRol {
+  id     Int     @id @default(autoincrement())
+  rol    String  @db.VarChar(20)
+  clave  String  @db.VarChar(50)
+  activo Boolean @default(true)
+
+  @@unique([rol, clave])
+  @@map("permiso_roles")
+}

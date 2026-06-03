@@ -29,6 +29,7 @@ export interface Usuario {
   fecha_creacion: string;
   sector?: { id: number; nombre: string } | null;
   sectores?: { id: number; nombre: string }[];
+  permisos?: Record<string, boolean>;
 }
 
 export type Criticidad = 'alta' | 'media' | 'baja';

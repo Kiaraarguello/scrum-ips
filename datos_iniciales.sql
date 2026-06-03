@@ -11,7 +11,4 @@ INSERT INTO sedes (nombre, ciudad, direccion, activo) VALUES
   ('Sucursal Norte', 'Rosario', 'Bv. Oronoz 567', 1),
   ('Sucursal Sur', 'La Plata', 'Calle 1 esquina 50', 1);
 
--- Hash bcrypt de 'Admin1234'
-INSERT INTO usuarios (nombre, apellido, email, password_hash, rol, sector_id, activo) VALUES
-  ('Administrador', 'Principal', 'kiaramarguello@gmail.com', 'cmPJ6X472vGV4K',
-   'admin', NULL, 1);
+

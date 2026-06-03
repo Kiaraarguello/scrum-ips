@@ -58,3 +58,23 @@ export async function requerirSuperUsuario(req, res, next) {
     next();
   });
 }
+
+export function requerirPermiso(clavePermiso) {
+  return async (req, res, next) => {
+    await obtenerUsuarioActual(req, res, async () => {
+      if (req.usuario.rol === 'super_usuario') {
+        return next();
+      }
+      try {
+        const { obtenerPermisosRol } = await import('../routes/permisos.js');
+        const perms = await obtenerPermisosRol(req.usuario.rol);
+        if (perms[clavePermiso] === true) {
+          return next();
+        }
+      } catch (err) {
+        console.error('Error al resolver permisos en middleware:', err);
+      }
+      return res.status(403).json({ detail: 'No tienes permisos para realizar esta acción' });
+    });
+  };
+}

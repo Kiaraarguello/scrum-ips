@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { requerirSuperUsuario } from '../middleware/auth.js';
+import { requerirSuperUsuario, requerirPermiso } from '../middleware/auth.js';
 
 const router = Router();
 
 // GET /api/auditoria
-router.get('/', requerirSuperUsuario, async (req, res) => {
+router.get('/', requerirPermiso('auditoria_logs'), async (req, res) => {
   const { tipo = 'sesiones', pagina = 1, limite = 50 } = req.query;
   const skip = (Math.max(1, parseInt(pagina)) - 1) * parseInt(limite);
   const take = parseInt(limite);

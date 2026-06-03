@@ -106,13 +106,38 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
 
     if (!tarea || tarea.estado === nuevoEstado) return;
 
-    if (tarea.estado === 'por_hacer' && nuevoEstado === 'en_proceso') {
-      setTareaParaAsignar({ tarea, nuevoEstado });
+    // 1. Validar permiso de mover / iniciar / pausar
+    const esSuperUsuario = usuario?.rol === 'super_usuario';
+    const tieneMoverGeneral = usuario?.permisos?.tablero_mover === true;
+    
+    if (!esSuperUsuario && !tieneMoverGeneral) {
+      // Si no tiene permiso general para mover, validamos si es asignado a la tarea ("Mover mis tareas únicamente")
+      const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
+      if (!esMia) {
+        alert('No tienes permisos para mover o cambiar el estado de tareas que no te pertenecen.');
+        cargar();
+        return;
+      }
+    }
+
+    // 2. Si va a finalizada, validar permiso de finalizar
+    if (nuevoEstado === 'finalizada') {
+      const tieneFinalizarGeneral = usuario?.permisos?.tablero_finalizar === true;
+      if (!esSuperUsuario && !tieneFinalizarGeneral) {
+        // Si no tiene permiso general para finalizar, validamos si es asignado a la tarea ("Finalizar mis tareas únicamente")
+        const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
+        if (!esMia) {
+          alert('No tienes permisos para finalizar tareas que no te pertenecen.');
+          cargar();
+          return;
+        }
+      }
+      setTareaParaFinalizar(tarea);
       return;
     }
 
-    if (nuevoEstado === 'finalizada') {
-      setTareaParaFinalizar(tarea);
+    if (tarea.estado === 'por_hacer' && nuevoEstado === 'en_proceso') {
+      setTareaParaAsignar({ tarea, nuevoEstado });
       return;
     }
 
@@ -211,10 +236,12 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
             <Clock size={16} style={{ marginRight: '6px' }} />
             Pendientes
           </Boton>
-          <Boton onClick={() => setMostrarModal(true)}>
-            <Plus size={16} />
-            Nueva tarea
-          </Boton>
+          {(usuario?.permisos?.tablero_crear === true || usuario?.rol === 'super_usuario') && (
+            <Boton onClick={() => setMostrarModal(true)}>
+              <Plus size={16} />
+              Nueva tarea
+            </Boton>
+          )}
         </div>
       </div>
 
