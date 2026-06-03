@@ -13,7 +13,7 @@ En el directorio principal se ubican los scripts de base de datos, configuracion
 
 ---
 
-## ⚙️ Backend (`backend-node/`)
+##  Backend (`backend-node/`)
 
 Servidor API REST desarrollado en **Node.js** con el framework **Express** y **Prisma ORM** para interactuar con la base de datos MySQL.
 
@@ -45,7 +45,7 @@ Servidor API REST desarrollado en **Node.js** con el framework **Express** y **P
 
 ---
 
-## 🎨 Frontend (`frontend/`)
+##  Frontend (`frontend/`)
 
 Interfaz de usuario SPA desarrollada con **React**, **Vite** y **TypeScript**.
 
@@ -70,7 +70,7 @@ Interfaz de usuario SPA desarrollada con **React**, **Vite** y **TypeScript**.
     * **`variables.css`**: Define los tokens de diseño globales (paleta de colores HSL, tipografías y fuentes del IPS).
     * **`globales.css`**: Reglas generales de diseño de la app, scrollbars y resets de CSS.
 
-### 🧩 Componentes (`frontend/src/componentes/`)
+###  Componentes (`frontend/src/componentes/`)
 *Cada carpeta en esta sección agrupa los archivos `.tsx` (estructura y lógica) y `.css` (estilos específicos) del componente respectivo:*
 
 * **`BadgeCriticidad/`**: Etiqueta visual de color dinámico según la prioridad de una tarea (Baja, Media, Alta, Urgente).
@@ -89,7 +89,7 @@ Interfaz de usuario SPA desarrollada con **React**, **Vite** y **TypeScript**.
 * **`Selector/`**: Desplegable de selección personalizado con soporte para búsquedas y opciones estilizadas.
 * **`TarjetaTarea/`**: Tarjeta visual compacta de la tarea para el tablero Scrum, que muestra prioridad, personas asignadas, etiquetas y es arrastrable.
 
-### 📄 Páginas (`frontend/src/paginas/`)
+###  Páginas (`frontend/src/paginas/`)
 *Cada vista o página de la aplicación web se organiza en su propia carpeta conteniendo su respectivo archivo de código React (`.tsx`) y de estilos (`.css`):*
 
 * **`AdministradorPermisos/`**: Panel interactivo del administrador para activar y desactivar los permisos granularmente por rol, e iniciar la simulación de vista de otros roles.
@@ -113,7 +113,7 @@ Interfaz de usuario SPA desarrollada con **React**, **Vite** y **TypeScript**.
 
 ---
 
-## 🛠️ Configuraciones y Archivos Adicionales en Frontend
+##  Configuraciones y Archivos Adicionales en Frontend
 
 * **`index.html`**: Estructura base de la aplicación Single Page Application (SPA) sobre la que se inyecta React.
 * **`vite.config.ts`**: Configuración de Vite para compilar los recursos de React, cargar plugins y levantar el servidor local de desarrollo.
