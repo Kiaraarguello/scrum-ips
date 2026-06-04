@@ -181,7 +181,11 @@ router.get('/', obtenerUsuarioActual, requerirSuperAdminOSuperior, async (req, r
     return res.json(estructura);
   } catch (error) {
     console.error('Error al obtener permisos:', error);
-    return res.status(500).json({ detail: 'Error al recuperar la configuración de permisos.' });
+    return res.status(500).json({ 
+      detail: 'Error al recuperar la configuración de permisos.',
+      error: error.message,
+      stack: error.stack
+    });
   }
 });
 

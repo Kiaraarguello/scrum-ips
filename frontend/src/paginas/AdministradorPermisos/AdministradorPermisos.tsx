@@ -28,9 +28,10 @@ export default function AdministradorPermisos() {
       try {
         const data = await obtenerTodosLosPermisos();
         setPermisosPorRol(data as Record<Rol, ModuloPermisos[]>);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error al cargar permisos:', err);
-        alert('No se pudo cargar la configuración de permisos del servidor.');
+        const serverError = err.response?.data?.error || err.response?.data?.detail || err.message;
+        alert('No se pudo cargar la configuración de permisos del servidor:\n' + serverError);
       } finally {
         setCargandoDatos(false);
       }
