@@ -42,7 +42,7 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
 
 
 // POST /api/proyectos/
-router.post('/', requerirAdminOSuperior, async (req, res) => {
+router.post('/', obtenerUsuarioActual, async (req, res) => {
   const { nombre, descripcion, activo = true, usuarios_ids = [] } = req.body;
   const uid = req.usuario.id;
   

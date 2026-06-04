@@ -30,7 +30,7 @@ export default function GestionBacklog() {
         listarUsuarios()
       ]);
       let proyectosFiltrados = dataProyectos;
-      if (usuarioAutenticado && usuarioAutenticado.rol !== 'admin') {
+      if (usuarioAutenticado && !['super_usuario', 'super_admin', 'admin'].includes(usuarioAutenticado.rol)) {
         proyectosFiltrados = dataProyectos.filter(p => 
           p.usuarios?.some(u => u.id === usuarioAutenticado.id)
         );
@@ -79,12 +79,12 @@ export default function GestionBacklog() {
         <div>
           <h1 className="gestion-backlog__titulo">Backlog de Proyectos</h1>
           <p className="gestion-backlog__subtitulo">
-            {usuarioAutenticado?.rol === 'admin' 
+            {['super_usuario', 'super_admin', 'admin'].includes(usuarioAutenticado?.rol || '')
               ? 'Gestiona y visualiza los tableros de cada proyecto independiente.'
               : 'Visualiza los proyectos en los que participas.'}
           </p>
         </div>
-        {usuarioAutenticado?.rol === 'admin' && (
+        {usuarioAutenticado && ['super_usuario', 'super_admin', 'admin', 'usuario'].includes(usuarioAutenticado.rol) && (
           <Boton onClick={() => setMostrarModal(true)}>
             <Plus size={18} />
             Nuevo Proyecto
@@ -117,7 +117,7 @@ export default function GestionBacklog() {
                 <Link to={`/admin/backlog/${p.id}`} className="gestion-backlog__enlace">
                   Ver Tablero
                 </Link>
-                {usuarioAutenticado?.rol === 'admin' && (
+                {usuarioAutenticado && ['super_usuario', 'super_admin', 'admin'].includes(usuarioAutenticado.rol) && (
                   <button 
                     className="gestion-backlog__btn-eliminar" 
                     onClick={() => manejarEliminar(p.id)}
@@ -170,7 +170,7 @@ export default function GestionBacklog() {
                       <span>Administradores</span>
                     </div>
                     <div className="gestion-backlog__lista-usuarios">
-                      {usuarios.filter(u => u.rol === 'admin').map(u => (
+                      {usuarios.filter(u => ['admin', 'super_admin', 'super_usuario'].includes(u.rol)).map(u => (
                         <div 
                           key={u.id} 
                           className={`gestion-backlog__usuario-item ${usuariosSeleccionados.includes(u.id) ? 'seleccionado' : ''}`}
