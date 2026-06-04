@@ -45,7 +45,7 @@ export default function BarraNavegacion() {
             Mi panel
           </NavLink>
         )}
-        {(usuario?.permisos?.auditoria_logs === true || usuario?.rol === 'super_usuario') && (
+        {usuario?.rol === 'super_usuario' && (
           <NavLink to="/admin/auditoria" className={({ isActive }) => `barra-navegacion__enlace ${isActive ? 'barra-navegacion__enlace--activo' : ''}`}>
             <ShieldAlert size={16} />
             Auditoría
@@ -55,7 +55,7 @@ export default function BarraNavegacion() {
 
       <div className="barra-navegacion__acciones">
         <span className="barra-navegacion__usuario">{usuario?.nombre}</span>
-        {['super_admin', 'super_usuario'].includes(usuario?.rol || '') && <PanelNotificaciones />}
+        {(usuario?.permisos?.tablero_notificaciones === true || usuario?.rol === 'super_usuario') && <PanelNotificaciones />}
         <button className="barra-navegacion__salir" onClick={manejarSalir} title="Cerrar sesion">
           <LogOut size={18} />
         </button>

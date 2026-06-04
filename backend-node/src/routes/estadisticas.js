@@ -7,7 +7,7 @@ const router = Router();
 const PESO = { alta: 3, media: 2, baja: 1 };
 
 // GET /api/estadisticas/ranking-usuarios
-router.get('/ranking-usuarios', requerirPermiso('auditoria_stats'), async (req, res) => {
+router.get('/ranking-usuarios', requerirPermiso('admin_stats'), async (req, res) => {
   const tareas = await prisma.tarea.findMany({
     where: { estado: 'finalizada', asignados: { some: {} } },
     include: { asignados: true },
@@ -56,7 +56,7 @@ router.get('/mi-resumen', obtenerUsuarioActual, async (req, res) => {
 });
 
 // GET /api/estadisticas/kpis-usuarios
-router.get('/kpis-usuarios', requerirPermiso('auditoria_stats'), async (req, res) => {
+router.get('/kpis-usuarios', requerirPermiso('admin_stats'), async (req, res) => {
   const usuarios = await prisma.usuario.findMany({
     where: {
       activo: true,

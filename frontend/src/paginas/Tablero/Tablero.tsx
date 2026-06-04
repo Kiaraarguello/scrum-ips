@@ -107,11 +107,10 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     if (!tarea || tarea.estado === nuevoEstado) return;
 
     // 1. Validar permiso de mover / iniciar / pausar
-    const esSuperUsuario = usuario?.rol === 'super_usuario';
-    const tieneMoverGeneral = usuario?.permisos?.tablero_mover === true;
+    const esSuper = ['super_usuario', 'super_admin', 'admin'].includes(usuario?.rol || '');
     
-    if (!esSuperUsuario && !tieneMoverGeneral) {
-      // Si no tiene permiso general para mover, validamos si es asignado a la tarea ("Mover mis tareas únicamente")
+    if (!esSuper) {
+      // Si no es admin o superior, validamos si es asignado a la tarea
       const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
       if (!esMia) {
         alert('No tienes permisos para mover o cambiar el estado de tareas que no te pertenecen.');
@@ -122,9 +121,8 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
 
     // 2. Si va a finalizada, validar permiso de finalizar
     if (nuevoEstado === 'finalizada') {
-      const tieneFinalizarGeneral = usuario?.permisos?.tablero_finalizar === true;
-      if (!esSuperUsuario && !tieneFinalizarGeneral) {
-        // Si no tiene permiso general para finalizar, validamos si es asignado a la tarea ("Finalizar mis tareas únicamente")
+      if (!esSuper) {
+        // Si no es admin o superior, validamos si es asignado a la tarea
         const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
         if (!esMia) {
           alert('No tienes permisos para finalizar tareas que no te pertenecen.');
@@ -236,7 +234,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
             <Clock size={16} style={{ marginRight: '6px' }} />
             Pendientes
           </Boton>
-          {(usuario?.permisos?.tablero_crear === true || usuario?.rol === 'super_usuario') && (
+          {usuario && (
             <Boton onClick={() => setMostrarModal(true)}>
               <Plus size={16} />
               Nueva tarea
@@ -277,7 +275,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
               estado={estado} 
               tareas={tareasPorEstado(estado)} 
               onClickTarea={(t) => setTareaParaEditar(t)} 
-              onEliminarTarea={archivarTarea} 
+              onEliminarTarea={(usuario?.permisos?.tablero_eliminar === true || usuario?.rol === 'super_usuario') ? archivarTarea : undefined} 
             />
           ))}
         </div>

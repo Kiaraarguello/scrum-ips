@@ -30,9 +30,11 @@ export default function GestionBacklog() {
         listarUsuarios()
       ]);
       let proyectosFiltrados = dataProyectos;
-      if (usuarioAutenticado && !['super_usuario', 'super_admin', 'admin'].includes(usuarioAutenticado.rol)) {
+      const esSuperUsuario = usuarioAutenticado?.rol === 'super_usuario';
+      const tieneVerTodos = usuarioAutenticado?.permisos?.backlog_ver_todos === true;
+      if (!esSuperUsuario && !tieneVerTodos) {
         proyectosFiltrados = dataProyectos.filter(p => 
-          p.usuarios?.some(u => u.id === usuarioAutenticado.id)
+          p.usuarios?.some(u => u.id === usuarioAutenticado?.id)
         );
       }
       setProyectos(proyectosFiltrados);
@@ -42,6 +44,20 @@ export default function GestionBacklog() {
     } finally {
       setCargando(false);
     }
+  }
+
+  function puedeEliminarBacklog(p: Proyecto) {
+    if (!usuarioAutenticado) return false;
+    if (usuarioAutenticado.rol === 'super_usuario') return true;
+
+    const esParticipante = p.usuarios?.some(u => u.id === usuarioAutenticado.id);
+    const tieneBorrarOtros = usuarioAutenticado.permisos?.backlog_borrar_otros === true;
+    const tieneBorrarPropios = usuarioAutenticado.permisos?.backlog_borrar_propios === true;
+
+    if (tieneBorrarOtros) return true;
+    if (tieneBorrarPropios && esParticipante) return true;
+
+    return false;
   }
 
   async function manejarCrear(e: React.FormEvent) {
@@ -117,7 +133,7 @@ export default function GestionBacklog() {
                 <Link to={`/admin/backlog/${p.id}`} className="gestion-backlog__enlace">
                   Ver Tablero
                 </Link>
-                {usuarioAutenticado && ['super_usuario', 'super_admin', 'admin'].includes(usuarioAutenticado.rol) && (
+                {puedeEliminarBacklog(p) && (
                   <button 
                     className="gestion-backlog__btn-eliminar" 
                     onClick={() => manejarEliminar(p.id)}
@@ -143,76 +159,78 @@ export default function GestionBacklog() {
           <div className="gestion-backlog__modal-caja" onClick={(e) => e.stopPropagation()}>
             <h2 className="gestion-backlog__modal-titulo">Crear Nuevo Proyecto</h2>
             <form onSubmit={manejarCrear} className="gestion-backlog__formulario">
-              <CampoTexto 
-                etiqueta="Nombre del Proyecto" 
-                value={nombre} 
-                onChange={(e) => setNombre(e.target.value)} 
-                placeholder="Ej: Migración de Servidores"
-              />
-              <div className="campo-texto">
-                <label className="campo-texto__etiqueta">Descripción (opcional)</label>
-                <textarea 
-                  className="gestion-backlog__textarea"
-                  value={descripcion}
-                  onChange={(e) => setDescripcion(e.target.value)}
-                  placeholder="Breve descripción del objetivo..."
-                  rows={3}
+              <div className="gestion-backlog__formulario-cuerpo">
+                <CampoTexto 
+                  etiqueta="Nombre del Proyecto" 
+                  value={nombre} 
+                  onChange={(e) => setNombre(e.target.value)} 
+                  placeholder="Ej: Migración de Servidores"
                 />
-              </div>
+                <div className="campo-texto">
+                  <label className="campo-texto__etiqueta">Descripción (opcional)</label>
+                  <textarea 
+                    className="gestion-backlog__textarea"
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                    placeholder="Breve descripción del objetivo..."
+                    rows={2}
+                  />
+                </div>
 
-              <div className="gestion-backlog__seleccion-usuarios">
-                <label className="campo-texto__etiqueta">Participantes del Proyecto</label>
-                
-                <div className="gestion-backlog__grupos-usuarios">
-                  <div className="gestion-backlog__grupo-usuarios">
-                    <div className="gestion-backlog__grupo-titulo">
-                      <Shield size={14} />
-                      <span>Administradores</span>
-                    </div>
-                    <div className="gestion-backlog__lista-usuarios">
-                      {usuarios.filter(u => ['admin', 'super_admin', 'super_usuario'].includes(u.rol)).map(u => (
-                        <div 
-                          key={u.id} 
-                          className={`gestion-backlog__usuario-item ${usuariosSeleccionados.includes(u.id) ? 'seleccionado' : ''}`}
-                          onClick={() => {
-                            setUsuariosSeleccionados(prev => 
-                              prev.includes(u.id) ? prev.filter(id => id !== u.id) : [...prev, u.id]
-                            );
-                          }}
-                        >
-                          <div className="gestion-backlog__usuario-avatar">
-                            {u.nombre[0]}{u.apellido[0]}
+                <div className="gestion-backlog__seleccion-usuarios">
+                  <label className="campo-texto__etiqueta">Participantes del Proyecto</label>
+                  
+                  <div className="gestion-backlog__grupos-usuarios">
+                    <div className="gestion-backlog__grupo-usuarios">
+                      <div className="gestion-backlog__grupo-titulo">
+                        <Shield size={14} />
+                        <span>Administradores</span>
+                      </div>
+                      <div className="gestion-backlog__lista-usuarios">
+                        {usuarios.filter(u => ['admin', 'super_admin', 'super_usuario'].includes(u.rol)).map(u => (
+                          <div 
+                            key={u.id} 
+                            className={`gestion-backlog__usuario-item ${usuariosSeleccionados.includes(u.id) ? 'seleccionado' : ''}`}
+                            onClick={() => {
+                              setUsuariosSeleccionados(prev => 
+                                prev.includes(u.id) ? prev.filter(id => id !== u.id) : [...prev, u.id]
+                              );
+                            }}
+                          >
+                            <div className="gestion-backlog__usuario-avatar">
+                              {u.nombre[0]}{u.apellido[0]}
+                            </div>
+                            <span className="gestion-backlog__usuario-nombre">{u.nombre} {u.apellido}</span>
+                            {usuariosSeleccionados.includes(u.id) && <Check size={14} className="gestion-backlog__check" />}
                           </div>
-                          <span className="gestion-backlog__usuario-nombre">{u.nombre} {u.apellido}</span>
-                          {usuariosSeleccionados.includes(u.id) && <Check size={14} className="gestion-backlog__check" />}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="gestion-backlog__grupo-usuarios">
-                    <div className="gestion-backlog__grupo-titulo">
-                      <UserIcon size={14} />
-                      <span>Usuarios</span>
-                    </div>
-                    <div className="gestion-backlog__lista-usuarios">
-                      {usuarios.filter(u => u.rol === 'usuario').map(u => (
-                        <div 
-                          key={u.id} 
-                          className={`gestion-backlog__usuario-item ${usuariosSeleccionados.includes(u.id) ? 'seleccionado' : ''}`}
-                          onClick={() => {
-                            setUsuariosSeleccionados(prev => 
-                              prev.includes(u.id) ? prev.filter(id => id !== u.id) : [...prev, u.id]
-                            );
-                          }}
-                        >
-                          <div className="gestion-backlog__usuario-avatar">
-                            {u.nombre[0]}{u.apellido[0]}
+                    <div className="gestion-backlog__grupo-usuarios">
+                      <div className="gestion-backlog__grupo-titulo">
+                        <UserIcon size={14} />
+                        <span>Usuarios</span>
+                      </div>
+                      <div className="gestion-backlog__lista-usuarios">
+                        {usuarios.filter(u => u.rol === 'usuario').map(u => (
+                          <div 
+                            key={u.id} 
+                            className={`gestion-backlog__usuario-item ${usuariosSeleccionados.includes(u.id) ? 'seleccionado' : ''}`}
+                            onClick={() => {
+                              setUsuariosSeleccionados(prev => 
+                                prev.includes(u.id) ? prev.filter(id => id !== u.id) : [...prev, u.id]
+                              );
+                            }}
+                          >
+                            <div className="gestion-backlog__usuario-avatar">
+                              {u.nombre[0]}{u.apellido[0]}
+                            </div>
+                            <span className="gestion-backlog__usuario-nombre">{u.nombre} {u.apellido}</span>
+                            {usuariosSeleccionados.includes(u.id) && <Check size={14} className="gestion-backlog__check" />}
                           </div>
-                          <span className="gestion-backlog__usuario-nombre">{u.nombre} {u.apellido}</span>
-                          {usuariosSeleccionados.includes(u.id) && <Check size={14} className="gestion-backlog__check" />}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

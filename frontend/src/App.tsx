@@ -123,7 +123,7 @@ export default function App() {
             <Route
               path="/admin/historial"
               element={
-                <RutaProtegida permisoRequerido="admin_panel">
+                <RutaProtegida permisoRequerido="admin_historial">
                   <LayoutConBarra><HistorialTareas /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -131,7 +131,7 @@ export default function App() {
             <Route
               path="/admin/estadisticas"
               element={
-                <RutaProtegida permisoRequerido="auditoria_stats">
+                <RutaProtegida permisoRequerido="admin_stats">
                   <LayoutConBarra><EstadisticasUsuarios /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -139,7 +139,7 @@ export default function App() {
             <Route
               path="/admin/auditoria"
               element={
-                <RutaProtegida rolesPermitidos={['super_usuario']} permisoRequerido="auditoria_logs">
+                <RutaProtegida rolesPermitidos={['super_usuario']}>
                   <LayoutConBarra><PanelAuditoria /></LayoutConBarra>
                 </RutaProtegida>
               }

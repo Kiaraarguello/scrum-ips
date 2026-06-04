@@ -10,10 +10,9 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
     {
       titulo: 'Módulo: Tablero de Tareas',
       permisos: [
-        { id: 'tablero_ver', nombre: 'Ver tablero completo', descripcion: 'Acceso de lectura a todas las columnas del tablero.', activoDefinido: true },
-        { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activoDefinido: true },
-        { id: 'tablero_mover', nombre: 'Mover y cambiar estados', descripcion: 'Iniciar, pausar o cancelar tareas en curso.', activoDefinido: true },
-        { id: 'tablero_finalizar', nombre: 'Finalizar tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activoDefinido: true },
+        { id: 'tablero_eliminar', nombre: 'Eliminar tareas', descripcion: 'Permite archivar y eliminar tareas del tablero.', activoDefinido: true },
+        { id: 'tablero_notificaciones', nombre: 'Notificaciones', descripcion: 'Permite visualizar alertas y recibir notificaciones.', activoDefinido: true },
+        { id: 'tablero_editar', nombre: 'Editar tareas', descripcion: 'Habilita la edición de títulos, descripciones y asignaciones de tareas.', activoDefinido: true },
       ],
     },
     {
@@ -22,13 +21,16 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
         { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activoDefinido: true },
         { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activoDefinido: true },
         { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activoDefinido: true },
+        { id: 'admin_stats', nombre: 'Estadísticas', descripcion: 'Ver el panel completo y habilitar el botón de estadísticas en administración.', activoDefinido: true },
+        { id: 'admin_historial', nombre: 'Historial', descripcion: 'Ver el panel de historial de cambios y movimientos de tareas.', activoDefinido: true },
       ],
     },
     {
-      titulo: 'Módulo: Auditoría y Control',
+      titulo: 'Módulo: Backlog',
       permisos: [
-        { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activoDefinido: false },
-        { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activoDefinido: true },
+        { id: 'backlog_ver_todos', nombre: 'Ver todos los backlogs', descripcion: 'Permite visualizar todos los backlogs o solo los asignados.', activoDefinido: true },
+        { id: 'backlog_borrar_propios', nombre: 'Borrar backlogs (propios)', descripcion: 'Permite eliminar backlogs en los que participa.', activoDefinido: true },
+        { id: 'backlog_borrar_otros', nombre: 'Borrar backlogs (de otros)', descripcion: 'Permite eliminar backlogs de otros usuarios.', activoDefinido: true },
       ],
     },
   ],
@@ -36,10 +38,9 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
     {
       titulo: 'Módulo: Tablero de Tareas',
       permisos: [
-        { id: 'tablero_ver', nombre: 'Ver tablero completo', descripcion: 'Acceso de lectura a todas las columnas del tablero.', activoDefinido: true },
-        { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activoDefinido: true },
-        { id: 'tablero_mover', nombre: 'Mover y cambiar estados', descripcion: 'Iniciar, pausar o cancelar tareas en curso.', activoDefinido: true },
-        { id: 'tablero_finalizar', nombre: 'Finalizar tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activoDefinido: true },
+        { id: 'tablero_eliminar', nombre: 'Eliminar tareas', descripcion: 'Permite archivar y eliminar tareas del tablero.', activoDefinido: true },
+        { id: 'tablero_notificaciones', nombre: 'Notificaciones', descripcion: 'Permite visualizar alertas y recibir notificaciones.', activoDefinido: true },
+        { id: 'tablero_editar', nombre: 'Editar tareas', descripcion: 'Habilita la edición de títulos, descripciones y asignaciones de tareas.', activoDefinido: true },
       ],
     },
     {
@@ -48,13 +49,16 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
         { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activoDefinido: true },
         { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activoDefinido: false },
         { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activoDefinido: true },
+        { id: 'admin_stats', nombre: 'Estadísticas', descripcion: 'Ver el panel completo y habilitar el botón de estadísticas en administración.', activoDefinido: true },
+        { id: 'admin_historial', nombre: 'Historial', descripcion: 'Ver el panel de historial de cambios y movimientos de tareas.', activoDefinido: true },
       ],
     },
     {
-      titulo: 'Módulo: Auditoría y Control',
+      titulo: 'Módulo: Backlog',
       permisos: [
-        { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activoDefinido: false },
-        { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activoDefinido: true },
+        { id: 'backlog_ver_todos', nombre: 'Ver todos los backlogs', descripcion: 'Permite visualizar todos los backlogs o solo los asignados.', activoDefinido: true },
+        { id: 'backlog_borrar_propios', nombre: 'Borrar backlogs (propios)', descripcion: 'Permite eliminar backlogs en los que participa.', activoDefinido: true },
+        { id: 'backlog_borrar_otros', nombre: 'Borrar backlogs (de otros)', descripcion: 'Permite eliminar backlogs de otros usuarios.', activoDefinido: false },
       ],
     },
   ],
@@ -62,10 +66,9 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
     {
       titulo: 'Módulo: Tablero de Tareas',
       permisos: [
-        { id: 'tablero_ver', nombre: 'Ver tablero de mi sector', descripcion: 'Acceso de lectura limitado a tareas de su sector asignado.', activoDefinido: true },
-        { id: 'tablero_crear', nombre: 'Crear nuevas tareas', descripcion: 'Habilidad de registrar solicitudes y tickets de soporte.', activoDefinido: true },
-        { id: 'tablero_mover', nombre: 'Mover mis tareas', descripcion: 'Iniciar o pausar únicamente tareas que le fueron asignadas.', activoDefinido: true },
-        { id: 'tablero_finalizar', nombre: 'Finalizar mis tareas', descripcion: 'Cerrar tareas ingresando diagnóstico y solución técnica.', activoDefinido: true },
+        { id: 'tablero_eliminar', nombre: 'Eliminar tareas', descripcion: 'Permite archivar y eliminar tareas del tablero.', activoDefinido: false },
+        { id: 'tablero_notificaciones', nombre: 'Notificaciones', descripcion: 'Permite visualizar alertas y recibir notificaciones.', activoDefinido: false },
+        { id: 'tablero_editar', nombre: 'Editar tareas', descripcion: 'Habilita la edición de títulos, descripciones y asignaciones de tareas.', activoDefinido: false },
       ],
     },
     {
@@ -74,13 +77,16 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
         { id: 'admin_panel', nombre: 'Acceso a Panel Admin', descripcion: 'Habilita el ingreso a las secciones administrativas de la app.', activoDefinido: false },
         { id: 'admin_usuarios', nombre: 'Administrar Usuarios', descripcion: 'Crear, editar o dar de baja cuentas y roles del personal.', activoDefinido: false },
         { id: 'admin_sectores_sedes', nombre: 'Administrar Sectores y Sedes', descripcion: 'Configurar sedes físicas y áreas departamentales.', activoDefinido: false },
+        { id: 'admin_stats', nombre: 'Estadísticas', descripcion: 'Ver el panel completo y habilitar el botón de estadísticas en administración.', activoDefinido: false },
+        { id: 'admin_historial', nombre: 'Historial', descripcion: 'Ver el panel de historial de cambios y movimientos de tareas.', activoDefinido: false },
       ],
     },
     {
-      titulo: 'Módulo: Auditoría y Control',
+      titulo: 'Módulo: Backlog',
       permisos: [
-        { id: 'auditoria_logs', nombre: 'Logs de Auditoría', descripcion: 'Visualizar bitácora detallada de inicios de sesión y movimientos.', activoDefinido: false },
-        { id: 'auditoria_stats', nombre: 'KPIs y Estadísticas', descripcion: 'Ver tableros de rendimiento y rankings de productividad.', activoDefinido: false },
+        { id: 'backlog_ver_todos', nombre: 'Ver todos los backlogs', descripcion: 'Permite visualizar todos los backlogs o solo los asignados.', activoDefinido: false },
+        { id: 'backlog_borrar_propios', nombre: 'Borrar backlogs (propios)', descripcion: 'Permite eliminar backlogs en los que participa.', activoDefinido: true },
+        { id: 'backlog_borrar_otros', nombre: 'Borrar backlogs (de otros)', descripcion: 'Permite eliminar backlogs de otros usuarios.', activoDefinido: false },
       ],
     },
   ],
@@ -91,15 +97,17 @@ export async function obtenerPermisosRol(rol) {
   if (rol === 'super_usuario') {
     // El Super Usuario tiene todos los accesos habilitados garantizados
     return {
-      tablero_ver: true,
-      tablero_crear: true,
-      tablero_mover: true,
-      tablero_finalizar: true,
+      tablero_eliminar: true,
+      tablero_notificaciones: true,
+      tablero_editar: true,
       admin_panel: true,
       admin_usuarios: true,
       admin_sectores_sedes: true,
-      auditoria_logs: true,
-      auditoria_stats: true,
+      admin_stats: true,
+      admin_historial: true,
+      backlog_ver_todos: true,
+      backlog_borrar_propios: true,
+      backlog_borrar_otros: true,
     };
   }
 
@@ -109,12 +117,22 @@ export async function obtenerPermisosRol(rol) {
   });
 
   const mapa = {};
+  const modulosDefault = MOCK_ESTRUCTURA_PERMISOS[rol] || [];
+  const clavesValidas = new Set();
+
+  for (const modulo of modulosDefault) {
+    for (const perm of modulo.permisos) {
+      clavesValidas.add(perm.id);
+    }
+  }
+
   for (const p of dbPermisos) {
-    mapa[p.clave] = p.activo;
+    if (clavesValidas.has(p.clave)) {
+      mapa[p.clave] = p.activo;
+    }
   }
 
   // Si no está inicializado o faltan claves, recurrir al valor por defecto
-  const modulosDefault = MOCK_ESTRUCTURA_PERMISOS[rol] || [];
   for (const modulo of modulosDefault) {
     for (const perm of modulo.permisos) {
       if (mapa[perm.id] === undefined) {

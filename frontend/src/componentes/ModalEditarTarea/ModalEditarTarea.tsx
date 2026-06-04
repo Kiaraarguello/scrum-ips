@@ -444,10 +444,12 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
             {/* Acciones del Modo Vista */}
             <div className="modal-editar-tarea__acciones-vista">
               <Boton type="button" variante="secundario" onClick={onCerrar}>Cerrar</Boton>
-              <Boton type="button" onClick={() => setModoEdicion(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Edit size={15} />
-                Editar Tarea
-              </Boton>
+              {(usuarioLogueado?.permisos?.tablero_editar === true || usuarioLogueado?.rol === 'super_usuario') && (
+                <Boton type="button" onClick={() => setModoEdicion(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Edit size={15} />
+                  Editar Tarea
+                </Boton>
+              )}
             </div>
           </div>
         ) : (

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
-import { requerirAdminOSuperior } from '../middleware/auth.js';
+import { requerirPermiso } from '../middleware/auth.js';
 
 const router = Router();
 
 // GET /api/historial
-router.get('/', requerirAdminOSuperior, async (req, res) => {
+router.get('/', requerirPermiso('admin_historial'), async (req, res) => {
   const { usuario_id, tarea_id, desde, hasta } = req.query;
 
   const where = {};

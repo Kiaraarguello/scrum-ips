@@ -26,10 +26,14 @@ function serializarProyecto(p) {
 // GET /api/proyectos/
 router.get('/', obtenerUsuarioActual, async (req, res) => {
   const uid = req.usuario.id;
-  const esSuper = ['super_admin', 'super_usuario'].includes(req.usuario.rol);
+  const esSuperUsuario = req.usuario.rol === 'super_usuario';
   
+  const { obtenerPermisosRol } = await import('./permisos.js');
+  const perms = await obtenerPermisosRol(req.usuario.rol);
+  const tieneVerTodos = perms['backlog_ver_todos'] === true;
+
   const where = { activo: true };
-  if (!esSuper) {
+  if (!esSuperUsuario && !tieneVerTodos) {
     where.usuarios = { some: { usuario_id: uid } };
   }
 
@@ -74,10 +78,10 @@ router.get('/:proyecto_id', async (req, res) => {
 });
 
 // DELETE /api/proyectos/:proyecto_id
-router.delete('/:proyecto_id', requerirAdminOSuperior, async (req, res) => {
+router.delete('/:proyecto_id', obtenerUsuarioActual, async (req, res) => {
   const id = parseInt(req.params.proyecto_id);
   const uid = req.usuario.id;
-  const esSuper = ['super_admin', 'super_usuario'].includes(req.usuario.rol);
+  const esSuperUsuario = req.usuario.rol === 'super_usuario';
 
   const proyecto = await prisma.proyecto.findUnique({ 
     where: { id },
@@ -86,8 +90,17 @@ router.delete('/:proyecto_id', requerirAdminOSuperior, async (req, res) => {
   
   if (!proyecto) return res.status(404).json({ detail: 'Proyecto no encontrado' });
 
-  if (!esSuper && !proyecto.usuarios.some(u => u.usuario_id === uid)) {
-    return res.status(403).json({ detail: 'No tienes permiso para eliminar este backlog' });
+  if (!esSuperUsuario) {
+    const { obtenerPermisosRol } = await import('./permisos.js');
+    const perms = await obtenerPermisosRol(req.usuario.rol);
+    
+    const esParticipante = proyecto.usuarios.some(u => u.usuario_id === uid);
+    const tieneBorrarOtros = perms['backlog_borrar_otros'] === true;
+    const tieneBorrarPropios = perms['backlog_borrar_propios'] === true;
+
+    if (!tieneBorrarOtros && !(tieneBorrarPropios && esParticipante)) {
+      return res.status(403).json({ detail: 'No tienes permiso para eliminar este backlog' });
+    }
   }
 
   await prisma.proyecto.update({ where: { id }, data: { activo: false } });

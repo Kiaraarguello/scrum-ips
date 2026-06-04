@@ -25,7 +25,10 @@ export default function PanelAdmin() {
       return usuario?.permisos?.admin_sectores_sedes === true;
     }
     if (acceso.ruta === '/admin/estadisticas') {
-      return usuario?.permisos?.auditoria_stats === true;
+      return usuario?.permisos?.admin_stats === true;
+    }
+    if (acceso.ruta === '/admin/historial') {
+      return usuario?.permisos?.admin_historial === true;
     }
     return true;
   });

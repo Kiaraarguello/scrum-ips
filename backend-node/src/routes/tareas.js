@@ -88,6 +88,15 @@ router.put('/:id', obtenerUsuarioActual, async (req, res) => {
   const id = parseInt(req.params.id);
   const tarea = await prisma.tarea.findUnique({ where: { id } });
   if (!tarea) return res.status(404).json({ detail: 'Tarea no encontrada' });
+
+  const esSuperUsuario = req.usuario.rol === 'super_usuario';
+  if (!esSuperUsuario) {
+    const { obtenerPermisosRol } = await import('./permisos.js');
+    const perms = await obtenerPermisosRol(req.usuario.rol);
+    if (perms['tablero_editar'] !== true) {
+      return res.status(403).json({ detail: 'No tienes permiso para editar tareas' });
+    }
+  }
   const { titulo, nota_llamada, criticidad, sector_id, sede_id, numero_contacto, asignado_ids } = req.body;
   const data = {};
   if (titulo !== undefined) data.titulo = titulo;
@@ -150,6 +159,15 @@ router.delete('/:id', obtenerUsuarioActual, async (req, res) => {
   const id = parseInt(req.params.id);
   const tarea = await prisma.tarea.findUnique({ where: { id } });
   if (!tarea) return res.status(404).json({ detail: 'Tarea no encontrada' });
+
+  const esSuperUsuario = req.usuario.rol === 'super_usuario';
+  if (!esSuperUsuario) {
+    const { obtenerPermisosRol } = await import('./permisos.js');
+    const perms = await obtenerPermisosRol(req.usuario.rol);
+    if (perms['tablero_eliminar'] !== true) {
+      return res.status(403).json({ detail: 'No tienes permiso para eliminar/archivar tareas' });
+    }
+  }
   await prisma.tarea.update({ where: { id }, data: { activo: false } });
   return res.status(204).send();
 });
