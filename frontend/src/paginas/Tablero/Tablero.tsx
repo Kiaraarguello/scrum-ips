@@ -1,12 +1,27 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
+import {
+  DndContext,
+  type DragEndEvent,
+  type DragOverEvent,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Plus, RefreshCw, Clock, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Tarea, EstadoTarea } from '../../tipos';
 import { listarTareas, moverTarea, eliminarTarea } from '../../servicios/tareas';
 import { ordenarPorCriticidad } from '../../utilidades/pesoCriticidad';
+import { tienePermiso } from '../../utilidades/permisos';
 import { useAuth } from '../../contextos/ContextoAuth';
 import ColumnaTablero from '../../componentes/ColumnaTablero/ColumnaTablero';
+import {
+  COLUMNAS_TABLERO,
+  deteccionColisionTablero,
+  resolverColumnaDestino,
+} from '../../utilidades/tableroDnd';
 import ModalNuevaTarea from '../../componentes/ModalNuevaTarea/ModalNuevaTarea';
 import ModalEditarTarea from '../../componentes/ModalEditarTarea/ModalEditarTarea';
 import ModalAsignarUsuario from '../../componentes/ModalAsignarUsuario/ModalAsignarUsuario';
@@ -14,8 +29,8 @@ import ModalFinalizarTarea from '../../componentes/ModalFinalizarTarea/ModalFina
 import Boton from '../../componentes/Boton/Boton';
 import './Tablero.css';
 
-const COLUMNAS: EstadoTarea[] = ['por_hacer', 'en_proceso', 'finalizada'];
 const INTERVALO_MS = 60_000;
+type ModoFinalizar = 'finalizada' | 'pendiente';
 
 interface Props {
   proyectoId?: number;
@@ -31,9 +46,12 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
   const [tareaParaEditar, setTareaParaEditar] = useState<Tarea | null>(null);
   const [tareaParaAsignar, setTareaParaAsignar] = useState<{ tarea: Tarea; nuevoEstado: string } | null>(null);
   const [tareaParaFinalizar, setTareaParaFinalizar] = useState<Tarea | null>(null);
+  const [modoFinalizar, setModoFinalizar] = useState<ModoFinalizar>('finalizada');
+  const [columnaDestino, setColumnaDestino] = useState<EstadoTarea | null>(null);
   const [ultimaActualizacion, setUltimaActualizacion] = useState<Date | null>(null);
   const [actualizando, setActualizando] = useState(false);
   const arrastrando = useRef(false);
+  const columnaDestinoRef = useRef<EstadoTarea | null>(null);
 
   const cargar = useCallback(async (silencioso = false) => {
     if (!silencioso) setActualizando(true);
@@ -46,7 +64,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     } finally {
       if (!silencioso) setActualizando(false);
     }
-  }, []);
+  }, [proyectoId]);
 
   // Carga inicial
   useEffect(() => {
@@ -74,7 +92,25 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     return () => document.removeEventListener('visibilitychange', alVolver);
   }, [cargar]);
 
-  const sensores = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const sensores = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } })
+  );
+
+  const esMia = useCallback(
+    (t: Tarea) => t.asignados?.some((u) => u.id === usuario?.id) || t.asignado_a === usuario?.id,
+    [usuario?.id]
+  );
+
+  const puedeMoverTarea = useCallback(
+    (t: Tarea) => tienePermiso(usuario, 'tablero_mover') || esMia(t),
+    [usuario, esMia]
+  );
+
+  const puedeFinalizarTarea = useCallback(
+    (t: Tarea) => tienePermiso(usuario, 'tablero_finalizar') || esMia(t),
+    [usuario, esMia]
+  );
 
   function tareasPorEstado(estado: EstadoTarea) {
     let filtradas = tareas.filter((t) => t.estado === estado);
@@ -95,41 +131,32 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     return ordenarPorCriticidad(filtradas);
   }
 
-  async function manejarDragEnd(evento: DragEndEvent) {
+  function manejarDragOver(evento: DragOverEvent) {
+    const col = resolverColumnaDestino(evento.over?.id, tareas);
+    columnaDestinoRef.current = col;
+    setColumnaDestino(col);
+  }
+
+  function limpiarArrastre() {
     arrastrando.current = false;
-    const { active, over } = evento;
-    if (!over) return;
+    columnaDestinoRef.current = null;
+    setColumnaDestino(null);
+  }
 
-    const idTarea = Number(active.id);
-    const nuevoEstado = over.id as EstadoTarea;
-    const tarea = tareas.find((t) => t.id === idTarea);
+  async function solicitarCambioEstado(tarea: Tarea, nuevoEstado: EstadoTarea) {
+    if (tarea.estado === nuevoEstado) return;
 
-    if (!tarea || tarea.estado === nuevoEstado) return;
-
-    // 1. Validar permiso de mover / iniciar / pausar
-    const esSuper = ['super_usuario', 'super_admin', 'admin'].includes(usuario?.rol || '');
-    
-    if (!esSuper) {
-      // Si no es admin o superior, validamos si es asignado a la tarea
-      const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
-      if (!esMia) {
-        alert('No tienes permisos para mover o cambiar el estado de tareas que no te pertenecen.');
-        cargar();
-        return;
-      }
+    if (!puedeMoverTarea(tarea)) {
+      alert('No tienes permisos para mover o cambiar el estado de tareas que no te pertenecen.');
+      return;
     }
 
-    // 2. Si va a finalizada, validar permiso de finalizar
-    if (nuevoEstado === 'finalizada') {
-      if (!esSuper) {
-        // Si no es admin o superior, validamos si es asignado a la tarea
-        const esMia = tarea.asignados?.some((u) => u.id === usuario?.id) || tarea.asignado_a === usuario?.id;
-        if (!esMia) {
-          alert('No tienes permisos para finalizar tareas que no te pertenecen.');
-          cargar();
-          return;
-        }
+    if (nuevoEstado === 'finalizada' || nuevoEstado === 'pendiente') {
+      if (!puedeFinalizarTarea(tarea)) {
+        alert('No tienes permisos para finalizar o dejar pendientes tareas que no te pertenecen.');
+        return;
       }
+      setModoFinalizar(nuevoEstado);
       setTareaParaFinalizar(tarea);
       return;
     }
@@ -139,12 +166,25 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       return;
     }
 
-    setTareas((prev) => prev.map((t) => (t.id === idTarea ? { ...t, estado: nuevoEstado } : t)));
+    setTareas((prev) => prev.map((t) => (t.id === tarea.id ? { ...t, estado: nuevoEstado } : t)));
     try {
-      await moverTarea(idTarea, nuevoEstado);
+      await moverTarea(tarea.id, nuevoEstado);
     } catch {
       cargar();
     }
+  }
+
+  async function manejarDragEnd(evento: DragEndEvent) {
+    const { active, over } = evento;
+    const nuevoEstado =
+      resolverColumnaDestino(over?.id, tareas) ?? columnaDestinoRef.current;
+    limpiarArrastre();
+
+    const idTarea = Number(active.id);
+    const tarea = tareas.find((t) => t.id === idTarea);
+
+    if (!tarea || !nuevoEstado || tarea.estado === nuevoEstado) return;
+    await solicitarCambioEstado(tarea, nuevoEstado);
   }
 
   async function confirmarFinalizacion(nuevoEstado: 'finalizada' | 'pendiente', descripcion: string) {
@@ -234,7 +274,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
             <Clock size={16} style={{ marginRight: '6px' }} />
             Pendientes
           </Boton>
-          {usuario && (
+          {tienePermiso(usuario, 'tablero_crear') && (
             <Boton onClick={() => setMostrarModal(true)}>
               <Plus size={16} />
               Nueva tarea
@@ -263,22 +303,36 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
 
       <DndContext
         sensors={sensores}
-        collisionDetection={rectIntersection}
-        onDragStart={() => { arrastrando.current = true; }}
+        collisionDetection={deteccionColisionTablero}
+        onDragStart={() => {
+          arrastrando.current = true;
+        }}
+        onDragOver={manejarDragOver}
         onDragEnd={manejarDragEnd}
-        onDragCancel={() => { arrastrando.current = false; }}
+        onDragCancel={limpiarArrastre}
       >
-        <div className="tablero__columnas">
-          {COLUMNAS.map((estado) => (
-            <ColumnaTablero 
-              key={estado} 
-              estado={estado} 
-              tareas={tareasPorEstado(estado)} 
-              onClickTarea={(t) => setTareaParaEditar(t)} 
-              onEliminarTarea={(usuario?.permisos?.tablero_eliminar === true || usuario?.rol === 'super_usuario') ? archivarTarea : undefined} 
-            />
-          ))}
-        </div>
+        <SortableContext
+          items={tareas.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="tablero__columnas">
+            {COLUMNAS_TABLERO.map((estado) => (
+              <ColumnaTablero
+                key={estado}
+                estado={estado}
+                tareas={tareasPorEstado(estado)}
+                resaltada={columnaDestino === estado}
+                onClickTarea={(t) => setTareaParaEditar(t)}
+                onEliminarTarea={
+                  tienePermiso(usuario, 'tablero_eliminar') ? archivarTarea : undefined
+                }
+                onCambiarEstado={solicitarCambioEstado}
+                puedeMover={puedeMoverTarea}
+                puedeFinalizar={puedeFinalizarTarea}
+              />
+            ))}
+          </div>
+        </SortableContext>
       </DndContext>
 
       {mostrarModal && (
@@ -312,6 +366,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       {tareaParaFinalizar && (
         <ModalFinalizarTarea
           tarea={tareaParaFinalizar}
+          modoInicial={modoFinalizar}
           onCerrar={() => setTareaParaFinalizar(null)}
           onConfirmar={confirmarFinalizacion}
         />

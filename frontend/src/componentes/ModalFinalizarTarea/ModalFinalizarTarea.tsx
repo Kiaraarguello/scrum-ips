@@ -6,12 +6,13 @@ import './ModalFinalizarTarea.css';
 
 interface Props {
   tarea: Tarea;
+  modoInicial?: 'finalizada' | 'pendiente';
   onCerrar: () => void;
   onConfirmar: (nuevoEstado: 'finalizada' | 'pendiente', texto: string) => Promise<void>;
 }
 
-export default function ModalFinalizarTarea({ tarea, onCerrar, onConfirmar }: Props) {
-  const [esPendiente, setEsPendiente] = useState(false);
+export default function ModalFinalizarTarea({ tarea, modoInicial = 'finalizada', onCerrar, onConfirmar }: Props) {
+  const [esPendiente, setEsPendiente] = useState(modoInicial === 'pendiente');
   const [descripcion, setDescripcion] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
