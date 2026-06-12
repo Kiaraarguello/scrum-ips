@@ -5,7 +5,9 @@ import { obtenerUsuarioActual, requerirAdminOSuperior, requerirPermiso } from '.
 const router = Router();
 
 router.get('/', obtenerUsuarioActual, async (req, res) => {
-  const sedes = await prisma.sede.findMany();
+  const sedes = await prisma.sede.findMany({
+    orderBy: { nombre: 'asc' },
+  });
   return res.json(sedes);
 });
 

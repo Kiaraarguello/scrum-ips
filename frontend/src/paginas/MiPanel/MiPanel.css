@@ -432,6 +432,143 @@
   flex-shrink: 0;
 }
 
+/* ── Ranking de puntuación ── */
+.mi-panel__ranking-ayuda {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+}
+
+.mi-panel__ranking-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mi-panel__ranking-mi-dato {
+  background: rgba(var(--azul-institucional-rgb), 0.05);
+  border: 1px solid rgba(var(--azul-institucional-rgb), 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.mi-panel__ranking-mi-numero {
+  display: block;
+  font-family: var(--fuente-especial);
+  font-size: 1.8rem;
+  color: var(--azul-institucional);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.mi-panel__ranking-mi-etiqueta {
+  font-size: 0.72rem;
+  color: var(--texto-gris);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mi-panel__ranking-vacio {
+  margin: 0;
+  color: var(--texto-gris);
+  font-size: 0.9rem;
+}
+
+.mi-panel__ranking-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mi-panel__ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--borde-suave);
+  background: var(--blanco-puro);
+}
+
+.mi-panel__ranking-item--yo {
+  border-color: rgba(var(--azul-institucional-rgb), 0.35);
+  background: rgba(var(--azul-institucional-rgb), 0.04);
+}
+
+.mi-panel__ranking-pos {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--texto-gris);
+  background: var(--fondo-gris-claro);
+  flex-shrink: 0;
+}
+
+.mi-panel__ranking-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mi-panel__ranking-nombre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+}
+
+.mi-panel__ranking-yo-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--azul-institucional);
+  background: rgba(var(--azul-institucional-rgb), 0.1);
+  padding: 2px 8px;
+  border-radius: var(--redondeado-pill);
+}
+
+.mi-panel__ranking-detalle {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--texto-gris);
+  margin: 2px 0 8px;
+}
+
+.mi-panel__ranking-barra-fondo {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(var(--azul-institucional-rgb), 0.08);
+  overflow: hidden;
+}
+
+.mi-panel__ranking-barra-relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--azul-institucional), #6366f1);
+  transition: width 0.4s ease;
+}
+
+.mi-panel__ranking-puntos {
+  font-family: var(--fuente-especial);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--azul-institucional);
+  flex-shrink: 0;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .mi-panel__encabezado {
@@ -489,5 +626,18 @@
 
   .mi-panel__form-acciones button {
     width: 100%;
+  }
+
+  .mi-panel__ranking-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .mi-panel__ranking-item {
+    flex-wrap: wrap;
+  }
+
+  .mi-panel__ranking-puntos {
+    width: 100%;
+    text-align: right;
   }
 }

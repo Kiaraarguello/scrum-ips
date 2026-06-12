@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, ArrowLeft, Search, X } from 'lucide-react';
 import type { Sede } from '../../tipos';
 import { listarSedes, crearSede, actualizarSede, eliminarSede } from '../../servicios/sedes';
+import { ordenarPorNombre } from '../../utilidades/ordenAlfabetico';
 import Boton from '../../componentes/Boton/Boton';
 import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
 import './GestionSedes.css';
@@ -30,10 +31,10 @@ export default function GestionSedes() {
     e.preventDefault();
     if (editando) {
       const act = await actualizarSede(editando, form);
-      setSedes((prev) => prev.map((s) => (s.id === editando ? act : s)));
+      setSedes((prev) => ordenarPorNombre(prev.map((s) => (s.id === editando ? act : s))));
     } else {
       const nueva = await crearSede(form);
-      setSedes((prev) => [...prev, nueva]);
+      setSedes((prev) => ordenarPorNombre([...prev, nueva]));
     }
     setMostrarForm(false);
   }
@@ -48,7 +49,7 @@ export default function GestionSedes() {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm((prev) => ({ ...prev, [k]: e.target.value })),
   });
 
-  const sedesFiltradas = sedes.filter((s) => {
+  const sedesFiltradas = ordenarPorNombre(sedes.filter((s) => {
     const termino = busqueda.toLowerCase().trim();
     if (!termino) return true;
     return (
@@ -57,7 +58,7 @@ export default function GestionSedes() {
       (s.direccion && s.direccion.toLowerCase().includes(termino)) ||
       (s.notas && s.notas.toLowerCase().includes(termino))
     );
-  });
+  }));
 
   return (
     <div className="gestion-sedes pagina pagina--centrada">

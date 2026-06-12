@@ -6,8 +6,7 @@ const router = Router();
 
 const PESO = { alta: 3, media: 2, baja: 1 };
 
-// GET /api/estadisticas/ranking-usuarios
-router.get('/ranking-usuarios', requerirPermiso('admin_stats'), async (req, res) => {
+async function calcularRankingUsuarios() {
   const tareas = await prisma.tarea.findMany({
     where: { estado: 'finalizada', asignados: { some: {} } },
     include: { asignados: true },
@@ -19,15 +18,43 @@ router.get('/ranking-usuarios', requerirPermiso('admin_stats'), async (req, res)
     for (const u of t.asignados) {
       const uid = u.id;
       if (!acumulado[uid]) {
-        acumulado[uid] = { usuario_id: uid, nombre: u.nombre || '', apellido: u.apellido || '', puntos: 0, tareas_finalizadas: 0 };
+        acumulado[uid] = {
+          usuario_id: uid,
+          nombre: u.nombre || '',
+          apellido: u.apellido || '',
+          puntos: 0,
+          tareas_finalizadas: 0,
+        };
       }
       acumulado[uid].puntos += PESO[t.criticidad] ?? 1;
       acumulado[uid].tareas_finalizadas += 1;
     }
   }
 
-  const ranking = Object.values(acumulado).sort((a, b) => b.puntos - a.puntos);
+  return Object.values(acumulado).sort((a, b) => b.puntos - a.puntos);
+}
+
+// GET /api/estadisticas/ranking-usuarios
+router.get('/ranking-usuarios', requerirPermiso('auditoria_stats'), async (req, res) => {
+  const ranking = await calcularRankingUsuarios();
   return res.json({ ranking });
+});
+
+// GET /api/estadisticas/ranking — visible para cualquier usuario autenticado
+router.get('/ranking', obtenerUsuarioActual, async (req, res) => {
+  const ranking = await calcularRankingUsuarios();
+  const uid = req.usuario.id;
+  const indice = ranking.findIndex((r) => r.usuario_id === uid);
+  const yo = indice >= 0
+    ? ranking[indice]
+    : { usuario_id: uid, puntos: 0, tareas_finalizadas: 0 };
+
+  return res.json({
+    ranking,
+    mi_posicion: indice >= 0 ? indice + 1 : null,
+    mis_puntos: yo.puntos,
+    mis_tareas_finalizadas: yo.tareas_finalizadas,
+  });
 });
 
 // GET /api/estadisticas/mi-resumen
@@ -56,7 +83,7 @@ router.get('/mi-resumen', obtenerUsuarioActual, async (req, res) => {
 });
 
 // GET /api/estadisticas/kpis-usuarios
-router.get('/kpis-usuarios', requerirPermiso('admin_stats'), async (req, res) => {
+router.get('/kpis-usuarios', requerirPermiso('auditoria_stats'), async (req, res) => {
   const usuarios = await prisma.usuario.findMany({
     where: {
       activo: true,

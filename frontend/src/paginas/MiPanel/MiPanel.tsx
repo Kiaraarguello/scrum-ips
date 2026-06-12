@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Lock, Edit2, Check, X, ShieldCheck, Layers } from 'lucide-react';
-import type { ResumenPropio, Sector } from '../../tipos';
-import { obtenerResumenPropio } from '../../servicios/estadisticas';
+import { User, Mail, Lock, Edit2, Check, X, ShieldCheck, Layers, Trophy } from 'lucide-react';
+import type { ResumenPropio, Sector, RankingEquipo } from '../../tipos';
+import { obtenerResumenPropio, obtenerRankingEquipo } from '../../servicios/estadisticas';
 import { actualizarPerfilPropio, actualizarSectoresPropio, type PayloadPerfilPropio } from '../../servicios/usuarios';
 import { listarSectores } from '../../servicios/sectores';
 import { useAuth } from '../../contextos/ContextoAuth';
 import { formatearFecha } from '../../utilidades/formatoFecha';
+import { ordenarPorNombre } from '../../utilidades/ordenAlfabetico';
 import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
 import Boton from '../../componentes/Boton/Boton';
 import './MiPanel.css';
@@ -13,6 +14,7 @@ import './MiPanel.css';
 export default function MiPanel() {
   const { usuario, actualizarUsuario } = useAuth();
   const [resumen, setResumen] = useState<ResumenPropio | null>(null);
+  const [rankingEquipo, setRankingEquipo] = useState<RankingEquipo | null>(null);
   const [todosLosSectores, setTodosLosSectores] = useState<Sector[]>([]);
 
   // Perfil
@@ -31,6 +33,7 @@ export default function MiPanel() {
 
   useEffect(() => {
     obtenerResumenPropio().then(setResumen);
+    obtenerRankingEquipo().then(setRankingEquipo);
     listarSectores().then(lista => setTodosLosSectores(lista.filter(s => s.activo)));
   }, []);
 
@@ -115,7 +118,8 @@ export default function MiPanel() {
     }
   }
 
-  const sectoresAsignados = usuario?.sectores ?? [];
+  const sectoresAsignados = ordenarPorNombre(usuario?.sectores ?? []);
+  const maxPuntosRanking = Math.max(...(rankingEquipo?.ranking.map(r => r.puntos) ?? [1]), 1);
 
   return (
     <div className="mi-panel pagina pagina--centrada">
@@ -292,6 +296,73 @@ export default function MiPanel() {
             </div>
           )}
         </section>
+
+        {/* ── Ranking de puntuación ── */}
+        {rankingEquipo && (
+          <section className="mi-panel__seccion">
+            <div className="mi-panel__seccion-cabecera">
+              <div className="mi-panel__seccion-titulo-grupo">
+                <div className="mi-panel__avatar"><Trophy size={20} /></div>
+                <div>
+                  <h2 className="mi-panel__seccion-titulo">Ranking de puntuación</h2>
+                  <p className="mi-panel__ranking-ayuda">Alta = 3 pts · Media = 2 pts · Baja = 1 pt</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mi-panel__ranking-resumen">
+              <div className="mi-panel__ranking-mi-dato">
+                <span className="mi-panel__ranking-mi-numero">{rankingEquipo.mis_puntos}</span>
+                <span className="mi-panel__ranking-mi-etiqueta">Tus puntos</span>
+              </div>
+              <div className="mi-panel__ranking-mi-dato">
+                <span className="mi-panel__ranking-mi-numero">
+                  {rankingEquipo.mi_posicion ?? '—'}
+                </span>
+                <span className="mi-panel__ranking-mi-etiqueta">Tu posición</span>
+              </div>
+              <div className="mi-panel__ranking-mi-dato">
+                <span className="mi-panel__ranking-mi-numero">{rankingEquipo.mis_tareas_finalizadas}</span>
+                <span className="mi-panel__ranking-mi-etiqueta">Finalizadas</span>
+              </div>
+            </div>
+
+            {rankingEquipo.ranking.length === 0 ? (
+              <p className="mi-panel__ranking-vacio">Todavía no hay tareas finalizadas en el equipo.</p>
+            ) : (
+              <ol className="mi-panel__ranking-lista">
+                {rankingEquipo.ranking.map((item, index) => {
+                  const posicion = index + 1;
+                  const esYo = item.usuario_id === usuario?.id;
+                  return (
+                    <li
+                      key={item.usuario_id}
+                      className={`mi-panel__ranking-item ${esYo ? 'mi-panel__ranking-item--yo' : ''}`}
+                    >
+                      <span className="mi-panel__ranking-pos">{posicion}</span>
+                      <div className="mi-panel__ranking-info">
+                        <span className="mi-panel__ranking-nombre">
+                          {item.nombre} {item.apellido}
+                          {esYo && <span className="mi-panel__ranking-yo-badge">Tú</span>}
+                        </span>
+                        <span className="mi-panel__ranking-detalle">
+                          {item.tareas_finalizadas} tareas finalizadas
+                        </span>
+                        <div className="mi-panel__ranking-barra-fondo">
+                          <div
+                            className="mi-panel__ranking-barra-relleno"
+                            style={{ width: `${Math.round((item.puntos / maxPuntosRanking) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="mi-panel__ranking-puntos">{item.puntos} pts</span>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </section>
+        )}
 
         {/* ── Últimas tareas ── */}
         {resumen && resumen.ultimas_finalizadas.length > 0 && (

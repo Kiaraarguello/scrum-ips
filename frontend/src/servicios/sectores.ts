@@ -1,9 +1,10 @@
 import api from './api';
 import type { Sector } from '../tipos';
+import { ordenarPorNombre } from '../utilidades/ordenAlfabetico';
 
 export async function listarSectores(): Promise<Sector[]> {
   const { data } = await api.get<Sector[]>('/sectores');
-  return data;
+  return ordenarPorNombre(data);
 }
 
 export async function crearSector(payload: Partial<Sector>): Promise<Sector> {

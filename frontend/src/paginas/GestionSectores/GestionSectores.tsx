@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, ArrowLeft, Search, X } from 'lucide-react';
 import type { Sector } from '../../tipos';
 import { listarSectores, crearSector, actualizarSector, eliminarSector } from '../../servicios/sectores';
+import { ordenarPorNombre } from '../../utilidades/ordenAlfabetico';
 import Boton from '../../componentes/Boton/Boton';
 import CampoTexto from '../../componentes/CampoTexto/CampoTexto';
 import './GestionSectores.css';
@@ -25,10 +26,10 @@ export default function GestionSectores() {
     e.preventDefault();
     if (editando) {
       const act = await actualizarSector(editando, { nombre, descripcion });
-      setSectores((prev) => prev.map((s) => (s.id === editando ? act : s)));
+      setSectores((prev) => ordenarPorNombre(prev.map((s) => (s.id === editando ? act : s))));
     } else {
       const nuevo = await crearSector({ nombre, descripcion });
-      setSectores((prev) => [...prev, nuevo]);
+      setSectores((prev) => ordenarPorNombre([...prev, nuevo]));
     }
     setMostrarForm(false);
   }
@@ -45,14 +46,14 @@ export default function GestionSectores() {
     }
   }
 
-  const sectoresFiltrados = sectores.filter((s) => {
+  const sectoresFiltrados = ordenarPorNombre(sectores.filter((s) => {
     const termino = busqueda.toLowerCase().trim();
     if (!termino) return true;
     return (
       s.nombre.toLowerCase().includes(termino) ||
       (s.descripcion && s.descripcion.toLowerCase().includes(termino))
     );
-  });
+  }));
 
   return (
     <div className="gestion-sectores pagina pagina--centrada">

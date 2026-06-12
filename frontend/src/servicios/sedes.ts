@@ -1,9 +1,10 @@
 import api from './api';
 import type { Sede } from '../tipos';
+import { ordenarPorNombre } from '../utilidades/ordenAlfabetico';
 
 export async function listarSedes(): Promise<Sede[]> {
   const { data } = await api.get<Sede[]>('/sedes');
-  return data;
+  return ordenarPorNombre(data);
 }
 
 export async function crearSede(payload: Partial<Sede>): Promise<Sede> {
