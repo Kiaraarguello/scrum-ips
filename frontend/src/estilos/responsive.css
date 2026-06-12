@@ -1,0 +1,135 @@
+/* ============================================
+   RESPONSIVE GLOBAL — scroll móvil y layouts
+   ============================================ */
+
+:root {
+  --altura-barra: 70px;
+  --altura-banner: 0px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body.tiene-banner-incognito {
+  --altura-banner: 52px;
+}
+
+body.tiene-banner-incognito .banner-incognito {
+  top: var(--safe-top);
+}
+
+body.tiene-banner-incognito .barra-navegacion {
+  top: calc(var(--safe-top) + var(--altura-banner));
+}
+
+/* Contenedor con barra: el scroll es del documento, no un panel interno */
+.layout-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.layout-app__main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Modales: el overlay scrollea en móvil (evita contenido cortado) */
+@media (max-width: 768px) {
+  [class*='__fondo'],
+  .modal-formulario__fondo {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: calc(12px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  [class*='__fondo'] > [class*='__caja'],
+  .modal-formulario__caja {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    margin: 0 auto 24px;
+    flex-shrink: 0;
+  }
+
+  .panel-notificaciones__drawer {
+    width: min(100vw, 360px);
+    height: 100dvh;
+    height: 100vh;
+    padding-bottom: var(--safe-bottom);
+  }
+
+  .cabecera-pagina {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cabecera-pagina__titulo {
+    font-size: 1.45rem;
+  }
+
+  .fila-dos-columnas {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-formulario {
+    flex-direction: column;
+  }
+
+  .acciones-formulario button,
+  .acciones-formulario .boton {
+    width: 100%;
+  }
+
+  .seccion-formulario {
+    padding: 20px 16px;
+  }
+
+  .tabla-envolvente {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagina {
+    padding: 16px 12px 24px;
+  }
+}
+
+/* Páginas full-screen sin barra */
+.no-encontrada {
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+}
+
+.pendiente-pag {
+  min-height: 0;
+}
+
+.pendiente-tarjeta:hover {
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .pendiente-tarjeta {
+    overflow: visible;
+  }
+
+  .mi-panel__grilla-datos,
+  .permisos-admin__grilla-roles {
+    grid-template-columns: 1fr !important;
+  }
+}

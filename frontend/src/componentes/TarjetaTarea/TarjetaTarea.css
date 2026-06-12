@@ -4,11 +4,42 @@
   padding: 10px 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--borde-suave);
-  cursor: grab;
+  cursor: pointer;
   transition: var(--transicion-base);
   user-select: none;
   position: relative;
   overflow: hidden;
+}
+
+.tarjeta-tarea__zona-arrastre {
+  cursor: grab;
+  touch-action: none;
+}
+
+.tarjeta-tarea--arrastrable .tarjeta-tarea__zona-arrastre:active {
+  cursor: grabbing;
+}
+
+.tarjeta-tarea--arrastrando {
+  opacity: 1;
+  box-shadow: 0 16px 40px rgba(45, 62, 139, 0.22);
+  border-color: var(--azul-vibrante, #3b82f6);
+}
+
+.tarjeta-tarea--arrastrando .tarjeta-tarea__zona-arrastre {
+  cursor: grabbing;
+}
+
+.tarjeta-tarea--overlay {
+  cursor: grabbing;
+  box-shadow: 0 16px 40px rgba(45, 62, 139, 0.22);
+  transform: rotate(1.5deg) scale(1.03);
+  border-color: var(--azul-vibrante);
+}
+
+.tarjeta-tarea--fantasma {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .tarjeta-tarea::before {
@@ -28,9 +59,6 @@
   border-color: var(--azul-claro);
 }
 
-.tarjeta-tarea:active {
-  cursor: grabbing;
-}
 
 .tarjeta-tarea__cabecera {
   display: flex;
@@ -166,4 +194,72 @@
   box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
 }
 
+.tarjeta-tarea__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--borde-suave);
+  touch-action: auto;
+  cursor: default;
+}
+
+.tarjeta-tarea__accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border: 1px solid var(--borde-suave);
+  border-radius: 8px;
+  background: var(--blanco-puro);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--fuente-principal);
+  color: var(--texto-oscuro);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.tarjeta-tarea__accion:hover {
+  transform: translateY(-1px);
+}
+
+.tarjeta-tarea__accion--por-hacer:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.tarjeta-tarea__accion--proceso:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.tarjeta-tarea__accion--finalizar:hover {
+  border-color: var(--verde-suave);
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.tarjeta-tarea__accion--pendiente:hover {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+}
+
+@media (max-width: 768px) {
+  .tarjeta-tarea__acciones {
+    opacity: 1;
+  }
+
+  .tarjeta-tarea__accion span {
+    display: none;
+  }
+
+  .tarjeta-tarea__accion {
+    padding: 6px 8px;
+  }
+}
 
