@@ -1,5 +1,10 @@
 import { Router } from 'express';
 import { prisma } from '../db.js';
+import {
+  obtenerIpCliente,
+  normalizarDni,
+  validarLimiteSolicitudPublica,
+} from '../utilidades/limiteSolicitudPublica.js';
 
 const router = Router();
 
@@ -26,7 +31,16 @@ router.get('/sedes', async (req, res) => {
 
 // POST /api/publico/solicitud
 router.post('/solicitud', async (req, res) => {
-  const { titulo, detalle, criticidad = 'baja', sede_id, sector_id, nombre_contacto, telefono_contacto } = req.body;
+  const {
+    titulo,
+    detalle,
+    criticidad = 'baja',
+    sede_id,
+    sector_id,
+    nombre_contacto,
+    telefono_contacto,
+    dni_contacto,
+  } = req.body;
 
   if (!titulo || !titulo.trim()) {
     return res.status(400).json({ detail: 'El campo título es obligatorio' });
@@ -43,8 +57,29 @@ router.post('/solicitud', async (req, res) => {
   if (!telefono_contacto || !telefono_contacto.trim()) {
     return res.status(400).json({ detail: 'El campo teléfono es obligatorio' });
   }
+  if (!dni_contacto || !String(dni_contacto).trim()) {
+    return res.status(400).json({ detail: 'El campo DNI es obligatorio' });
+  }
+  const dniLimpio = normalizarDni(dni_contacto);
+  if (dniLimpio.length < 7 || dniLimpio.length > 8) {
+    return res.status(400).json({ detail: 'Ingresá un DNI válido (7 u 8 dígitos)' });
+  }
   if (!detalle || !detalle.trim()) {
     return res.status(400).json({ detail: 'El campo detalle es obligatorio' });
+  }
+
+  const ip = obtenerIpCliente(req);
+  const sedeIdNum = parseInt(sede_id, 10);
+
+  const limite = await validarLimiteSolicitudPublica(prisma, {
+    ip,
+    dni: dniLimpio,
+    telefono: telefono_contacto,
+    titulo,
+    sedeId: sedeIdNum,
+  });
+  if (!limite.ok) {
+    return res.status(limite.status).json({ detail: limite.detail });
   }
 
   const admin = await prisma.usuario.findFirst({ where: { rol: 'admin', activo: true } });
@@ -60,18 +95,21 @@ router.post('/solicitud', async (req, res) => {
   if (!sector) return res.status(400).json({ detail: 'Sector inválido o no disponible' });
 
   const partes = [];
-  if (nombre_contacto) partes.push(`Contacto: ${nombre_contacto}`);
+  if (nombre_contacto) partes.push(`Contacto: ${nombre_contacto.trim()} (DNI: ${dniLimpio})`);
   if (detalle) partes.push(detalle);
   const nota = partes.join('\n\n') || null;
 
   const tarea = await prisma.tarea.create({
     data: {
-      titulo,
+      titulo: titulo.trim(),
+      titulo_normalizado: limite.tituloNorm,
       nota_llamada: nota,
       criticidad,
       sector_id: sector.id,
-      sede_id,
-      numero_contacto: telefono_contacto || null,
+      sede_id: sedeIdNum,
+      numero_contacto: telefono_contacto.trim(),
+      dni_contacto: dniLimpio,
+      solicitud_ip: ip,
       creada_por: admin.id,
     },
   });

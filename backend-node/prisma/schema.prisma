@@ -110,6 +110,9 @@ model Tarea {
   sector_id          Int
   sede_id            Int
   numero_contacto    String?   @db.VarChar(50)
+  dni_contacto       String?   @db.VarChar(20)
+  solicitud_ip       String?   @db.VarChar(45)
+  titulo_normalizado String?   @db.VarChar(255)
   creada_por         Int
   fecha_creacion     DateTime  @default(now())
   fecha_inicio       DateTime?

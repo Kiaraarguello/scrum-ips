@@ -24,6 +24,8 @@ import { middlewareAuditoria } from './middleware/auditoria.js';
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+app.set('trust proxy', 1);
+
 const corsOrigenes = (process.env.CORS_ORIGENES || 'http://localhost:5173').split(',');
 
 app.use(cors({

@@ -33,6 +33,7 @@ export default function SolicitudPublica() {
   const [sedeId, setSedeId] = useState('');
   const [sectorId, setSectorId] = useState('');
   const [nombre, setNombre] = useState('');
+  const [dni, setDni] = useState('');
   const [telefono, setTelefono] = useState('');
 
   const [bloqueaAtencion, setBloqueaAtencion] = useState<boolean | null>(null);
@@ -78,6 +79,15 @@ export default function SolicitudPublica() {
       setError('Por favor, ingresá tu nombre.');
       return;
     }
+    const dniLimpio = dni.replace(/\D/g, '');
+    if (!dniLimpio) {
+      setError('Por favor, ingresá tu DNI.');
+      return;
+    }
+    if (dniLimpio.length < 7 || dniLimpio.length > 8) {
+      setError('El DNI debe tener 7 u 8 dígitos.');
+      return;
+    }
     if (!telefono.trim()) {
       setError('Por favor, ingresá tu teléfono de contacto.');
       return;
@@ -110,12 +120,14 @@ export default function SolicitudPublica() {
         sede_id: Number(sedeId),
         sector_id: Number(sectorId),
         nombre_contacto: nombre.trim(),
+        dni_contacto: dniLimpio,
         telefono_contacto: telefono.trim(),
       });
       setTareaIdCreada(respuesta.data.id);
       setEnviado(true);
-    } catch {
-      setError('Hubo un error al enviar la solicitud. Intentá de nuevo.');
+    } catch (e: unknown) {
+      const detalle = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setError(detalle ?? 'Hubo un error al enviar la solicitud. Intentá de nuevo.');
     } finally {
       setEnviando(false);
     }
@@ -123,7 +135,7 @@ export default function SolicitudPublica() {
 
   function reiniciar() {
     setTitulo(''); setDetalle(''); setCriticidad('baja');
-    setSedeId(''); setSectorId(''); setNombre(''); setTelefono('');
+    setSedeId(''); setSectorId(''); setNombre(''); setDni(''); setTelefono('');
     setBloqueaAtencion(null);
     setEsRemoto(null);
     setRustdeskId('');
@@ -292,7 +304,7 @@ export default function SolicitudPublica() {
             </div>
           </div>
 
-          {/* Nombre y teléfono */}
+          {/* Nombre, DNI y teléfono */}
           <div className="sp-fila">
             <div className="sp-campo">
               <label className="sp-etiqueta" htmlFor="sp-nombre">
@@ -309,19 +321,34 @@ export default function SolicitudPublica() {
               />
             </div>
             <div className="sp-campo">
-              <label className="sp-etiqueta" htmlFor="sp-telefono">
-                Teléfono <span className="sp-requerido">*</span>
+              <label className="sp-etiqueta" htmlFor="sp-dni">
+                DNI <span className="sp-requerido">*</span>
               </label>
               <input
-                id="sp-telefono"
+                id="sp-dni"
                 className="sp-input"
-                type="tel"
-                placeholder="Número o interno"
-                value={telefono}
-                onChange={e => setTelefono(e.target.value)}
+                type="text"
+                inputMode="numeric"
+                placeholder="Sin puntos"
+                value={dni}
+                onChange={e => setDni(e.target.value.replace(/\D/g, '').slice(0, 8))}
                 required
               />
             </div>
+          </div>
+          <div className="sp-campo">
+            <label className="sp-etiqueta" htmlFor="sp-telefono">
+              Teléfono <span className="sp-requerido">*</span>
+            </label>
+            <input
+              id="sp-telefono"
+              className="sp-input"
+              type="tel"
+              placeholder="Número o interno"
+              value={telefono}
+              onChange={e => setTelefono(e.target.value)}
+              required
+            />
           </div>
 
           {/* Asistencia Remota (RustDesk) */}
