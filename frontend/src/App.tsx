@@ -25,10 +25,10 @@ import AdministradorPermisos from './paginas/AdministradorPermisos/Administrador
 
 function LayoutConBarra({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="layout-app">
       <BarraNavegacion />
-      <main>{children}</main>
-    </>
+      <main className="layout-app__main">{children}</main>
+    </div>
   );
 }
 
@@ -123,7 +123,7 @@ export default function App() {
             <Route
               path="/admin/historial"
               element={
-                <RutaProtegida permisoRequerido="admin_historial">
+                <RutaProtegida permisoRequerido="admin_panel">
                   <LayoutConBarra><HistorialTareas /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -131,7 +131,7 @@ export default function App() {
             <Route
               path="/admin/estadisticas"
               element={
-                <RutaProtegida permisoRequerido="admin_stats">
+                <RutaProtegida permisoRequerido="auditoria_stats">
                   <LayoutConBarra><EstadisticasUsuarios /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -139,7 +139,7 @@ export default function App() {
             <Route
               path="/admin/auditoria"
               element={
-                <RutaProtegida rolesPermitidos={['super_usuario']}>
+                <RutaProtegida permisoRequerido="auditoria_logs">
                   <LayoutConBarra><PanelAuditoria /></LayoutConBarra>
                 </RutaProtegida>
               }
@@ -161,6 +161,7 @@ export default function App() {
               }
             />
             <Route path="/solicitar" element={<SolicitudPublica />} />
+            <Route path="/soporte" element={<SolicitudPublica />} />
             <Route path="/" element={<Login />} />
             <Route path="*" element={<NoEncontrada />} />
           </Routes>
