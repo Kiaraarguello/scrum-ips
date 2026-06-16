@@ -1,0 +1,153 @@
+.sp-valoracion {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.sp-valoracion--compacto {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.sp-valoracion--ok {
+  text-align: center;
+}
+
+.sp-valoracion__titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 6px;
+}
+
+.sp-valoracion__ayuda {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 16px;
+  line-height: 1.45;
+}
+
+.sp-valoracion__estrellas {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.sp-valoracion__estrellas--solo-lectura {
+  margin-bottom: 8px;
+}
+
+.sp-valoracion__estrella-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 6px;
+  transition: transform 0.12s ease;
+}
+
+.sp-valoracion__estrella-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+}
+
+.sp-valoracion__estrella-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sp-valoracion__estrella {
+  color: #d1d5db;
+}
+
+.sp-valoracion__estrella--activa {
+  color: #f59e0b;
+}
+
+.sp-valoracion__campo {
+  margin-bottom: 12px;
+}
+
+.sp-valoracion__textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.sp-valoracion__btn {
+  margin-top: 4px;
+}
+
+.sp-valoracion__error {
+  color: #dc2626;
+  font-size: 0.84rem;
+  margin: 0 0 10px;
+}
+
+.sp-valoracion__cargando {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 16px 0 0;
+}
+
+.sp-valoracion__comentario-enviado {
+  font-size: 0.85rem;
+  color: #475569;
+  font-style: italic;
+  margin: 8px 0 0;
+}
+
+.sp-valoracion-buscar {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.sp-valoracion-buscar__toggle {
+  background: none;
+  border: none;
+  color: #1a56db;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sp-valoracion-buscar__form {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sp-valoracion-buscar__fila {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.sp-valoracion-buscar__fila .sp-campo {
+  flex: 1;
+}
+
+.sp-valoracion-buscar__fila .sp-btn {
+  flex-shrink: 0;
+  width: auto;
+  padding: 10px 18px;
+}
+
+@media (max-width: 480px) {
+  .sp-valoracion-buscar__fila {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sp-valoracion-buscar__fila .sp-btn {
+    width: 100%;
+  }
+}

@@ -117,6 +117,9 @@ model Tarea {
   proyecto_id        Int?
   solucion           String?   @db.Text
   pendiente_descripcion String? @db.Text
+  valoracion_solicitante Int?
+  comentario_solicitante String? @db.Text
+  fecha_valoracion   DateTime?
   activo             Boolean   @default(true)
 
   sector    Sector    @relation(fields: [sector_id], references: [id])

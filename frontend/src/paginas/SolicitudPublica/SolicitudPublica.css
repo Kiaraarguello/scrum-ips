@@ -1,11 +1,17 @@
 /* ── Fondo ── */
 .sp-fondo {
+  min-height: 100dvh;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 50%, #e8f0fe 100%);
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 40px 16px 60px;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(40px, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Caja central ── */
@@ -198,6 +204,11 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+}
+
+.sp-caja--con-valoracion {
+  max-width: 620px;
+  padding: 48px 40px 40px;
 }
 .sp-exito-icono {
   width: 64px; height: 64px;

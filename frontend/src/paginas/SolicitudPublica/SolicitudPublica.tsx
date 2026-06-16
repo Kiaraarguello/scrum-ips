@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import apiPublica from '../../servicios/apiPublica';
 import logoSiglas from '../../assets/logo-siglas.svg';
 import Selector from '../../componentes/Selector/Selector';
+import ValoracionSolicitud from './ValoracionSolicitud';
 import './SolicitudPublica.css';
+import './ValoracionSolicitud.css';
 
 interface Sede { id: number; nombre: string; }
+interface Sector { id: number; nombre: string; }
 
 type Criticidad = 'baja' | 'media' | 'alta';
 
@@ -22,11 +25,13 @@ const CRITICIDAD_DESC: Record<Criticidad, string> = {
 
 export default function SolicitudPublica() {
   const [sedes, setSedes] = useState<Sede[]>([]);
+  const [sectores, setSectores] = useState<Sector[]>([]);
 
   const [titulo, setTitulo] = useState('');
   const [detalle, setDetalle] = useState('');
   const [criticidad, setCriticidad] = useState<Criticidad>('baja');
   const [sedeId, setSedeId] = useState('');
+  const [sectorId, setSectorId] = useState('');
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
 
@@ -40,8 +45,13 @@ export default function SolicitudPublica() {
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState('');
 
+  const [mostrarBuscarValoracion, setMostrarBuscarValoracion] = useState(false);
+  const [idBuscarValoracion, setIdBuscarValoracion] = useState('');
+  const [idValoracionActiva, setIdValoracionActiva] = useState<number | null>(null);
+
   useEffect(() => {
     apiPublica.get<Sede[]>('/publico/sedes').then(r => setSedes(r.data));
+    apiPublica.get<Sector[]>('/publico/sectores').then(r => setSectores(r.data));
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -54,6 +64,10 @@ export default function SolicitudPublica() {
     }
     if (!sedeId) {
       setError('Por favor, seleccioná tu sede.');
+      return;
+    }
+    if (!sectorId) {
+      setError('Por favor, seleccioná el área que debe atender tu solicitud.');
       return;
     }
     if (bloqueaAtencion === null) {
@@ -94,6 +108,7 @@ export default function SolicitudPublica() {
         detalle: detalleFinal,
         criticidad,
         sede_id: Number(sedeId),
+        sector_id: Number(sectorId),
         nombre_contacto: nombre.trim(),
         telefono_contacto: telefono.trim(),
       });
@@ -108,19 +123,32 @@ export default function SolicitudPublica() {
 
   function reiniciar() {
     setTitulo(''); setDetalle(''); setCriticidad('baja');
-    setSedeId(''); setNombre(''); setTelefono('');
+    setSedeId(''); setSectorId(''); setNombre(''); setTelefono('');
     setBloqueaAtencion(null);
     setEsRemoto(null);
     setRustdeskId('');
     setRustdeskPassword('');
     setTareaIdCreada(null);
     setEnviado(false); setError('');
+    setMostrarBuscarValoracion(false);
+    setIdBuscarValoracion('');
+    setIdValoracionActiva(null);
+  }
+
+  function buscarValoracion() {
+    const id = parseInt(idBuscarValoracion, 10);
+    if (Number.isNaN(id) || id < 1) {
+      setError('Ingresá un número de solicitud válido.');
+      return;
+    }
+    setError('');
+    setIdValoracionActiva(id);
   }
 
   if (enviado) {
     return (
       <div className="sp-fondo">
-        <div className="sp-caja sp-caja--exito">
+        <div className="sp-caja sp-caja--exito sp-caja--con-valoracion">
           <div className="sp-exito-icono">✓</div>
           <h1 className="sp-exito-titulo">¡Solicitud enviada!</h1>
           {tareaIdCreada !== null && (
@@ -130,7 +158,13 @@ export default function SolicitudPublica() {
           )}
           <p className="sp-exito-texto">
             El equipo de sistemas recibió tu solicitud y la va a atender a la brevedad.
+            Guardá este número para valorar la atención cuando esté resuelta.
           </p>
+
+          {tareaIdCreada !== null && (
+            <ValoracionSolicitud solicitudId={tareaIdCreada} />
+          )}
+
           <button className="sp-btn sp-btn--secundario" onClick={reiniciar}>
             Enviar otra solicitud
           </button>
@@ -182,6 +216,23 @@ export default function SolicitudPublica() {
               opciones={[
                 { valor: '', etiqueta: 'Seleccioná tu sede' },
                 ...sedes.map(s => ({ valor: s.id, etiqueta: s.nombre }))
+              ]}
+            />
+          </div>
+
+          {/* Sector / área */}
+          <div className="sp-campo">
+            <label className="sp-etiqueta" htmlFor="sp-sector">
+              Área de soporte <span className="sp-requerido">*</span>
+            </label>
+            <Selector
+              id="sp-sector"
+              value={sectorId}
+              onChange={e => setSectorId(e.target.value)}
+              required
+              opciones={[
+                { valor: '', etiqueta: 'Seleccioná el equipo que debe atender' },
+                ...sectores.map(s => ({ valor: s.id, etiqueta: s.nombre }))
               ]}
             />
           </div>
@@ -361,6 +412,47 @@ export default function SolicitudPublica() {
           <button type="submit" className="sp-btn sp-btn--primario" disabled={enviando}>
             {enviando ? 'Enviando...' : 'Enviar solicitud'}
           </button>
+
+          <div className="sp-valoracion-buscar">
+            <button
+              type="button"
+              className="sp-valoracion-buscar__toggle"
+              onClick={() => {
+                setMostrarBuscarValoracion(v => !v);
+                setIdValoracionActiva(null);
+                setError('');
+              }}
+            >
+              {mostrarBuscarValoracion ? 'Ocultar valoración' : '¿Ya resolvieron tu pedido? Valorá con tu número'}
+            </button>
+
+            {mostrarBuscarValoracion && (
+              <div className="sp-valoracion-buscar__form">
+                <div className="sp-valoracion-buscar__fila">
+                  <div className="sp-campo">
+                    <label className="sp-etiqueta" htmlFor="sp-buscar-id">
+                      Número de solicitud
+                    </label>
+                    <input
+                      id="sp-buscar-id"
+                      className="sp-input"
+                      type="number"
+                      min={1}
+                      placeholder="Ej: 165"
+                      value={idBuscarValoracion}
+                      onChange={e => setIdBuscarValoracion(e.target.value)}
+                    />
+                  </div>
+                  <button type="button" className="sp-btn sp-btn--secundario" onClick={buscarValoracion}>
+                    Buscar
+                  </button>
+                </div>
+                {idValoracionActiva !== null && (
+                  <ValoracionSolicitud solicitudId={idValoracionActiva} compacto />
+                )}
+              </div>
+            )}
+          </div>
         </form>
       </div>
     </div>
