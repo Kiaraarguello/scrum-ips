@@ -121,6 +121,13 @@ export interface ItemRanking {
   tareas_finalizadas: number;
 }
 
+export interface RankingEquipo {
+  ranking: ItemRanking[];
+  mi_posicion: number | null;
+  mis_puntos: number;
+  mis_tareas_finalizadas: number;
+}
+
 export interface ResumenPropio {
   en_proceso: number;
   finalizadas_7_dias: number;

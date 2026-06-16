@@ -6,7 +6,8 @@ const router = Router();
 
 router.get('/', obtenerUsuarioActual, async (req, res) => {
   const sectores = await prisma.sector.findMany({
-    where: { activo: true }
+    where: { activo: true },
+    orderBy: { nombre: 'asc' },
   });
   return res.json(sectores);
 });
