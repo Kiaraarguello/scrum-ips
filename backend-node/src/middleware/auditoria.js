@@ -3,6 +3,13 @@ import { prisma } from '../db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secreto_desarrollo';
 
+function obtenerRutaApi(req) {
+  const combinada = `${req.baseUrl || ''}${req.path || ''}`;
+  if (combinada.startsWith('/api')) return combinada;
+  const original = (req.originalUrl || '').split('?')[0];
+  return original.startsWith('/api') ? original : combinada;
+}
+
 // Helper para sanitizar el cuerpo de la petición (redactar contraseñas)
 function sanitizarCuerpo(body) {
   if (!body) return null;
@@ -38,14 +45,14 @@ function sanitizarCuerpo(body) {
 }
 
 export function middlewareAuditoria(req, res, next) {
-  // Solo auditamos llamadas a la API (rutas que empiezan con /api)
-  if (!req.path.startsWith('/api')) {
+  const path = obtenerRutaApi(req);
+
+  if (!path.startsWith('/api')) {
     return next();
   }
 
-  const { method, path, ip, body, query } = req;
+  const { method, ip, body, query } = req;
 
-  // Auditamos mutaciones (POST, PUT, DELETE, PATCH) e inicios de sesión
   const esMutacion = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
   const esLogin = path === '/api/auth/login' && method === 'POST';
 
@@ -53,13 +60,16 @@ export function middlewareAuditoria(req, res, next) {
     return next();
   }
 
-  // Interceptamos la finalización de la petición de forma asíncrona
   res.on('finish', async () => {
     try {
+      const esLoginEvento = path === '/api/auth/login' && method === 'POST';
+      if (!esLoginEvento && res.statusCode >= 400) {
+        return;
+      }
+
       let usuarioId = null;
       let email = null;
 
-      // 1. Obtener usuario del objeto request si ya está autenticado
       if (req.usuario) {
         usuarioId = req.usuario.id;
         email = req.usuario.email;
@@ -67,7 +77,6 @@ export function middlewareAuditoria(req, res, next) {
         usuarioId = parseInt(req.payload.sub);
       }
 
-      // 2. Si no hay usuario y hay header de autorización, intentar decodificar el token JWT manualmente
       if (!usuarioId) {
         const authHeader = req.headers.authorization;
         if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -77,33 +86,30 @@ export function middlewareAuditoria(req, res, next) {
             if (decoded && decoded.sub) {
               usuarioId = parseInt(decoded.sub);
             }
-          } catch (err) {
-            // Ignorar errores de verificación de token
+          } catch {
+            // token inválido
           }
         }
       }
 
-      // 3. Buscar el email en la BD si tenemos el id de usuario pero no el email
       if (usuarioId && !email) {
         const u = await prisma.usuario.findUnique({
           where: { id: usuarioId },
-          select: { email: true }
+          select: { email: true, nombre: true, apellido: true },
         });
         if (u) {
           email = u.email;
         }
       }
 
-      // 4. Caso especial: Inicio de sesión
-      if (esLogin) {
+      if (esLoginEvento) {
         if (body && body.email) {
           email = body.email;
         }
-        // Si el login fue exitoso (200), buscar el ID del usuario
         if (res.statusCode === 200 && body && body.email) {
           const u = await prisma.usuario.findFirst({
             where: { email: body.email },
-            select: { id: true }
+            select: { id: true },
           });
           if (u) {
             usuarioId = u.id;
@@ -111,14 +117,18 @@ export function middlewareAuditoria(req, res, next) {
         }
       }
 
-      // Determinar la acción amigable y la tabla de auditoría correspondiente
       let accion = `${method} ${path}`;
       let modeloPrisma = null;
 
-      // Modularización según el endpoint
       if (path.startsWith('/api/auth/login')) {
         modeloPrisma = prisma.auditoriaSesion;
         accion = res.statusCode === 200 ? 'Inicio de sesión exitoso' : 'Intento de inicio de sesión fallido';
+      } else if (path.startsWith('/api/auth/impersonate')) {
+        modeloPrisma = prisma.auditoriaSesion;
+        accion = 'Inicio de sesión incógnito';
+      } else if (path.startsWith('/api/permisos')) {
+        modeloPrisma = prisma.auditoriaUsuario;
+        if (method === 'PUT') accion = 'Modificación de permisos de rol';
       } else if (path.startsWith('/api/usuarios')) {
         modeloPrisma = prisma.auditoriaUsuario;
         if (method === 'POST') accion = 'Creación de usuario';
@@ -158,20 +168,18 @@ export function middlewareAuditoria(req, res, next) {
         else if (method === 'DELETE') accion = 'Eliminación de proyecto';
       }
 
-      // Si no calza con ninguno específico pero es una mutación, lo ignoramos o podríamos usar una genérica.
-      // Pero dado que el usuario pidió modular y bien organizado, auditar estas 7 entidades cubre el 100% de la BD.
       if (!modeloPrisma) {
         return;
       }
 
-      // Preparar los detalles
       const detalles = {
+        ruta: path,
+        metodo: method,
         body: sanitizarCuerpo(body),
         query: Object.keys(query).length > 0 ? query : undefined,
-        params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined
+        params: req.params && Object.keys(req.params).length > 0 ? req.params : undefined,
       };
 
-      // Guardar en la tabla modular correspondiente de base de datos
       await modeloPrisma.create({
         data: {
           usuario_id: usuarioId,
@@ -179,12 +187,11 @@ export function middlewareAuditoria(req, res, next) {
           accion,
           detalles: JSON.stringify(detalles),
           ip: ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-          estado_codigo: res.statusCode
-        }
+          estado_codigo: res.statusCode,
+        },
       });
-
     } catch (error) {
-      console.error('Error al registrar auditoría modular:', error);
+      console.error('Error al registrar auditoría modular:', error.message);
     }
   });
 

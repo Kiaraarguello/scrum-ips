@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Users, Layers, Building2, History, BarChart2, FolderKanban } from 'lucide-react';
+import { Users, Layers, Building2, History, BarChart2, FolderKanban, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../contextos/ContextoAuth';
+import { esSuperUsuario, tienePermiso } from '../../utilidades/permisos';
 import './PanelAdmin.css';
 
 const ACCESOS = [
@@ -10,25 +11,32 @@ const ACCESOS = [
   { ruta: '/admin/historial', icono: History, titulo: 'Historial', descripcion: 'Movimientos de tareas' },
   { ruta: '/admin/estadisticas', icono: BarChart2, titulo: 'Estadisticas', descripcion: 'Ranking de productividad' },
   { ruta: '/admin/backlog', icono: FolderKanban, titulo: 'Backlog', descripcion: 'Gestionar proyectos y tareas externas' },
+  { ruta: '/admin/auditoria', icono: ShieldAlert, titulo: 'Auditoría', descripcion: 'Quién hizo cada cambio, cuándo y dónde' },
 ];
 
 export default function PanelAdmin() {
   const { usuario } = useAuth();
   
   const accesosFiltrados = ACCESOS.filter(acceso => {
-    if (usuario?.rol === 'super_usuario') return true;
+    if (esSuperUsuario(usuario?.rol)) return true;
 
     if (acceso.ruta === '/admin/usuarios') {
-      return usuario?.permisos?.admin_usuarios === true;
+      return tienePermiso(usuario, 'admin_usuarios');
     }
     if (acceso.ruta === '/admin/sectores' || acceso.ruta === '/admin/sedes') {
-      return usuario?.permisos?.admin_sectores_sedes === true;
+      return tienePermiso(usuario, 'admin_sectores_sedes');
     }
     if (acceso.ruta === '/admin/estadisticas') {
-      return usuario?.permisos?.admin_stats === true;
+      return tienePermiso(usuario, 'auditoria_stats');
     }
     if (acceso.ruta === '/admin/historial') {
-      return usuario?.permisos?.admin_historial === true;
+      return tienePermiso(usuario, 'admin_panel');
+    }
+    if (acceso.ruta === '/admin/backlog') {
+      return tienePermiso(usuario, 'tablero_ver');
+    }
+    if (acceso.ruta === '/admin/auditoria') {
+      return tienePermiso(usuario, 'auditoria_logs');
     }
     return true;
   });
