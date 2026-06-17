@@ -31,8 +31,14 @@ router.get('/', obtenerUsuarioActual, async (req, res) => {
     req.usuario.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
     req.usuario.sectores?.some(us => us.sector?.nombre?.toLowerCase() === 'todos los sectores');
 
-  if (req.usuario.rol !== 'admin' && !req.usuario.ver_todos && !perteneceATodosLosSectores) {
+  const rolesVistaGlobal = ['admin', 'super_admin', 'super_usuario'];
+  if (
+    !rolesVistaGlobal.includes(req.usuario.rol) &&
+    !req.usuario.ver_todos &&
+    !perteneceATodosLosSectores
+  ) {
     const sectorIds = req.usuario.sectores.map(us => us.sector_id);
+    if (sectorIds.length === 0) return res.json([]);
     where.sector_id = { in: sectorIds };
   }
 
@@ -60,13 +66,42 @@ router.get('/:id/historial', obtenerUsuarioActual, async (req, res) => {
 
 router.post('/', obtenerUsuarioActual, async (req, res) => {
   const { titulo, nota_llamada, criticidad = 'baja', sector_id, sede_id, numero_contacto, proyecto_id, asignado_ids } = req.body;
+
+  if (!titulo || !String(titulo).trim()) {
+    return res.status(400).json({ detail: 'El título es obligatorio' });
+  }
+  if (!sector_id) {
+    return res.status(400).json({ detail: 'El sector es obligatorio' });
+  }
+  if (!sede_id) {
+    return res.status(400).json({ detail: 'La sede es obligatoria' });
+  }
+
+  const sectorIdNum = parseInt(sector_id, 10);
+  const sedeIdNum = parseInt(sede_id, 10);
+  if (Number.isNaN(sectorIdNum) || Number.isNaN(sedeIdNum)) {
+    return res.status(400).json({ detail: 'Sector o sede inválidos' });
+  }
+
+  const [sector, sede] = await Promise.all([
+    prisma.sector.findFirst({ where: { id: sectorIdNum, activo: true } }),
+    prisma.sede.findFirst({ where: { id: sedeIdNum, activo: true } }),
+  ]);
+  if (!sector) return res.status(400).json({ detail: 'Sector inválido o inactivo' });
+  if (!sede) return res.status(400).json({ detail: 'Sede inválida o inactiva' });
+
+  const criticidadesValidas = ['alta', 'media', 'baja'];
+  if (!criticidadesValidas.includes(criticidad)) {
+    return res.status(400).json({ detail: 'Criticidad inválida' });
+  }
+
   const data = { 
-    titulo, 
-    nota_llamada, 
+    titulo: String(titulo).trim(), 
+    nota_llamada: nota_llamada?.trim() || null, 
     criticidad, 
-    sector_id, 
-    sede_id, 
-    numero_contacto, 
+    sector_id: sectorIdNum, 
+    sede_id: sedeIdNum, 
+    numero_contacto: numero_contacto?.trim() || null, 
     proyecto_id: proyecto_id || null, 
     creada_por: req.usuario.id 
   };
@@ -88,15 +123,6 @@ router.put('/:id', obtenerUsuarioActual, async (req, res) => {
   const id = parseInt(req.params.id);
   const tarea = await prisma.tarea.findUnique({ where: { id } });
   if (!tarea) return res.status(404).json({ detail: 'Tarea no encontrada' });
-
-  const esSuperUsuario = req.usuario.rol === 'super_usuario';
-  if (!esSuperUsuario) {
-    const { obtenerPermisosRol } = await import('./permisos.js');
-    const perms = await obtenerPermisosRol(req.usuario.rol);
-    if (perms['tablero_editar'] !== true) {
-      return res.status(403).json({ detail: 'No tienes permiso para editar tareas' });
-    }
-  }
   const { titulo, nota_llamada, criticidad, sector_id, sede_id, numero_contacto, asignado_ids } = req.body;
   const data = {};
   if (titulo !== undefined) data.titulo = titulo;
@@ -159,15 +185,6 @@ router.delete('/:id', obtenerUsuarioActual, async (req, res) => {
   const id = parseInt(req.params.id);
   const tarea = await prisma.tarea.findUnique({ where: { id } });
   if (!tarea) return res.status(404).json({ detail: 'Tarea no encontrada' });
-
-  const esSuperUsuario = req.usuario.rol === 'super_usuario';
-  if (!esSuperUsuario) {
-    const { obtenerPermisosRol } = await import('./permisos.js');
-    const perms = await obtenerPermisosRol(req.usuario.rol);
-    if (perms['tablero_eliminar'] !== true) {
-      return res.status(403).json({ detail: 'No tienes permiso para eliminar/archivar tareas' });
-    }
-  }
   await prisma.tarea.update({ where: { id }, data: { activo: false } });
   return res.status(204).send();
 });
