@@ -11,6 +11,11 @@ export function tienePermiso(usuario: Usuario | null | undefined, clave: string)
   return usuario.permisos?.[clave] === true;
 }
 
+/** Todos los usuarios autenticados pueden crear tareas desde el tablero. */
+export function puedeCrearTarea(usuario: Usuario | null | undefined): boolean {
+  return !!usuario;
+}
+
 export function puedeAccederAdmin(usuario: Usuario | null | undefined): boolean {
   if (!usuario) return false;
   if (['admin', 'super_admin', 'super_usuario'].includes(usuario.rol)) return true;
