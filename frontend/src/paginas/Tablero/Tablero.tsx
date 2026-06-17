@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Tarea, EstadoTarea } from '../../tipos';
 import { listarTareas, moverTarea, eliminarTarea } from '../../servicios/tareas';
 import { ordenarPorCriticidad } from '../../utilidades/pesoCriticidad';
-import { tienePermiso } from '../../utilidades/permisos';
+import { tienePermiso, puedeCrearTarea } from '../../utilidades/permisos';
 import { useAuth } from '../../contextos/ContextoAuth';
 import ColumnaTablero from '../../componentes/ColumnaTablero/ColumnaTablero';
 import {
@@ -274,7 +274,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
             <Clock size={16} style={{ marginRight: '6px' }} />
             Pendientes
           </Boton>
-          {tienePermiso(usuario, 'tablero_crear') && (
+          {puedeCrearTarea(usuario) && (
             <Boton onClick={() => setMostrarModal(true)}>
               <Plus size={16} />
               Nueva tarea
@@ -323,9 +323,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
                 tareas={tareasPorEstado(estado)}
                 resaltada={columnaDestino === estado}
                 onClickTarea={(t) => setTareaParaEditar(t)}
-                onEliminarTarea={
-                  tienePermiso(usuario, 'tablero_eliminar') ? archivarTarea : undefined
-                }
+                onEliminarTarea={archivarTarea}
                 onCambiarEstado={solicitarCambioEstado}
                 puedeMover={puedeMoverTarea}
                 puedeFinalizar={puedeFinalizarTarea}
