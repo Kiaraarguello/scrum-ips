@@ -31,6 +31,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
   const [usuarioIdsAsignados, setUsuarioIdsAsignados] = useState<number[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
+  const [erroresCampos, setErroresCampos] = useState<{ titulo?: string; sector?: string; sede?: string }>({});
   const { usuario: usuarioLogueado } = useAuth();
 
   useEffect(() => {
@@ -83,25 +84,36 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
 
   async function manejarEnvio(e: React.FormEvent) {
     e.preventDefault();
-    if (!titulo.trim()) {
-      setError('El título es obligatorio');
+    setError('');
+
+    const nuevosErrores: { titulo?: string; sector?: string; sede?: string } = {};
+    if (!titulo.trim()) nuevosErrores.titulo = 'El título es obligatorio';
+    if (!sectorId) nuevosErrores.sector = 'Seleccioná un sector';
+    if (!sedeId) nuevosErrores.sede = 'Seleccioná una sede';
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErroresCampos(nuevosErrores);
+      setError('Completá los campos obligatorios marcados con *');
       return;
     }
+
+    setErroresCampos({});
     setEnviando(true);
     try {
       await crearTarea({
         titulo: titulo.trim(),
         nota_llamada: nota.trim() || undefined,
         criticidad: criticidad as 'alta' | 'media' | 'baja',
-        sector_id: sectorId ? Number(sectorId) : undefined,
-        sede_id: sedeId ? Number(sedeId) : undefined,
+        sector_id: Number(sectorId),
+        sede_id: Number(sedeId),
         numero_contacto: contacto.trim() || undefined,
         proyecto_id: proyectoId,
         asignado_ids: usuarioIdsAsignados,
       });
       onCreada();
-    } catch {
-      setError('Error al crear la tarea');
+    } catch (err: unknown) {
+      const detalle = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setError(detalle ?? 'Error al crear la tarea');
     } finally {
       setEnviando(false);
     }
@@ -112,23 +124,34 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
       <div className="modal-nueva-tarea__caja" onClick={(e) => e.stopPropagation()}>
         <h2 className="modal-nueva-tarea__titulo">Nueva tarea</h2>
         <form onSubmit={manejarEnvio} className="modal-nueva-tarea__formulario">
-          <CampoTexto etiqueta="Titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} id="titulo-tarea" />
+          <CampoTexto
+            etiqueta="Título *"
+            value={titulo}
+            onChange={(e) => { setTitulo(e.target.value); setErroresCampos(p => ({ ...p, titulo: undefined })); }}
+            id="titulo-tarea"
+            error={erroresCampos.titulo}
+            required
+          />
           <div className="modal-nueva-tarea__fila">
             <Selector
-              etiqueta="Sector"
+              etiqueta="Sector *"
               id="sector-tarea"
               value={sectorId}
-              onChange={(e) => setSectorId(e.target.value)}
+              onChange={(e) => { setSectorId(e.target.value); setErroresCampos(p => ({ ...p, sector: undefined })); }}
+              error={erroresCampos.sector}
+              required
               opciones={[
                 { valor: '', etiqueta: 'Seleccionar sector' },
                 ...sectores.filter((s) => s.activo && s.nombre.toLowerCase() !== 'todos los sectores').map((s) => ({ valor: s.id, etiqueta: s.nombre })),
               ]}
             />
             <Selector
-              etiqueta="Sede"
+              etiqueta="Sede *"
               id="sede-tarea"
               value={sedeId}
-              onChange={(e) => setSedeId(e.target.value)}
+              onChange={(e) => { setSedeId(e.target.value); setErroresCampos(p => ({ ...p, sede: undefined })); }}
+              error={erroresCampos.sede}
+              required
               opciones={[
                 { valor: '', etiqueta: 'Seleccionar sede' },
                 ...sedes.filter((s) => s.activo).map((s) => ({ valor: s.id, etiqueta: s.nombre })),
@@ -137,7 +160,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
           </div>
           <div className="modal-nueva-tarea__fila">
             <Selector
-              etiqueta="Criticidad"
+              etiqueta="Criticidad *"
               id="criticidad-tarea"
               value={criticidad}
               onChange={(e) => setCriticidad(e.target.value)}
