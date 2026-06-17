@@ -20,6 +20,7 @@ interface Props {
   onCambiarEstado?: (tarea: Tarea, nuevoEstado: EstadoTarea) => void;
   puedeMover?: (tarea: Tarea) => boolean;
   puedeFinalizar?: (tarea: Tarea) => boolean;
+  esBacklog?: boolean;
 }
 
 export default function ColumnaTablero({
@@ -31,6 +32,7 @@ export default function ColumnaTablero({
   onCambiarEstado,
   puedeMover,
   puedeFinalizar,
+  esBacklog = false,
 }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: estado });
   const { usuario } = useAuth();
@@ -46,6 +48,7 @@ export default function ColumnaTablero({
   const propsTarjeta = (tarea: Tarea, esMiaTarjeta: boolean) => ({
     tarea,
     esMia: esMiaTarjeta,
+    esBacklog,
     onClick: () => onClickTarea?.(tarea),
     onEliminar: onEliminarTarea ? () => onEliminarTarea(tarea) : undefined,
     onCambiarEstado: onCambiarEstado ? (nuevo: EstadoTarea) => onCambiarEstado(tarea, nuevo) : undefined,

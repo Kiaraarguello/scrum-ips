@@ -4,6 +4,7 @@ import { MapPin, Phone, Layers, Trash2, ListTodo, PlayCircle, CheckCircle, Clock
 import type { Tarea, EstadoTarea } from '../../tipos';
 import BadgeCriticidad from '../BadgeCriticidad/BadgeCriticidad';
 import { formatearFechaHora } from '../../utilidades/formatoFecha';
+import { etiquetaIdTarea } from '../../utilidades/backlog';
 import './TarjetaTarea.css';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   puedeMover?: boolean;
   puedeFinalizar?: boolean;
   esMia?: boolean;
+  esBacklog?: boolean;
 }
 
 export default function TarjetaTarea({
@@ -24,6 +26,7 @@ export default function TarjetaTarea({
   puedeMover = false,
   puedeFinalizar = false,
   esMia,
+  esBacklog = false,
 }: Props) {
   const puedeArrastrar = puedeMover || puedeFinalizar;
 
@@ -57,7 +60,7 @@ export default function TarjetaTarea({
       >
         <div className="tarjeta-tarea__cabecera">
           <div className="tarjeta-tarea__cabecera-izquierda">
-            <span className="tarjeta-tarea__id-badge">#{tarea.id}</span>
+            <span className="tarjeta-tarea__id-badge">{etiquetaIdTarea(tarea)}</span>
             <BadgeCriticidad criticidad={tarea.criticidad} />
             {tarea.asignados && tarea.asignados.length > 0 && (
               <span
@@ -87,26 +90,28 @@ export default function TarjetaTarea({
           </div>
         </div>
         <h3 className="tarjeta-tarea__titulo">{tarea.titulo}</h3>
-        <div className="tarjeta-tarea__pie">
-          {tarea.sede && (
-            <span className="tarjeta-tarea__meta">
-              <MapPin size={11} />
-              {tarea.sede.nombre}
-            </span>
-          )}
-          {tarea.sector && (
-            <span className="tarjeta-tarea__meta">
-              <Layers size={11} />
-              {tarea.sector.nombre}
-            </span>
-          )}
-          {tarea.numero_contacto && (
-            <span className="tarjeta-tarea__meta">
-              <Phone size={11} />
-              {tarea.numero_contacto}
-            </span>
-          )}
-        </div>
+        {!esBacklog && (
+          <div className="tarjeta-tarea__pie">
+            {tarea.sede && (
+              <span className="tarjeta-tarea__meta">
+                <MapPin size={11} />
+                {tarea.sede.nombre}
+              </span>
+            )}
+            {tarea.sector && (
+              <span className="tarjeta-tarea__meta">
+                <Layers size={11} />
+                {tarea.sector.nombre}
+              </span>
+            )}
+            {tarea.numero_contacto && (
+              <span className="tarjeta-tarea__meta">
+                <Phone size={11} />
+                {tarea.numero_contacto}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {mostrarAcciones && (

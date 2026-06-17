@@ -5,6 +5,7 @@ import { listarSedes } from '../../servicios/sedes';
 import { crearTarea } from '../../servicios/tareas';
 import { listarUsuarios } from '../../servicios/usuarios';
 import { useAuth } from '../../contextos/ContextoAuth';
+import type { MiembroProyecto } from '../../utilidades/backlog';
 import { Check } from 'lucide-react';
 import CampoTexto from '../CampoTexto/CampoTexto';
 import Selector from '../Selector/Selector';
@@ -16,9 +17,11 @@ interface Props {
   onCerrar: () => void;
   onCreada: () => void;
   proyectoId?: number;
+  miembrosProyecto?: MiembroProyecto[];
 }
 
-export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Props) {
+export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId, miembrosProyecto }: Props) {
+  const esBacklog = proyectoId != null;
   const [titulo, setTitulo] = useState('');
   const [nota, setNota] = useState('');
   const [criticidad, setCriticidad] = useState('baja');
@@ -40,6 +43,23 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
   }, []);
 
   useEffect(() => {
+    if (esBacklog && miembrosProyecto?.length) {
+      const ids = new Set(miembrosProyecto.map((m) => m.id));
+      listarUsuarios().then((lista) => {
+        const filtrados = lista.filter((u) => ids.has(u.id) && u.activo);
+        const ordenados = [...filtrados].sort((a, b) => {
+          const idActual = usuarioLogueado?.id;
+          if (a.id === idActual && b.id !== idActual) return -1;
+          if (b.id === idActual && a.id !== idActual) return 1;
+          const nombreA = `${a.nombre} ${a.apellido}`.toLowerCase();
+          const nombreB = `${b.nombre} ${b.apellido}`.toLowerCase();
+          return nombreA.localeCompare(nombreB);
+        });
+        setUsuariosAsignables(ordenados);
+      });
+      return;
+    }
+
     if (!sectorId) {
       setUsuariosAsignables([]);
       setUsuarioIdsAsignados([]);
@@ -71,7 +91,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
       });
       setUsuariosAsignables(ordenados);
     });
-  }, [sectorId, usuarioLogueado]);
+  }, [sectorId, usuarioLogueado, esBacklog, miembrosProyecto]);
 
   const obtenerColorAvatar = (texto: string) => {
     let hash = 0;
@@ -88,8 +108,10 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
 
     const nuevosErrores: { titulo?: string; sector?: string; sede?: string } = {};
     if (!titulo.trim()) nuevosErrores.titulo = 'El título es obligatorio';
-    if (!sectorId) nuevosErrores.sector = 'Seleccioná un sector';
-    if (!sedeId) nuevosErrores.sede = 'Seleccioná una sede';
+    if (!esBacklog) {
+      if (!sectorId) nuevosErrores.sector = 'Seleccioná un sector';
+      if (!sedeId) nuevosErrores.sede = 'Seleccioná una sede';
+    }
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErroresCampos(nuevosErrores);
@@ -104,9 +126,9 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
         titulo: titulo.trim(),
         nota_llamada: nota.trim() || undefined,
         criticidad: criticidad as 'alta' | 'media' | 'baja',
-        sector_id: Number(sectorId),
-        sede_id: Number(sedeId),
-        numero_contacto: contacto.trim() || undefined,
+        sector_id: esBacklog ? undefined : Number(sectorId),
+        sede_id: esBacklog ? undefined : Number(sedeId),
+        numero_contacto: esBacklog ? undefined : (contacto.trim() || undefined),
         proyecto_id: proyectoId,
         asignado_ids: usuarioIdsAsignados,
       });
@@ -132,6 +154,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
             error={erroresCampos.titulo}
             required
           />
+          {!esBacklog && (
           <div className="modal-nueva-tarea__fila">
             <Selector
               etiqueta="Sector *"
@@ -158,6 +181,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
               ]}
             />
           </div>
+          )}
           <div className="modal-nueva-tarea__fila">
             <Selector
               etiqueta="Criticidad *"
@@ -170,6 +194,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
                 { valor: 'alta', etiqueta: 'Alta' },
               ]}
             />
+            {!esBacklog && (
             <CampoTexto
               etiqueta="Contacto (opcional)"
               value={contacto}
@@ -177,6 +202,7 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
               id="contacto-tarea"
               placeholder="Numero o nombre"
             />
+            )}
           </div>
           <div className="modal-nueva-tarea__nota-campo">
             <label className="campo-texto__etiqueta" htmlFor="nota-tarea">Nota de llamada (opcional)</label>
@@ -189,11 +215,11 @@ export default function ModalNuevaTarea({ onCerrar, onCreada, proyectoId }: Prop
               placeholder="Detalle de la consulta..."
             />
           </div>
-          {sectorId && (
+          {((esBacklog && miembrosProyecto?.length) || sectorId) && (
             <div className="modal-nueva-tarea__nota-campo" style={{ gap: '8px' }}>
               <label className="campo-texto__etiqueta">Asignar Equipo (opcional)</label>
               {usuariosAsignables.length === 0 ? (
-                <p className="modal-asignar__vacio">No hay usuarios disponibles en este sector.</p>
+                <p className="modal-asignar__vacio">{esBacklog ? 'No hay miembros en este backlog.' : 'No hay usuarios disponibles en este sector.'}</p>
               ) : (
                 <div className="modal-asignar__lista" style={{ maxHeight: '120px' }}>
                   {usuariosAsignables.map((u) => {

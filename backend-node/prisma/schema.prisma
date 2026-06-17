@@ -107,8 +107,8 @@ model Tarea {
   nota_llamada       String?   @db.Text
   criticidad         String    @default("baja") @db.VarChar(10)
   estado             String    @default("por_hacer") @db.VarChar(20)
-  sector_id          Int
-  sede_id            Int
+  sector_id          Int?
+  sede_id            Int?
   numero_contacto    String?   @db.VarChar(50)
   dni_contacto       String?   @db.VarChar(20)
   solicitud_ip       String?   @db.VarChar(45)
@@ -118,6 +118,7 @@ model Tarea {
   fecha_inicio       DateTime?
   fecha_finalizacion DateTime?
   proyecto_id        Int?
+  numero_backlog     Int?
   solucion           String?   @db.Text
   pendiente_descripcion String? @db.Text
   valoracion_solicitante Int?
@@ -125,8 +126,8 @@ model Tarea {
   fecha_valoracion   DateTime?
   activo             Boolean   @default(true)
 
-  sector    Sector    @relation(fields: [sector_id], references: [id])
-  sede      Sede      @relation(fields: [sede_id], references: [id])
+  sector    Sector?   @relation(fields: [sector_id], references: [id])
+  sede      Sede?     @relation(fields: [sede_id], references: [id])
   creador   Usuario   @relation("TareaCreador", fields: [creada_por], references: [id])
   asignados Usuario[] @relation("TareaAsignados")
   proyecto  Proyecto? @relation(fields: [proyecto_id], references: [id], onDelete: Cascade)

@@ -7,34 +7,40 @@ import { useAuth } from '../../contextos/ContextoAuth';
 import './ModalAsignarUsuario.css';
 
 interface Props {
-  sectorId: number;
+  sectorId?: number;
+  miembrosIds?: number[];
   usuarioIdsPrevios?: number[];
   onConfirmar: (usuarioIds: number[]) => void;
   onCancelar: () => void;
 }
 
-export default function ModalAsignarUsuario({ sectorId, usuarioIdsPrevios = [], onConfirmar, onCancelar }: Props) {
+export default function ModalAsignarUsuario({ sectorId, miembrosIds, usuarioIdsPrevios = [], onConfirmar, onCancelar }: Props) {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [seleccionados, setSeleccionados] = useState<number[]>(usuarioIdsPrevios);
   const { usuario: usuarioLogueado } = useAuth();
 
   useEffect(() => {
     listarUsuarios().then((lista) => {
-      // Filtramos por sector y activos, incluyendo también a quienes tienen 'ver_todos' habilitado,
-      // a quienes tienen el sector en sus sectores adicionales, o quienes pertenecen al sector especial "Todos los sectores",
-      // y permitimos tanto rol 'usuario' como 'admin'.
-      // También incluimos cualquier usuario previamente asignado para evitar que desaparezca de la lista.
-      const filtrados = lista.filter((u) => 
-        ((
-          u.sector_id === sectorId || 
-          u.ver_todos || 
-          u.rol === 'admin' ||
-          u.sectores?.some((s) => s.id === sectorId) ||
-          u.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
-          u.sectores?.some((s) => s.nombre?.toLowerCase() === 'todos los sectores')
-        ) && u.activo) || 
-        (usuarioIdsPrevios.includes(u.id))
-      );
+      let filtrados: Usuario[];
+
+      if (miembrosIds !== undefined) {
+        const ids = new Set(miembrosIds);
+        filtrados = lista.filter((u) => (ids.has(u.id) && u.activo) || usuarioIdsPrevios.includes(u.id));
+      } else if (sectorId) {
+        filtrados = lista.filter((u) => 
+          ((
+            u.sector_id === sectorId || 
+            u.ver_todos || 
+            u.rol === 'admin' ||
+            u.sectores?.some((s) => s.id === sectorId) ||
+            u.sector?.nombre?.toLowerCase() === 'todos los sectores' ||
+            u.sectores?.some((s) => s.nombre?.toLowerCase() === 'todos los sectores')
+          ) && u.activo) || 
+          (usuarioIdsPrevios.includes(u.id))
+        );
+      } else {
+        filtrados = lista.filter((u) => u.activo);
+      }
 
       // Ordenamos la lista:
       // 1. Primero el usuario de la cuenta logueado actualmente
@@ -59,7 +65,7 @@ export default function ModalAsignarUsuario({ sectorId, usuarioIdsPrevios = [], 
 
       setUsuarios(ordenados);
     });
-  }, [sectorId, usuarioIdsPrevios, usuarioLogueado]);
+  }, [sectorId, miembrosIds, usuarioIdsPrevios, usuarioLogueado]);
 
   useEffect(() => {
     setSeleccionados(usuarioIdsPrevios);
@@ -92,7 +98,7 @@ export default function ModalAsignarUsuario({ sectorId, usuarioIdsPrevios = [], 
         
         <div className="modal-asignar__lista">
           {usuarios.length === 0 ? (
-            <p className="modal-asignar__vacio">No hay usuarios disponibles en este sector.</p>
+            <p className="modal-asignar__vacio">{miembrosIds !== undefined ? 'No hay miembros disponibles en este backlog.' : 'No hay usuarios disponibles en este sector.'}</p>
           ) : (
             usuarios.map((u) => {
               const estaSeleccionado = seleccionados.includes(u.id);

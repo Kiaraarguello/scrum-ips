@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Tarea, EstadoTarea } from '../../tipos';
 import { listarTareas, moverTarea, eliminarTarea } from '../../servicios/tareas';
 import { ordenarPorCriticidad } from '../../utilidades/pesoCriticidad';
+import type { MiembroProyecto } from '../../utilidades/backlog';
 import { tienePermiso, puedeCrearTarea } from '../../utilidades/permisos';
 import { useAuth } from '../../contextos/ContextoAuth';
 import ColumnaTablero from '../../componentes/ColumnaTablero/ColumnaTablero';
@@ -35,9 +36,11 @@ type ModoFinalizar = 'finalizada' | 'pendiente';
 interface Props {
   proyectoId?: number;
   tituloPersonalizado?: string;
+  miembrosProyecto?: MiembroProyecto[];
 }
 
-export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
+export default function Tablero({ proyectoId, tituloPersonalizado, miembrosProyecto }: Props) {
+  const esBacklog = proyectoId != null;
   const { usuario } = useAuth();
   const navegar = useNavigate();
   const [tareas, setTareas] = useState<Tarea[]>([]);
@@ -117,12 +120,15 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
     if (filtroBusqueda.trim()) {
       const query = filtroBusqueda.toLowerCase().trim();
       filtradas = filtradas.filter((t) => {
-        const idMatch = t.id.toString() === query || `#${t.id}`.toLowerCase() === query;
+        const idMatch =
+          t.id.toString() === query ||
+          `#${t.id}`.toLowerCase() === query ||
+          (t.numero_backlog != null && (t.numero_backlog.toString() === query || `#${t.numero_backlog}`.toLowerCase() === query));
         const tituloMatch = t.titulo.toLowerCase().includes(query);
         const notaMatch = t.nota_llamada?.toLowerCase().includes(query) ?? false;
-        const contactoMatch = t.numero_contacto?.toLowerCase().includes(query) ?? false;
-        const sedeMatch = t.sede?.nombre.toLowerCase().includes(query) ?? false;
-        const sectorMatch = t.sector?.nombre.toLowerCase().includes(query) ?? false;
+        const contactoMatch = !esBacklog && (t.numero_contacto?.toLowerCase().includes(query) ?? false);
+        const sedeMatch = !esBacklog && (t.sede?.nombre.toLowerCase().includes(query) ?? false);
+        const sectorMatch = !esBacklog && (t.sector?.nombre.toLowerCase().includes(query) ?? false);
         const creadorMatch = t.creador ? `${t.creador.nombre} ${t.creador.apellido}`.toLowerCase().includes(query) : false;
         const asignadosMatch = t.asignados?.some(u => `${u.nombre} ${u.apellido}`.toLowerCase().includes(query)) ?? false;
         return idMatch || tituloMatch || notaMatch || contactoMatch || sedeMatch || sectorMatch || creadorMatch || asignadosMatch;
@@ -289,7 +295,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
           <input
             type="text"
             className="tablero__busqueda-input"
-            placeholder="Buscar por ID, título, sector, sede, contacto, equipo..."
+            placeholder={esBacklog ? 'Buscar por ID, título, nota, equipo...' : 'Buscar por ID, título, sector, sede, contacto, equipo...'}
             value={filtroBusqueda}
             onChange={(e) => setFiltroBusqueda(e.target.value)}
           />
@@ -322,6 +328,7 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
                 estado={estado}
                 tareas={tareasPorEstado(estado)}
                 resaltada={columnaDestino === estado}
+                esBacklog={esBacklog}
                 onClickTarea={(t) => setTareaParaEditar(t)}
                 onEliminarTarea={archivarTarea}
                 onCambiarEstado={solicitarCambioEstado}
@@ -338,12 +345,14 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
           onCerrar={() => setMostrarModal(false)} 
           onCreada={() => { setMostrarModal(false); cargar(); }} 
           proyectoId={proyectoId}
+          miembrosProyecto={miembrosProyecto}
         />
       )}
 
       {tareaParaAsignar && (
         <ModalAsignarUsuario
-          sectorId={tareaParaAsignar.tarea.sector_id}
+          sectorId={esBacklog ? undefined : tareaParaAsignar.tarea.sector_id ?? undefined}
+          miembrosIds={esBacklog ? miembrosProyecto?.map((m) => m.id) : undefined}
           usuarioIdsPrevios={tareaParaAsignar.tarea.asignados?.map((u) => u.id) ?? []}
           onConfirmar={confirmarAsignacion}
           onCancelar={() => { setTareaParaAsignar(null); }}
@@ -353,6 +362,8 @@ export default function Tablero({ proyectoId, tituloPersonalizado }: Props) {
       {tareaParaEditar && (
         <ModalEditarTarea
           tarea={tareaParaEditar}
+          esBacklog={esBacklog}
+          miembrosProyecto={miembrosProyecto}
           onCerrar={() => setTareaParaEditar(null)}
           onActualizada={() => {
             setTareaParaEditar(null);
