@@ -1,0 +1,63 @@
+.proyecto-detalle__cabecera-pagina {
+  padding-bottom: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.proyecto-detalle__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.proyecto-detalle__miembros {
+  background: var(--color-fondo-tarjeta, white);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.proyecto-detalle__miembros-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.75rem;
+}
+
+.proyecto-detalle__miembros-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.proyecto-detalle__miembro {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.proyecto-detalle__miembro-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.proyecto-detalle__miembro-nombre {
+  font-size: 0.875rem;
+  color: var(--color-texto);
+}

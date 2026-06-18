@@ -11,6 +11,7 @@ import Selector from '../Selector/Selector';
 import Boton from '../Boton/Boton';
 import BadgeCriticidad from '../BadgeCriticidad/BadgeCriticidad';
 import { formatearFechaHora } from '../../utilidades/formatoFecha';
+import { tituloIdTarea } from '../../utilidades/backlog';
 import './ModalEditarTarea.css';
 import '../ModalAsignarUsuario/ModalAsignarUsuario.css';
 
@@ -18,6 +19,8 @@ interface Props {
   tarea: Tarea;
   onCerrar: () => void;
   onActualizada: () => void;
+  esBacklog?: boolean;
+  miembrosProyecto?: { id: number; nombre: string; apellido: string }[];
 }
 
 const ESTADOS_MAP: Record<string, { label: string, clase: string }> = {
@@ -27,14 +30,14 @@ const ESTADOS_MAP: Record<string, { label: string, clase: string }> = {
   pendiente: { label: 'Pendiente', clase: 'modal-editar-tarea__estado-badge--pendiente' },
 };
 
-export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Props) {
+export default function ModalEditarTarea({ tarea, onCerrar, onActualizada, esBacklog = false, miembrosProyecto }: Props) {
   const [modoEdicion, setModoEdicion] = useState(false);
   
   const [titulo, setTitulo] = useState(tarea.titulo);
   const [nota, setNota] = useState(tarea.nota_llamada ?? '');
   const [criticidad, setCriticidad] = useState(tarea.criticidad);
-  const [sectorId, setSectorId] = useState(tarea.sector_id.toString());
-  const [sedeId, setSedeId] = useState(tarea.sede_id.toString());
+  const [sectorId, setSectorId] = useState(tarea.sector_id?.toString() ?? '');
+  const [sedeId, setSedeId] = useState(tarea.sede_id?.toString() ?? '');
   const [contacto, setContacto] = useState(tarea.numero_contacto ?? '');
   
   const [sectores, setSectores] = useState<Sector[]>([]);
@@ -60,6 +63,15 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
   }, [tarea.id]);
 
   useEffect(() => {
+    if (esBacklog && miembrosProyecto?.length) {
+      const ids = new Set(miembrosProyecto.map((m) => m.id));
+      listarUsuarios().then((lista) => {
+        const filtrados = lista.filter((u) => (ids.has(u.id) && u.activo) || usuarioIdsAsignados.includes(u.id));
+        setUsuariosAsignables(filtrados);
+      });
+      return;
+    }
+
     if (!sectorId) {
       setUsuariosAsignables([]);
       return;
@@ -91,7 +103,7 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
       });
       setUsuariosAsignables(ordenados);
     });
-  }, [sectorId, usuarioLogueado]);
+  }, [sectorId, usuarioLogueado, esBacklog, miembrosProyecto, usuarioIdsAsignados]);
 
   const obtenerColorAvatar = (texto: string) => {
     let hash = 0;
@@ -106,8 +118,8 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
     setTitulo(tarea.titulo);
     setNota(tarea.nota_llamada ?? '');
     setCriticidad(tarea.criticidad);
-    setSectorId(tarea.sector_id.toString());
-    setSedeId(tarea.sede_id.toString());
+    setSectorId(tarea.sector_id?.toString() ?? '');
+    setSedeId(tarea.sede_id?.toString() ?? '');
     setContacto(tarea.numero_contacto ?? '');
     setUsuarioIdsAsignados(tarea.asignados?.map((u) => u.id) ?? []);
     setError('');
@@ -126,9 +138,13 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
         titulo: titulo.trim(),
         nota_llamada: nota.trim() || null,
         criticidad: criticidad,
-        sector_id: Number(sectorId),
-        sede_id: Number(sedeId),
-        numero_contacto: contacto.trim() || null,
+        ...(esBacklog
+          ? {}
+          : {
+              sector_id: Number(sectorId),
+              sede_id: Number(sedeId),
+              numero_contacto: contacto.trim() || null,
+            }),
         asignado_ids: usuarioIdsAsignados,
       });
       onActualizada();
@@ -148,7 +164,7 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
         {/* Cabecera del modal */}
         <div className="modal-editar-tarea__cabecera-top">
           <div className="modal-editar-tarea__cabecera-info">
-            <span className="modal-editar-tarea__id-tag">Tarea #{tarea.id}</span>
+            <span className="modal-editar-tarea__id-tag">{tituloIdTarea(tarea)}</span>
             <span className={`modal-editar-tarea__estado-badge ${estadoInfo.clase}`}>
               {estadoInfo.label}
             </span>
@@ -172,21 +188,25 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                 
                 <div className="modal-editar-tarea__sidebar-lista">
                   
-                  <div className="modal-editar-tarea__sidebar-item">
-                    <Layers size={15} className="modal-editar-tarea__sidebar-icono" />
-                    <div>
-                      <span className="modal-editar-tarea__sidebar-label">Sector</span>
-                      <strong className="modal-editar-tarea__sidebar-valor">{tarea.sector?.nombre || 'No especificado'}</strong>
-                    </div>
-                  </div>
+                  {!esBacklog && (
+                    <>
+                      <div className="modal-editar-tarea__sidebar-item">
+                        <Layers size={15} className="modal-editar-tarea__sidebar-icono" />
+                        <div>
+                          <span className="modal-editar-tarea__sidebar-label">Sector</span>
+                          <strong className="modal-editar-tarea__sidebar-valor">{tarea.sector?.nombre || 'No especificado'}</strong>
+                        </div>
+                      </div>
 
-                  <div className="modal-editar-tarea__sidebar-item">
-                    <MapPin size={15} className="modal-editar-tarea__sidebar-icono" />
-                    <div>
-                      <span className="modal-editar-tarea__sidebar-label">Sede</span>
-                      <strong className="modal-editar-tarea__sidebar-valor">{tarea.sede?.nombre || 'No especificado'}</strong>
-                    </div>
-                  </div>
+                      <div className="modal-editar-tarea__sidebar-item">
+                        <MapPin size={15} className="modal-editar-tarea__sidebar-icono" />
+                        <div>
+                          <span className="modal-editar-tarea__sidebar-label">Sede</span>
+                          <strong className="modal-editar-tarea__sidebar-valor">{tarea.sede?.nombre || 'No especificado'}</strong>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   <div className="modal-editar-tarea__sidebar-item">
                     <AlertCircle size={15} className="modal-editar-tarea__sidebar-icono" />
@@ -198,13 +218,15 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                     </div>
                   </div>
 
-                  <div className="modal-editar-tarea__sidebar-item">
-                    <Phone size={15} className="modal-editar-tarea__sidebar-icono" />
-                    <div>
-                      <span className="modal-editar-tarea__sidebar-label">Contacto</span>
-                      <strong className="modal-editar-tarea__sidebar-valor">{tarea.numero_contacto || 'Sin contacto registrado'}</strong>
+                  {!esBacklog && (
+                    <div className="modal-editar-tarea__sidebar-item">
+                      <Phone size={15} className="modal-editar-tarea__sidebar-icono" />
+                      <div>
+                        <span className="modal-editar-tarea__sidebar-label">Contacto</span>
+                        <strong className="modal-editar-tarea__sidebar-valor">{tarea.numero_contacto || 'Sin contacto registrado'}</strong>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                 </div>
               </div>
@@ -444,12 +466,10 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
             {/* Acciones del Modo Vista */}
             <div className="modal-editar-tarea__acciones-vista">
               <Boton type="button" variante="secundario" onClick={onCerrar}>Cerrar</Boton>
-              {(usuarioLogueado?.permisos?.tablero_editar === true || usuarioLogueado?.rol === 'super_usuario') && (
-                <Boton type="button" onClick={() => setModoEdicion(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Edit size={15} />
-                  Editar Tarea
-                </Boton>
-              )}
+              <Boton type="button" onClick={() => setModoEdicion(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Edit size={15} />
+                Editar Tarea
+              </Boton>
             </div>
           </div>
         ) : (
@@ -482,30 +502,32 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                   />
                 </div>
 
-                <div className="modal-editar-tarea__fila" style={{ marginTop: '8px' }}>
-                  <Selector
-                    etiqueta="Sector"
-                    id="edit-sector-tarea"
-                    value={sectorId}
-                    onChange={(e) => setSectorId(e.target.value)}
-                    opciones={[
-                      { valor: '', etiqueta: 'Seleccionar sector' },
-                      ...sectores.filter((s) => (s.activo && s.nombre.toLowerCase() !== 'todos los sectores') || s.id === tarea.sector_id).map((s) => ({ valor: s.id, etiqueta: s.nombre })),
-                    ]}
-                    required
-                  />
-                  <Selector
-                    etiqueta="Sede"
-                    id="edit-sede-tarea"
-                    value={sedeId}
-                    onChange={(e) => setSedeId(e.target.value)}
-                    opciones={[
-                      { valor: '', etiqueta: 'Seleccionar sede' },
-                      ...sedes.filter((s) => s.activo || s.id === tarea.sede_id).map((s) => ({ valor: s.id, etiqueta: s.nombre })),
-                    ]}
-                    required
-                  />
-                </div>
+                {!esBacklog && (
+                  <div className="modal-editar-tarea__fila" style={{ marginTop: '8px' }}>
+                    <Selector
+                      etiqueta="Sector"
+                      id="edit-sector-tarea"
+                      value={sectorId}
+                      onChange={(e) => setSectorId(e.target.value)}
+                      opciones={[
+                        { valor: '', etiqueta: 'Seleccionar sector' },
+                        ...sectores.filter((s) => (s.activo && s.nombre.toLowerCase() !== 'todos los sectores') || s.id === tarea.sector_id).map((s) => ({ valor: s.id, etiqueta: s.nombre })),
+                      ]}
+                      required
+                    />
+                    <Selector
+                      etiqueta="Sede"
+                      id="edit-sede-tarea"
+                      value={sedeId}
+                      onChange={(e) => setSedeId(e.target.value)}
+                      opciones={[
+                        { valor: '', etiqueta: 'Seleccionar sede' },
+                        ...sedes.filter((s) => s.activo || s.id === tarea.sede_id).map((s) => ({ valor: s.id, etiqueta: s.nombre })),
+                      ]}
+                      required
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Columna Derecha - Controles adicionales y asignaciones */}
@@ -523,20 +545,22 @@ export default function ModalEditarTarea({ tarea, onCerrar, onActualizada }: Pro
                     ]}
                     required
                   />
-                  <CampoTexto
-                    etiqueta="Contacto (opcional)"
-                    value={contacto}
-                    onChange={(e) => setContacto(e.target.value)}
-                    id="edit-contacto-tarea"
-                    placeholder="Número o nombre"
-                  />
+                  {!esBacklog && (
+                    <CampoTexto
+                      etiqueta="Contacto (opcional)"
+                      value={contacto}
+                      onChange={(e) => setContacto(e.target.value)}
+                      id="edit-contacto-tarea"
+                      placeholder="Número o nombre"
+                    />
+                  )}
                 </div>
 
-                {sectorId && (
+                {((esBacklog && (miembrosProyecto?.length || usuariosAsignables.length)) || sectorId) && (
                   <div className="modal-editar-tarea__nota-campo" style={{ gap: '6px', marginTop: '12px' }}>
                     <label className="campo-texto__etiqueta">Asignar Equipo (opcional)</label>
                     {usuariosAsignables.length === 0 ? (
-                      <p className="modal-asignar__vacio">No hay usuarios disponibles en este sector.</p>
+                      <p className="modal-asignar__vacio">{esBacklog ? 'No hay miembros en este backlog.' : 'No hay usuarios disponibles en este sector.'}</p>
                     ) : (
                       <div className="modal-asignar__lista" style={{ maxHeight: '160px', overflowY: 'auto' }}>
                         {usuariosAsignables.map((u) => {

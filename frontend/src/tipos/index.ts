@@ -57,13 +57,14 @@ export interface Tarea {
   nota_llamada: string | null;
   criticidad: Criticidad;
   estado: EstadoTarea;
-  sector_id: number;
-  sede_id: number;
+  sector_id: number | null;
+  sede_id: number | null;
   numero_contacto: string | null;
   creada_por: number;
   asignado_a?: number | null;
   asignado_ids?: number[];
   proyecto_id: number | null;
+  numero_backlog?: number | null;
   fecha_creacion: string;
   fecha_inicio: string | null;
   fecha_finalizacion: string | null;
