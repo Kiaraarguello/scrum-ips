@@ -92,17 +92,6 @@ export const MOCK_ESTRUCTURA_PERMISOS = {
   ],
 };
 
-function construirMapaPermisosDefault(rol) {
-  const mapa = {};
-  const modulosDefault = MOCK_ESTRUCTURA_PERMISOS[rol] || [];
-  for (const modulo of modulosDefault) {
-    for (const perm of modulo.permisos) {
-      mapa[perm.id] = perm.activoDefinido;
-    }
-  }
-  return mapa;
-}
-
 // Obtiene un mapeo simple del tipo { clave: activo } para un rol específico
 export async function obtenerPermisosRol(rol) {
   if (rol === 'super_usuario') {
@@ -122,56 +111,47 @@ export async function obtenerPermisosRol(rol) {
     };
   }
 
-  const mapaDefault = construirMapaPermisosDefault(rol);
+  // Buscar en BD
+  const dbPermisos = await prisma.permisoRol.findMany({
+    where: { rol },
+  });
+
+  const mapa = {};
   const modulosDefault = MOCK_ESTRUCTURA_PERMISOS[rol] || [];
-  if (modulosDefault.length === 0) {
-    return mapaDefault;
+  const clavesValidas = new Set();
+
+  for (const modulo of modulosDefault) {
+    for (const perm of modulo.permisos) {
+      clavesValidas.add(perm.id);
+    }
   }
 
-  try {
-    const dbPermisos = await prisma.permisoRol.findMany({
-      where: { rol },
-    });
-
-    const clavesValidas = new Set();
-    for (const modulo of modulosDefault) {
-      for (const perm of modulo.permisos) {
-        clavesValidas.add(perm.id);
-      }
+  for (const p of dbPermisos) {
+    if (clavesValidas.has(p.clave)) {
+      mapa[p.clave] = p.activo;
     }
+  }
 
-    const mapa = { ...mapaDefault };
-    for (const p of dbPermisos) {
-      if (clavesValidas.has(p.clave)) {
-        mapa[p.clave] = p.activo;
-      }
-    }
-
-    for (const modulo of modulosDefault) {
-      for (const perm of modulo.permisos) {
-        if (dbPermisos.some((p) => p.clave === perm.id)) continue;
-        try {
-          await prisma.permisoRol.upsert({
-            where: { rol_clave: { rol, clave: perm.id } },
-            update: {},
-            create: {
-              rol,
-              clave: perm.id,
-              activo: perm.activoDefinido,
-            },
-          });
-        } catch (upsertError) {
-          console.error(`No se pudo inicializar permiso ${perm.id} para ${rol}:`, upsertError.message);
-        }
+  // Si no está inicializado o faltan claves, recurrir al valor por defecto
+  for (const modulo of modulosDefault) {
+    for (const perm of modulo.permisos) {
+      if (mapa[perm.id] === undefined) {
+        // Se auto-cura guardando el valor por defecto
+        await prisma.permisoRol.upsert({
+          where: { rol_clave: { rol, clave: perm.id } },
+          update: {},
+          create: {
+            rol,
+            clave: perm.id,
+            activo: perm.activoDefinido,
+          },
+        });
         mapa[perm.id] = perm.activoDefinido;
       }
     }
-
-    return mapa;
-  } catch (error) {
-    console.error(`permiso_roles no disponible para rol ${rol}, usando valores por defecto:`, error.message);
-    return mapaDefault;
   }
+
+  return mapa;
 }
 
 // Helper para construir la estructura JSON completa y jerárquica para el frontend
