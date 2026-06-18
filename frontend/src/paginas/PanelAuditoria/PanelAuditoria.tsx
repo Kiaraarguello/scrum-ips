@@ -18,7 +18,7 @@ interface RegistroAuditoria {
 }
 
 const SECCIONES = [
-  { id: 'sesiones', titulo: 'Sesiones', descripcion: 'Auditoría de logins y logouts', icono: ShieldAlert },
+  { id: 'sesiones', titulo: 'Sesiones', descripcion: 'Inicios de sesión e impersonate', icono: ShieldAlert },
   { id: 'usuarios', titulo: 'Usuarios', descripcion: 'Auditoría de gestión de usuarios', icono: Users },
   { id: 'sectores', titulo: 'Sectores', descripcion: 'Auditoría de sectores', icono: Layers },
   { id: 'sedes', titulo: 'Sedes', descripcion: 'Auditoría de sedes y edificios', icono: Building2 },
@@ -34,6 +34,8 @@ export default function PanelAuditoria() {
   const [pagina, setPagina] = useState(1);
   const [paginasTotales, setPaginasTotales] = useState(1);
   const [detallesModal, setDetallesModal] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const [totalRegistros, setTotalRegistros] = useState(0);
 
   useEffect(() => {
     if (seccionSeleccionada) {
@@ -43,12 +45,22 @@ export default function PanelAuditoria() {
 
   async function cargarRegistros() {
     setCargando(true);
+    setError('');
     try {
-      const res = await api.get(`/api/auditoria?tipo=${seccionSeleccionada}&pagina=${pagina}`);
+      const res = await api.get(`/auditoria?tipo=${seccionSeleccionada}&pagina=${pagina}`);
       setRegistros(Array.isArray(res.data.registros) ? res.data.registros : []);
       setPaginasTotales(res.data.paginas_totales || 1);
-    } catch (error) {
-      console.error('Error cargando auditoría:', error);
+      setTotalRegistros(res.data.total ?? 0);
+    } catch (err: unknown) {
+      const detalle = (err as { response?: { data?: { detail?: string }; status?: number } })?.response?.data?.detail;
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      if (status === 403) {
+        setError('No tenés permiso para ver los logs de auditoría. Pedí que activen "Logs de Auditoría" para tu rol.');
+      } else {
+        setError(detalle ?? 'No se pudieron cargar los registros. Verificá que las tablas de auditoría existan en la base de datos.');
+      }
+      setRegistros([]);
+      setTotalRegistros(0);
     } finally {
       setCargando(false);
     }
@@ -59,7 +71,7 @@ export default function PanelAuditoria() {
     try {
       const fecha = new Date(isoString);
       if (isNaN(fecha.getTime())) return 'Inválida';
-      return fecha.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+      return fecha.toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
     } catch {
       return 'Inválida';
     }
@@ -113,13 +125,22 @@ export default function PanelAuditoria() {
           <ArrowLeft size={16} /> Volver
         </button>
         <h1 className="panel-auditoria__titulo-tabla">Auditoría: {seccion?.titulo}</h1>
+        {totalRegistros > 0 && (
+          <span className="panel-auditoria__contador-total">{totalRegistros} registros</span>
+        )}
       </div>
+
+      {error && (
+        <div className="panel-auditoria__error">{error}</div>
+      )}
 
       <div className="panel-auditoria__tabla-contenedor">
         {cargando ? (
           <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando registros...</div>
-        ) : !Array.isArray(registros) || registros.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center' }}>No hay registros en esta categoría.</div>
+        ) : error ? null : !Array.isArray(registros) || registros.length === 0 ? (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            No hay registros en esta categoría. Los cambios (crear, editar, eliminar) aparecen acá automáticamente.
+          </div>
         ) : (
           <table className="panel-auditoria__tabla">
             <thead>

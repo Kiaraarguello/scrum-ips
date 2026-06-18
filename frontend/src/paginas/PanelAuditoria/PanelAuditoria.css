@@ -57,7 +57,26 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.panel-auditoria__contador-total {
+  font-size: 0.85rem;
+  color: var(--color-texto-secundario);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.panel-auditoria__error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
 }
 
 .panel-auditoria__btn-volver {
